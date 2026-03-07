@@ -1,0 +1,263 @@
+:root {
+  color-scheme: light;
+  --bg: radial-gradient(circle at top left, #f9f5ff 0%, #eef8ff 35%, #f6fff3 100%);
+  --panel: #ffffff;
+  --primary: #5b5df9;
+  --success: #1fa968;
+  --secondary: #5b6478;
+  --text: #1d2340;
+  --muted: #677197;
+  --border: #dce3fb;
+  --done: #e6fff3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 1.2rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #fff0fb, #eef4ff);
+  border: 1px solid #e6dcff;
+  border-radius: 20px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 8px 24px rgba(85, 90, 190, 0.12);
+}
+
+h1, h2, h3 { margin: 0.1rem 0; }
+h1 { font-size: 2rem; }
+
+.stickers {
+  display: flex;
+  gap: 0.35rem;
+  font-size: 1.25rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.install-hint {
+  grid-column: 1 / -1;
+  border-style: dashed;
+  background: linear-gradient(135deg, #fffef4, #f1fffa);
+}
+
+.install-hint p {
+  margin: 0.4rem 0 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 8px 18px rgba(56, 81, 121, 0.08);
+}
+
+.session-panel, .stats-panel {
+  grid-column: 1 / -1;
+}
+
+.child-selector {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.child-btn {
+  font-size: 1.05rem;
+  padding: 0.75rem 1.2rem;
+}
+
+.child-btn.active {
+  outline: 3px solid color-mix(in srgb, var(--primary) 30%, white);
+  transform: translateY(-1px);
+}
+
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+button:hover { transform: translateY(-1px); filter: brightness(1.02); }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: linear-gradient(135deg, #5b5df9, #4da0ff);
+  color: #fff;
+}
+.success {
+  background: linear-gradient(135deg, #1ea05f, #00c27f);
+  color: #fff;
+}
+.secondary {
+  background: #eef1ff;
+  color: var(--secondary);
+}
+
+.session-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge {
+  border: 1px solid var(--border);
+  background: #f8fbff;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.session-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.progress-wrap {
+  margin-top: 0.9rem;
+  border-radius: 999px;
+  height: 16px;
+  background: #eef0ff;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff9d66, #ffd84e, #6be28b);
+  border-radius: inherit;
+  transition: width 220ms ease;
+}
+
+.progress-text {
+  margin: 0.4rem 0;
+  font-weight: 700;
+  color: #47516f;
+}
+
+.hint {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
+.tasks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.75rem;
+}
+
+.task {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+}
+
+.task.done {
+  background: var(--done);
+  border-color: #9be2bd;
+}
+
+.task label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+#weeklyStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.5rem;
+}
+
+.stat-card {
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem;
+  background: linear-gradient(180deg, #fafdff, #f3f8ff);
+}
+
+dialog {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: min(420px, calc(100vw - 2rem));
+}
+
+dialog::backdrop {
+  background: rgba(10, 20, 40, 0.25);
+}
+
+.pin-form, #parentSettings {
+  display: grid;
+  gap: 0.7rem;
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+input[type="password"], input[type="number"] {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.switch-row {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.note {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.9rem;
+}
