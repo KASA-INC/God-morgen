@@ -39,11 +39,11 @@ main { display: grid; gap: 1.6rem; }
   text-align: center;
 }
 
-h1 {
-  margin: 0;
-  font-size: 3.5rem;
-  letter-spacing: 1px;
-  text-shadow: 0 0 16px rgba(100, 242, 255, 0.4);
+.site-logo {
+  width: min(800px, 100%);
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 700; }
 h3 { margin: 0; font-size: 1.2rem; font-weight: 700; }
@@ -176,13 +176,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 .task-icon {
-  font-size: 4rem;
+  font-size: 3rem;
   line-height: 1;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.65rem;
 }
 
 .task-text {
   text-align: center;
+  margin-top: 0.25rem;
 }
 
 .task-btn small {
