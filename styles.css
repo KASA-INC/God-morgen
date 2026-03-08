@@ -48,8 +48,41 @@ h2 { margin: 0 0 0.6rem; font-size: 1.7rem; }
 h3 { margin: 0; font-size: 1.45rem; }
 p { margin: 0.45rem 0 0; font-size: 1.14rem; }
 
-.stickers { display: flex; justify-content: center; gap: 0.45rem; font-size: 1.6rem; margin-top: 0.25rem; }
 
+.daily-facts {
+  margin-top: 0.7rem;
+  text-align: left;
+}
+
+.daily-facts h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+  color: #ffe67f;
+}
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.fact-card {
+  background: linear-gradient(160deg, #1c429d, #193a89);
+  border: 2px solid #5f80de;
+  border-radius: 16px;
+  padding: 0.55rem 0.65rem;
+}
+
+.fact-card h3 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.fact-card p {
+  margin: 0.2rem 0 0;
+  font-size: 0.98rem;
+  color: #e5eeff;
+}
 button {
   border: 0;
   border-radius: 16px;
@@ -192,3 +225,7 @@ input[type="password"], input[type="number"] {
 .row { display: flex; justify-content: flex-end; gap: 0.5rem; }
 .switch-row { grid-template-columns: auto 1fr; align-items: center; }
 .note { color: var(--muted); margin: 0; }
+
+@media (max-width: 860px) {
+  .facts-grid { grid-template-columns: 1fr; }
+}

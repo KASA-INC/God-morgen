@@ -24,6 +24,9 @@ const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
 const openParentModeBtn = document.getElementById("openParentMode");
 const installHint = document.getElementById("installHint");
+const historyFact = document.getElementById("historyFact");
+const weatherFact = document.getElementById("weatherFact");
+const todayFact = document.getElementById("todayFact");
 
 const parentDialog = document.getElementById("parentDialog");
 const pinForm = document.getElementById("pinForm");
@@ -41,6 +44,7 @@ renderAll();
 startTimerLoop();
 registerServiceWorker();
 handleInstallHint();
+renderDailyFacts();
 
 function createAllSessions() {
   return Object.fromEntries(Object.keys(state.children).map((name) => [name, createSession(name)]));
@@ -82,6 +86,58 @@ function handleInstallHint() {
   if (!installHint) return;
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
   installHint.hidden = !!isStandalone;
+}
+
+
+function renderDailyFacts() {
+  if (!historyFact || !weatherFact || !todayFact) return;
+
+  const now = new Date();
+  const mmdd = `${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  const historicByDate = {
+    "01-01": "Nyttårsaften ble markert internasjonalt med store feiringer verden over.",
+    "02-14": "I 1876 søkte Alexander Graham Bell patent på telefonen.",
+    "03-08": "Den internasjonale kvinnedagen markeres globalt.",
+    "04-12": "I 1961 ble Jurij Gagarin første menneske i verdensrommet.",
+    "05-17": "Norge feirer grunnlovsdagen med tog, flagg og is.",
+    "06-20": "Jorden har nesten nådd sommersolverv på den nordlige halvkule.",
+    "07-20": "I 1969 landet Apollo 11 på månen.",
+    "08-16": "I 1977 døde Elvis Presley, en av historiens største artister.",
+    "09-12": "I 1962 holdt JFK sin berømte 'Moon speech'.",
+    "10-01": "På denne tiden av året er Nobelpris-sesongen rett rundt hjørnet.",
+    "11-09": "I 1989 begynte Berlinmurens fall.",
+    "12-10": "Nobels fredspris deles ut i Oslo.",
+  };
+
+  const weatherByMonth = [
+    "Kald vinterluft ute ❄️ – superheltlag på med yttertøy!",
+    "Friskt i lufta 🌬️ – perfekt dag for raske morgenhelter.",
+    "Vårtegn i sikte 🌱 – dagen passer for en energistart.",
+    "Mild vårdag 🌤️ – herlig dag for superhelter på oppdrag.",
+    "Lysere dager ☀️ – godt humør-vær for morgenteamet.",
+    "Sommervibber 🌼 – husk drikkeflaske i sekken.",
+    "Sommer og solbriller 😎 – rask rutine, mer tid ute.",
+    "Lun sensommer 🌇 – fin dag for en ny personlig rekord.",
+    "Klar høstluft 🍂 – god dag for fokus og fart.",
+    "Høstvind og skjerf🧣 – superheltmodus: på med yttertøy!",
+    "Mørkere morgener 🍁 – ekstra stjerne for å komme raskt i gang.",
+    "Vinterstemning 🎄 – varm start gir sterk dag.",
+  ];
+
+  const dayMission = [
+    "Dagens oppdrag: Fullfør de første 2 oppgavene på under 6 minutter!",
+    "Dagens oppdrag: Ta på yttertøy med superhelt-fart 💨",
+    "Dagens oppdrag: Null mas + masse teamwork = bonus-stemning!",
+    "Dagens oppdrag: Samle minst én ny personlig rekord i dag 🏅",
+    "Dagens oppdrag: Smil etter hver fullførte oppgave 😄",
+    "Dagens oppdrag: Morgenrutine uten pauser i mellom oppgaver!",
+    "Dagens oppdrag: Fullfør alt før favorittsangen er ferdig 🎵",
+  ];
+
+  historyFact.textContent = historicByDate[mmdd] || `På denne datoen (${mmdd}) har verden fått mange små og store helteøyeblikk.`;
+  weatherFact.textContent = weatherByMonth[now.getMonth()];
+  todayFact.textContent = dayMission[now.getDay()];
 }
 
 function renderAll() {
