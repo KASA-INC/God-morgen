@@ -153,7 +153,7 @@ function toggleTask(childName, taskIndex) {
     const points = state.scoring.basePoints + bonus;
     session.completedTasks[taskIndex] = points;
     session.score += points;
-    if (state.soundEnabled) playBlip();
+    if (state.soundEnabled) playTaskSound();
   } else {
     delete session.completedTasks[taskIndex];
     session.score -= current;
@@ -180,6 +180,7 @@ function finishMorning(childName) {
     ...state.history,
   ].slice(0, 60);
 
+  if (state.soundEnabled) playCompletionJingle();
   alert(`Bra jobbet, ${childName}!\nPoeng i dag: ${session.score}`);
   sessions[childName] = createSession(childName);
   saveState();
@@ -227,17 +228,52 @@ function taskEmoji(task) {
   return "✅";
 }
 
-function playBlip() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "triangle";
-  osc.frequency.value = 700;
-  gain.gain.value = 0.03;
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.1);
+function createAudioContext() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  return new Ctx();
+}
+
+function playTaskSound() {
+  const ctx = createAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const notes = [784, 988];
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = freq;
+    gain.gain.value = 0.0001;
+    gain.gain.exponentialRampToValueAtTime(0.06, now + i * 0.08 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 0.16);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + i * 0.08);
+    osc.stop(now + i * 0.08 + 0.17);
+  });
+}
+
+function playCompletionJingle() {
+  const ctx = createAudioContext();
+  if (!ctx) return;
+
+  const melody = [523, 659, 784, 1046];
+  const now = ctx.currentTime;
+  melody.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = 0.0001;
+    gain.gain.exponentialRampToValueAtTime(0.08, now + i * 0.12 + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.12 + 0.28);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + i * 0.12);
+    osc.stop(now + i * 0.12 + 0.3);
+  });
 }
 
 openParentModeBtn.addEventListener("click", () => {
