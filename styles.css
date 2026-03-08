@@ -1,8 +1,5 @@
 :root {
-  --bg: radial-gradient(circle at top, #10245f 0%, #0b1a4a 45%, #081233 100%);
-  --panel: #122a6d;
-  --panel-soft: #17357f;
-  --border: #3c5db8;
+  --bg: #081233;
   --text: #f4f7ff;
   --muted: #c1d2ff;
   --primary: linear-gradient(135deg, #ff4fa2, #ff8f3f);
@@ -19,23 +16,22 @@ body {
   color: var(--text);
 }
 
-.app { max-width: 1180px; margin: 0 auto; padding: 1rem; }
-main { display: grid; gap: 1rem; }
+.app { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 2rem; }
+main { display: grid; gap: 1.6rem; }
 
 .panel {
-  background: var(--panel);
-  border: 2px solid var(--border);
-  border-radius: 26px;
-  padding: 1rem;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #1a3d93, #163479);
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
 }
 
 .topbar > div {
@@ -43,106 +39,101 @@ main { display: grid; gap: 1rem; }
   text-align: center;
 }
 
-h1 { margin: 0; font-size: 3.4rem; letter-spacing: 1px; text-shadow: 0 4px 0 #0b1d4f, 0 0 16px rgba(100,242,255,0.55); }
-h2 { margin: 0 0 0.6rem; font-size: 1.7rem; }
-h3 { margin: 0; font-size: 1.45rem; }
-p { margin: 0.45rem 0 0; font-size: 1.14rem; }
-
+h1 {
+  margin: 0;
+  font-size: 3.5rem;
+  letter-spacing: 1px;
+  text-shadow: 0 0 16px rgba(100, 242, 255, 0.4);
+}
+h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 700; }
+h3 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); }
 
 .daily-facts {
-  margin-top: 0.7rem;
+  margin-top: 0.9rem;
   text-align: left;
 }
 
 .daily-facts h2 {
   margin: 0 0 0.5rem;
-  font-size: 1.3rem;
-  color: #ffe67f;
+  font-size: 1.15rem;
+  color: #d8e6ff;
+  letter-spacing: 0.3px;
 }
 
 .facts-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .fact-card {
-  background: linear-gradient(160deg, #1c429d, #193a89);
-  border: 2px solid #5f80de;
-  border-radius: 16px;
-  padding: 0.55rem 0.65rem;
+  padding: 0.2rem 0.1rem;
 }
 
 .fact-card h3 {
   font-size: 0.95rem;
   margin: 0;
+  color: #9fc0ff;
 }
 
 .fact-card p {
   margin: 0.2rem 0 0;
-  font-size: 0.98rem;
-  color: #e5eeff;
+  font-size: 1rem;
+  color: #f1f5ff;
 }
+
 button {
   border: 0;
-  border-radius: 16px;
-  padding: 0.85rem 1.05rem;
-  font-weight: 800;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 .primary { background: var(--primary); color: #fff; }
 .success { background: var(--success); color: #042f2a; }
-.secondary { background: #2e4ca0; color: #fff; border: 2px solid #5d7ad8; }
+.secondary { background: #1f356f; color: #fff; border: 1px solid #38559f; }
 
 .child-boards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .child-board {
-  border: 2px solid #5675d2;
-  border-radius: 24px;
-  padding: 0.9rem;
-  background: linear-gradient(180deg, #173783, #143277);
+  padding: 0.2rem 0;
 }
 
-.child-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem; }
+.child-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; }
 .badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .badge {
-  background: #243f89;
-  border: 1px solid #4f6ac5;
+  background: #162a60;
   color: #eaf0ff;
   border-radius: 999px;
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.7rem;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.98rem;
 }
 
 .badge-clock {
-  font-size: 1.22rem;
-  padding: 0.5rem 0.95rem;
-  border: 2px solid #7fa2ff;
-  background: linear-gradient(135deg, #264fa6, #315dc2);
+  font-size: 1.1rem;
+  background: #183777;
 }
 
 .badge-score {
-  font-size: 1.34rem;
-  padding: 0.52rem 1.05rem;
-  border: 2px solid #ffe173;
+  font-size: 1.2rem;
   color: #1b1f35;
   background: linear-gradient(135deg, #ffd84d, #ff9d4d);
-  text-shadow: none;
 }
 
 .progress-wrap {
-  height: 16px;
+  height: 10px;
   border-radius: 999px;
-  background: #223e83;
+  background: #122659;
   overflow: hidden;
-  margin-top: 0.65rem;
+  margin-top: 0.5rem;
 }
 .progress-bar {
   height: 100%;
@@ -156,51 +147,45 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .task-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
-  margin-top: 0.9rem;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
 }
 
 .task-btn {
-  min-height: 88px;
-  font-size: 1.15rem;
+  min-height: 78px;
+  font-size: 1.08rem;
   text-align: left;
-  padding: 0.9rem;
-  background: linear-gradient(135deg, #26489c, #214492);
-  border: 2px solid #6c8eed;
+  padding: 0.8rem;
+  background: #132b63;
+  border: 1px solid #2a4b9a;
   color: #f7f9ff;
-  border-radius: 22px 28px 24px 30px;
-  box-shadow: 0 6px 12px rgba(7, 16, 45, 0.45);
-  transition: transform 140ms ease, filter 140ms ease;
+  border-radius: 10px;
+  transition: transform 120ms ease, filter 120ms ease;
 }
 
-.task-btn:hover { transform: translateY(-2px) rotate(-0.4deg); filter: brightness(1.08); }
-.task-btn:nth-child(3n) { border-radius: 30px 22px 28px 20px; }
-.task-btn:nth-child(4n) { border-radius: 20px 30px 18px 28px; }
+.task-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
 .task-btn.done {
-  background: linear-gradient(135deg, #1ea56f, #36d59e);
-  border-color: #90ffcf;
-  color: #052a1f;
+  background: #1d6a52;
+  border-color: #39a981;
+  color: #eafcf5;
 }
 
 .task-btn small {
   display: block;
   margin-top: 0.3rem;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
 #weeklyStats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 0.6rem;
+  gap: 0.7rem;
 }
 .stat-card {
-  border: 2px solid #5576d8;
-  border-radius: 18px;
-  padding: 0.7rem;
-  background: linear-gradient(180deg, #1c3d8e, #17327a);
-  font-size: 1.05rem;
+  padding: 0.5rem 0.1rem;
+  font-size: 1.02rem;
 }
 
 dialog {
@@ -213,7 +198,7 @@ dialog {
 
 dialog::backdrop { background: rgba(10, 20, 40, 0.45); }
 .pin-form, #parentSettings { display: grid; gap: 0.7rem; }
-label { display: grid; gap: 0.3rem; font-weight: 600; font-size: 1.05rem; }
+label { display: grid; gap: 0.3rem; font-weight: 600; font-size: 1.02rem; }
 input[type="password"], input[type="number"] {
   border: 1px solid #5570c7;
   background: #0f265f;
