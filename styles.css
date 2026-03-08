@@ -152,15 +152,19 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 .task-btn {
-  min-height: 78px;
+  min-height: 132px;
   font-size: 1.08rem;
-  text-align: left;
+  text-align: center;
   padding: 0.8rem;
   background: #132b63;
   border: 1px solid #2a4b9a;
   color: #f7f9ff;
   border-radius: 10px;
   transition: transform 120ms ease, filter 120ms ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .task-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
@@ -169,6 +173,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: #1d6a52;
   border-color: #39a981;
   color: #eafcf5;
+}
+
+.task-icon {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.task-text {
+  text-align: center;
 }
 
 .task-btn small {

@@ -158,7 +158,7 @@ function renderBoards() {
     board.className = "child-board";
     board.innerHTML = `
       <div class="child-head">
-        <h3>${name} (${info.age})</h3>
+        <h3>${name}</h3>
         <div class="badges">
           <span class="badge badge-clock">⏱ ${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score">⭐ ${session.score}</span>
@@ -167,7 +167,7 @@ function renderBoards() {
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p>${doneCount} av ${total} fullført</p>
       <div class="actions">
-        <button class="primary start-btn" ${started ? "disabled" : ""}>Start ${name}</button>
+        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${name}</button>
         <button class="success finish-btn" ${!started || doneCount !== total ? "disabled" : ""}>Fullfør</button>
       </div>
       <div class="task-grid"></div>
@@ -182,7 +182,7 @@ function renderBoards() {
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
       taskBtn.disabled = !started;
-      taskBtn.innerHTML = `<div>${taskEmoji(task)} ${task}</div>${done ? `<small>+${session.completedTasks[idx]} poeng</small>` : ""}`;
+      taskBtn.innerHTML = `<div class="task-icon">${taskEmoji(task)}</div><div class="task-text">${task}</div>${done ? `<small>+${session.completedTasks[idx]} poeng</small>` : ""}`;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
       taskGrid.appendChild(taskBtn);
     });
@@ -261,9 +261,8 @@ function renderStats() {
     card.className = "stat-card";
     card.innerHTML = `
       <h4>${name}</h4>
-      <p>Rekord poeng: ${bestScore}</p>
+      <p>Rekorddag: ${bestScore} poeng</p>
       <p>Raskeste morgen: ${fastest ? formatDuration(fastest) : "-"}</p>
-      <p>Økter totalt: ${entries.length}</p>
     `;
     weeklyStatsEl.appendChild(card);
   });
@@ -299,10 +298,14 @@ function taskEmoji(task) {
   return "✅";
 }
 
+let audioCtx = null;
+
 function createAudioContext() {
   const Ctx = window.AudioContext || window.webkitAudioContext;
   if (!Ctx) return null;
-  return new Ctx();
+  if (!audioCtx) audioCtx = new Ctx();
+  if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+  return audioCtx;
 }
 
 function playTaskSound() {
@@ -392,5 +395,14 @@ function clampNumber(value, min, max, fallback) {
   if (!Number.isFinite(num)) return fallback;
   return Math.min(max, Math.max(min, Math.round(num)));
 }
+
+
+function unlockAudio() {
+  const ctx = createAudioContext();
+  if (!ctx) return;
+  if (ctx.state === "suspended") ctx.resume().catch(() => {});
+}
+
+window.addEventListener("pointerdown", unlockAudio, { once: true });
 
 window.addEventListener("beforeunload", saveState);
