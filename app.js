@@ -254,19 +254,19 @@ function playTaskSound() {
   if (!ctx) return;
 
   const now = ctx.currentTime;
-  const notes = [784, 988];
+  const notes = [740, 932, 1175];
   notes.forEach((freq, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = "triangle";
-    osc.frequency.value = freq;
+    osc.type = "square";
+    osc.frequency.setValueAtTime(freq, now + i * 0.06);
     gain.gain.value = 0.0001;
-    gain.gain.exponentialRampToValueAtTime(0.06, now + i * 0.08 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 0.16);
+    gain.gain.exponentialRampToValueAtTime(0.05, now + i * 0.06 + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.06 + 0.12);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(now + i * 0.08);
-    osc.stop(now + i * 0.08 + 0.17);
+    osc.start(now + i * 0.06);
+    osc.stop(now + i * 0.06 + 0.13);
   });
 }
 
@@ -274,20 +274,20 @@ function playCompletionJingle() {
   const ctx = createAudioContext();
   if (!ctx) return;
 
-  const melody = [523, 659, 784, 1046];
+  const melody = [392, 523, 659, 784, 1046, 1318];
   const now = ctx.currentTime;
   melody.forEach((freq, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = "sine";
+    osc.type = "sawtooth";
     osc.frequency.value = freq;
     gain.gain.value = 0.0001;
-    gain.gain.exponentialRampToValueAtTime(0.08, now + i * 0.12 + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.12 + 0.28);
+    gain.gain.exponentialRampToValueAtTime(0.09, now + i * 0.1 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.1 + 0.22);
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start(now + i * 0.12);
-    osc.stop(now + i * 0.12 + 0.3);
+    osc.start(now + i * 0.1);
+    osc.stop(now + i * 0.1 + 0.24);
   });
 }
 
