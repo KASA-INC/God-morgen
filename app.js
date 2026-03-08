@@ -104,8 +104,8 @@ function renderBoards() {
       <div class="child-head">
         <h3>${name} (${info.age})</h3>
         <div class="badges">
-          <span class="badge">⏱ ${formatElapsed(session.startedAt)}</span>
-          <span class="badge">⭐ ${session.score}</span>
+          <span class="badge badge-clock">⏱ ${formatElapsed(session.startedAt)}</span>
+          <span class="badge badge-score">⭐ ${session.score}</span>
         </div>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
@@ -150,7 +150,7 @@ function toggleTask(childName, taskIndex) {
     const elapsedMinutes = (Date.now() - session.startedAt) / 60000;
     const speedFactor = Math.max(0, 1 - elapsedMinutes / 30);
     const bonus = Math.round(state.scoring.maxBonus * speedFactor);
-    const points = state.scoring.basePoints + bonus;
+    const points = Math.max(state.scoring.basePoints, state.scoring.basePoints + bonus);
     session.completedTasks[taskIndex] = points;
     session.score += points;
     if (state.soundEnabled) playTaskSound();
@@ -159,10 +159,17 @@ function toggleTask(childName, taskIndex) {
     session.score -= current;
   }
 
+  const total = state.children[childName].routines.length;
+  const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
+  if (doneCount === total) {
+    finishMorning(childName, true);
+    return;
+  }
+
   renderBoards();
 }
 
-function finishMorning(childName) {
+function finishMorning(childName, automatic = false) {
   const session = sessions[childName];
   const total = state.children[childName].routines.length;
   const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
@@ -178,10 +185,10 @@ function finishMorning(childName) {
       completedAt: new Date(finishedAt).toISOString(),
     },
     ...state.history,
-  ].slice(0, 60);
+  ].slice(0, 100);
 
   if (state.soundEnabled) playCompletionJingle();
-  alert(`Bra jobbet, ${childName}!\nPoeng i dag: ${session.score}`);
+  alert(`${automatic ? "Alle oppgavene er fullført!" : "Bra jobbet!"}\n${childName} fikk ${session.score} poeng.`);
   sessions[childName] = createSession(childName);
   saveState();
   renderAll();
@@ -191,13 +198,17 @@ function renderStats() {
   weeklyStatsEl.innerHTML = "";
   Object.keys(state.children).forEach((name) => {
     const entries = state.history.filter((h) => h.childName === name);
-    const total = entries.reduce((sum, item) => sum + item.score, 0);
-    const avg = entries.length ? Math.round(total / entries.length) : 0;
-    const best = entries.length ? Math.max(...entries.map((x) => x.score)) : 0;
+    const bestScore = entries.length ? Math.max(...entries.map((x) => x.score)) : 0;
+    const fastest = entries.length ? Math.min(...entries.map((x) => x.durationSec)) : null;
 
     const card = document.createElement("div");
     card.className = "stat-card";
-    card.innerHTML = `<h4>${name}</h4><p>Økter: ${entries.length}</p><p>Snitt: ${avg}</p><p>Beste: ${best}</p>`;
+    card.innerHTML = `
+      <h4>${name}</h4>
+      <p>Rekord poeng: ${bestScore}</p>
+      <p>Raskeste morgen: ${fastest ? formatDuration(fastest) : "-"}</p>
+      <p>Økter totalt: ${entries.length}</p>
+    `;
     weeklyStatsEl.appendChild(card);
   });
 }
@@ -209,6 +220,10 @@ function startTimerLoop() {
 function formatElapsed(startedAt) {
   if (!startedAt) return "00:00";
   const totalSec = Math.floor((Date.now() - startedAt) / 1000);
+  return formatDuration(totalSec);
+}
+
+function formatDuration(totalSec) {
   const min = String(Math.floor(totalSec / 60)).padStart(2, "0");
   const sec = String(totalSec % 60).padStart(2, "0");
   return `${min}:${sec}`;
