@@ -146,7 +146,7 @@ function renderBoards() {
         <h3>${name}</h3>
         <div class="badges">
           <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
-          <span class="badge badge-score">⭐ ${session.score}</span>
+          <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
         </div>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>

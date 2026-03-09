@@ -9,6 +9,7 @@
 }
 
 * { box-sizing: border-box; }
+html { font-size: 20px; }
 body {
   margin: 0;
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
@@ -48,41 +49,9 @@ main { display: grid; gap: 1.6rem; }
 }
 h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 700; color: #1e0046; }
 h3 { margin: 0; font-size: 1.2rem; font-weight: 700; color: #1e0046; }
+h4 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #1e0046; }
 p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); font-family: "Roboto", "Segoe UI", system-ui, sans-serif; }
 
-.daily-facts {
-  margin-top: 0.9rem;
-  text-align: left;
-}
-
-.daily-facts h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.15rem;
-  color: #1e0046;
-  letter-spacing: 0.3px;
-}
-
-.facts-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.6rem;
-}
-
-.fact-card {
-  padding: 0.35rem 0.4rem;
-}
-
-.fact-card h3 {
-  font-size: 0.95rem;
-  margin: 0;
-  color: #1e0046;
-}
-
-.fact-card p {
-  margin: 0.2rem 0 0;
-  font-size: 1rem;
-  color: #1e0046;
-}
 
 button {
   border: 3px solid #1e0046;
@@ -128,9 +97,18 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 }
 
 .badge-score {
-  font-size: 1.7rem;
+  font-size: 2.1rem;
   color: #1e0046;
   background: transparent;
+}
+
+.score-star {
+  font-size: 0.5em;
+  color: #1f0e46;
+}
+
+.score-value {
+  color: #1e0046;
 }
 
 .progress-wrap {
@@ -230,10 +208,6 @@ input[type="password"], input[type="number"] {
 .row { display: flex; justify-content: flex-end; gap: 0.5rem; }
 .switch-row { grid-template-columns: auto 1fr; align-items: center; }
 .note { color: var(--muted); margin: 0; }
-
-@media (max-width: 860px) {
-  .facts-grid { grid-template-columns: 1fr; }
-}
 
 .add-task-btn {
   background: transparent;
