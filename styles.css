@@ -1,11 +1,11 @@
 :root {
-  --bg: #081233;
-  --text: #f4f7ff;
-  --muted: #c1d2ff;
-  --primary: linear-gradient(135deg, #ff4fa2, #ff8f3f);
-  --success: linear-gradient(135deg, #21d48f, #4be6c2);
-  --contrast-a: #ffd84d;
-  --contrast-b: #64f2ff;
+  --bg: linear-gradient(180deg, #ffb3c9 0%, #ff8fb2 32%, #ff9a73 68%, #ffb86a 100%);
+  --text: #44203f;
+  --muted: #6c345a;
+  --primary: linear-gradient(135deg, #d4588d, #f27b53);
+  --success: linear-gradient(135deg, #5bc28f, #96d887);
+  --contrast-a: #f36ea4;
+  --contrast-b: #f29c5d;
 }
 
 * { box-sizing: border-box; }
@@ -14,17 +14,18 @@ body {
   font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
 }
 
 .app { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 2rem; }
 main { display: grid; gap: 1.6rem; }
 
 .panel {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  box-shadow: none;
+  background: rgba(255, 244, 238, 0.42);
+  border: 1px solid rgba(146, 70, 101, 0.2);
+  border-radius: 16px;
+  padding: 0.8rem;
+  box-shadow: 0 10px 24px rgba(126, 55, 90, 0.14);
 }
 
 .topbar {
@@ -45,8 +46,8 @@ main { display: grid; gap: 1.6rem; }
   display: block;
   margin: 0 auto;
 }
-h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 700; }
-h3 { margin: 0; font-size: 1.2rem; font-weight: 700; }
+h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 700; color: #53264a; }
+h3 { margin: 0; font-size: 1.2rem; font-weight: 700; color: #5a284e; }
 p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); }
 
 .daily-facts {
@@ -57,7 +58,7 @@ p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); }
 .daily-facts h2 {
   margin: 0 0 0.5rem;
   font-size: 1.15rem;
-  color: #d8e6ff;
+  color: #652f57;
   letter-spacing: 0.3px;
 }
 
@@ -68,19 +69,21 @@ p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); }
 }
 
 .fact-card {
-  padding: 0.2rem 0.1rem;
+  padding: 0.35rem 0.4rem;
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
 }
 
 .fact-card h3 {
   font-size: 0.95rem;
   margin: 0;
-  color: #9fc0ff;
+  color: #733761;
 }
 
 .fact-card p {
   margin: 0.2rem 0 0;
   font-size: 1rem;
-  color: #f1f5ff;
+  color: #4a2241;
 }
 
 button {
@@ -92,9 +95,9 @@ button {
   font-size: 1rem;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
-.primary { background: var(--primary); color: #fff; }
-.success { background: var(--success); color: #042f2a; }
-.secondary { background: #1f356f; color: #fff; border: 1px solid #38559f; }
+.primary { background: var(--primary); color: #fff8f8; }
+.success { background: var(--success); color: #26361f; }
+.secondary { background: #6f365d; color: #fff4f8; border: 1px solid #8f4b76; }
 
 .child-boards {
   display: grid;
@@ -109,8 +112,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .child-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; }
 .badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .badge {
-  background: #162a60;
-  color: #eaf0ff;
+  background: rgba(117, 54, 92, 0.22);
+  color: #4e2443;
   border-radius: 999px;
   padding: 0.3rem 0.7rem;
   font-weight: 700;
@@ -119,26 +122,26 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .badge-clock {
   font-size: 1.1rem;
-  background: #183777;
+  background: rgba(142, 62, 106, 0.24);
 }
 
 .badge-score {
   font-size: 1.2rem;
-  color: #1b1f35;
-  background: linear-gradient(135deg, #ffd84d, #ff9d4d);
+  color: #4a203f;
+  background: linear-gradient(135deg, #ffd38f, #f7a87a);
 }
 
 .progress-wrap {
   height: 10px;
   border-radius: 999px;
-  background: #122659;
+  background: rgba(90, 39, 72, 0.2);
   overflow: hidden;
   margin-top: 0.5rem;
 }
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #ff7f50, var(--contrast-a), var(--contrast-b));
+  background: linear-gradient(90deg, #cf4f8c, var(--contrast-a), var(--contrast-b));
   transition: width 220ms ease;
 }
 
@@ -156,9 +159,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 1.08rem;
   text-align: center;
   padding: 0.8rem;
-  background: #132b63;
-  border: 1px solid #2a4b9a;
-  color: #f7f9ff;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(139, 60, 98, 0.38);
+  color: #4d2544;
   border-radius: 10px;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
@@ -170,9 +173,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .task-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
 .task-btn.done {
-  background: #1d6a52;
-  border-color: #39a981;
-  color: #eafcf5;
+  background: #bce3c0;
+  border-color: #6db482;
+  color: #2e4a34;
 }
 
 .task-icon {
@@ -204,20 +207,20 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 dialog {
-  border: 1px solid #4c67bd;
+  border: 1px solid #a05682;
   border-radius: 16px;
   width: min(430px, calc(100vw - 2rem));
-  background: #122b69;
-  color: #f4f7ff;
+  background: #ffe5da;
+  color: #4c2342;
 }
 
-dialog::backdrop { background: rgba(10, 20, 40, 0.45); }
+dialog::backdrop { background: rgba(70, 22, 49, 0.35); }
 .pin-form, #parentSettings { display: grid; gap: 0.7rem; }
 label { display: grid; gap: 0.3rem; font-weight: 600; font-size: 1.02rem; }
 input[type="password"], input[type="number"] {
-  border: 1px solid #5570c7;
-  background: #0f265f;
-  color: #fff;
+  border: 1px solid #bc7299;
+  background: #fff4ef;
+  color: #4a2240;
   border-radius: 10px;
   padding: 0.55rem;
   font-size: 1rem;
@@ -230,11 +233,10 @@ input[type="password"], input[type="number"] {
   .facts-grid { grid-template-columns: 1fr; }
 }
 
-
 .add-task-btn {
-  background: #0f234f;
-  border: 1px dashed #4f70c8;
-  color: #9fc0ff;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px dashed rgba(126, 54, 90, 0.6);
+  color: #6a3157;
 }
 
 .add-task-btn .task-icon {
@@ -249,7 +251,7 @@ input[type="password"], input[type="number"] {
 .stat-card-extended h5 {
   margin: 0.8rem 0 0.5rem;
   font-size: 0.95rem;
-  color: #9fc0ff;
+  color: #6f345b;
 }
 
 .graph-list {
@@ -266,7 +268,7 @@ input[type="password"], input[type="number"] {
 }
 
 .graph-label {
-  color: #dce7ff;
+  color: #5d2c50;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -275,17 +277,17 @@ input[type="password"], input[type="number"] {
 .graph-track {
   height: 8px;
   border-radius: 999px;
-  background: #10245a;
+  background: rgba(99, 39, 73, 0.22);
   overflow: hidden;
 }
 
 .graph-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #5ab6ff, #ffd84d);
+  background: linear-gradient(90deg, #d86094, #f4b567);
 }
 
 .graph-value {
-  color: #f4f7ff;
+  color: #4f2645;
   font-variant-numeric: tabular-nums;
 }
