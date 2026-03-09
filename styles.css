@@ -21,11 +21,11 @@ body {
 main { display: grid; gap: 1.6rem; }
 
 .panel {
-  background: rgba(255, 244, 238, 0.42);
-  border: 1px solid rgba(146, 70, 101, 0.2);
-  border-radius: 16px;
-  padding: 0.8rem;
-  box-shadow: 0 10px 24px rgba(126, 55, 90, 0.14);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .topbar {
