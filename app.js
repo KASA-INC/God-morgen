@@ -145,7 +145,7 @@ function renderBoards() {
       <div class="child-head">
         <h3>${name}</h3>
         <div class="badges">
-          <span class="badge badge-clock">⏱ ${formatElapsed(session.startedAt)}</span>
+          <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score">⭐ ${session.score}</span>
         </div>
       </div>
@@ -170,7 +170,7 @@ function renderBoards() {
       taskBtn.disabled = !started;
       taskBtn.innerHTML = `
         <div class="task-text">${task}</div>
-        ${done ? `<small>⏱ ${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
+        ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
       `;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
       taskGrid.appendChild(taskBtn);
@@ -339,20 +339,6 @@ function formatDuration(totalSec) {
   const min = String(Math.floor(totalSec / 60)).padStart(2, "0");
   const sec = String(totalSec % 60).padStart(2, "0");
   return `${min}:${sec}`;
-}
-
-function taskEmoji(task) {
-  const lower = task.toLowerCase();
-  if (lower.includes("opp")) return "⏰";
-  if (lower.includes("frokost")) return "🥣";
-  if (lower.includes("tenner")) return "🪥";
-  if (lower.includes("håret")) return "🪮";
-  if (lower.includes("sekk")) return "🎒";
-  if (lower.includes("yttertøy")) return "🧥";
-  if (lower.includes("medisin")) return "💊";
-  if (lower.includes("deo")) return "🧴";
-  if (lower.includes("klær")) return "👕";
-  return "✅";
 }
 
 function createAudioContext() {
