@@ -14,6 +14,97 @@ body {
   font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.sky-scene {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(255, 216, 77, 0.2), transparent 18%),
+    linear-gradient(180deg, #0b1f4f 0%, #081233 70%);
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+}
+
+.sun {
+  position: absolute;
+  top: 4.5rem;
+  right: 8vw;
+  width: 100px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe689 0%, #ffd84d 45%, rgba(255, 216, 77, 0.65) 70%, rgba(255, 216, 77, 0) 100%);
+  filter: blur(0.3px);
+}
+
+.cloud {
+  position: absolute;
+  height: 56px;
+  opacity: 0.3;
+  animation: cloud-drift linear infinite;
+}
+
+.cloud span {
+  position: absolute;
+  background: rgba(220, 237, 255, 0.9);
+  border-radius: 999px;
+}
+
+.cloud span:nth-child(1) { width: 72px; height: 34px; left: 0; top: 16px; }
+.cloud span:nth-child(2) { width: 50px; height: 50px; left: 22px; top: 0; }
+.cloud span:nth-child(3) { width: 66px; height: 36px; left: 52px; top: 14px; }
+
+.cloud-a { top: 12%; left: -20%; width: 120px; animation-duration: 56s; }
+.cloud-b { top: 24%; left: -22%; width: 120px; opacity: 0.25; animation-duration: 72s; animation-delay: -12s; }
+.cloud-c { top: 38%; left: -18%; width: 120px; opacity: 0.2; animation-duration: 64s; animation-delay: -34s; }
+
+.birds {
+  position: absolute;
+  display: flex;
+  gap: 0.6rem;
+  color: rgba(236, 244, 255, 0.55);
+  animation: birds-float linear infinite;
+}
+
+.birds span {
+  width: 14px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-radius: 100% 100% 0 0;
+  transform-origin: center;
+  animation: wing-flap 1.6s ease-in-out infinite;
+}
+
+.birds-a { top: 18%; left: 18%; animation-duration: 26s; }
+.birds-b { top: 30%; left: 68%; opacity: 0.45; animation-duration: 22s; animation-delay: -8s; }
+
+.birds-b span:nth-child(2),
+.birds-a span:nth-child(2) { animation-delay: -0.4s; }
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(135vw); }
+}
+
+@keyframes birds-float {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3vw, -0.8vh); }
+  50% { transform: translate(8vw, 0.5vh); }
+  75% { transform: translate(12vw, -0.5vh); }
+  100% { transform: translate(16vw, 0); }
+}
+
+@keyframes wing-flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.55); }
 }
 
 .app { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 2rem; }
