@@ -56,3 +56,11 @@ service cloud.firestore {
 ### iCloud / Apple
 
 iCloud-innlogging i web tilsvarer «Sign in with Apple». I Firebase bruker vi provider `apple.com`.
+
+
+## Ny innloggingsflyt
+
+- Før innlogging vises en ren login-side med kun logo + innloggingsalternativer.
+- Etter innlogging vises hovedsiden.
+- Hovedsiden starter tom hvis brukeren ikke har lagt til barn ennå.
+- Barn og oppgaver kan legges til/fjernes direkte fra hovedsiden (uten profil-dialog).

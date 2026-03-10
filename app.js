@@ -2,16 +2,7 @@ const DEFAULT_STATE = {
   pin: "1234",
   soundEnabled: true,
   scoring: { basePoints: 10, maxBonus: 5 },
-  children: {
-    Alma: {
-      age: 10,
-      routines: ["Stå opp", "Ta på deo", "Ta på klær", "Spis frokost", "Ta medisin", "Puss tenner", "Gre håret", "Pakk sekk", "Ta på yttertøy"],
-    },
-    Ludvik: {
-      age: 5,
-      routines: ["Stå opp", "Ta på klær", "Spis frokost", "Puss tenner", "Gre håret", "Pakk sekk", "Ta på yttertøy"],
-    },
-  },
+  children: {},
   history: [],
   meta: { updatedAt: 0 },
 };
@@ -22,26 +13,21 @@ const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
 
+const authScreen = document.getElementById("authScreen");
+const appShell = document.getElementById("appShell");
+const authStatus = document.getElementById("authStatus");
+const authGoogleBtn = document.getElementById("authGoogle");
+const authFacebookBtn = document.getElementById("authFacebook");
+const authAppleBtn = document.getElementById("authApple");
+
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
+const addChildBtn = document.getElementById("addChildBtn");
+const childNameInput = document.getElementById("newChildName");
+const emptyState = document.getElementById("emptyState");
+
 const openParentModeBtn = document.getElementById("openParentMode");
-const historyFact = document.getElementById("historyFact");
-const weatherFact = document.getElementById("weatherFact");
-const todayFact = document.getElementById("todayFact");
-
-const profileDialog = document.getElementById("profileDialog");
-const openProfileBtn = document.getElementById("openProfile");
-const closeProfileBtn = document.getElementById("closeProfile");
-const googleLoginBtn = document.getElementById("googleLogin");
-const facebookLoginBtn = document.getElementById("facebookLogin");
-const appleLoginBtn = document.getElementById("appleLogin");
 const logoutBtn = document.getElementById("logoutBtn");
-const authStatus = document.getElementById("authStatus");
-const setupChildName = document.getElementById("setupChildName");
-const setupTasks = document.getElementById("setupTasks");
-const addSetupChild = document.getElementById("addSetupChild");
-
-const cloud = createCloudAdapter();
 
 const parentDialog = document.getElementById("parentDialog");
 const pinForm = document.getElementById("pinForm");
@@ -55,11 +41,12 @@ const basePoints = document.getElementById("basePoints");
 const bonusPoints = document.getElementById("bonusPoints");
 const saveSettings = document.getElementById("saveSettings");
 
+const cloud = createCloudAdapter();
+
 renderAll();
 startTimerLoop();
 registerServiceWorker();
-renderDailyFacts();
-setupProfileUI();
+setupAuthUI();
 cloud.init();
 
 function createAllSessions() {
@@ -80,21 +67,19 @@ function escapeHtml(value) {
 }
 
 function sanitizeChildren(rawChildren) {
-  const defaults = structuredClone(DEFAULT_STATE).children;
   const source = rawChildren && typeof rawChildren === "object" ? rawChildren : {};
 
   return Object.fromEntries(
-    Object.entries({ ...defaults, ...source }).map(([name, info]) => {
-      const defaultInfo = defaults[name] || { age: 0, routines: [] };
+    Object.entries(source).map(([name, info]) => {
       const validInfo = info && typeof info === "object" ? info : {};
       const routines = Array.isArray(validInfo.routines)
         ? validInfo.routines.filter((task) => typeof task === "string" && task.trim()).map((task) => task.trim())
-        : defaultInfo.routines;
+        : [];
 
       return [
         name,
         {
-          age: Number.isFinite(validInfo.age) ? Math.max(0, Math.round(validInfo.age)) : defaultInfo.age,
+          age: Number.isFinite(validInfo.age) ? Math.max(0, Math.round(validInfo.age)) : 0,
           routines,
         },
       ];
@@ -133,50 +118,6 @@ function registerServiceWorker() {
   });
 }
 
-function renderDailyFacts() {
-  if (!historyFact || !weatherFact || !todayFact) return;
-
-  const now = new Date();
-  const mmdd = `${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
-  const historicByDate = {
-    "03-08": "Den internasjonale kvinnedagen markeres globalt.",
-    "04-12": "I 1961 ble Jurij Gagarin første menneske i verdensrommet.",
-    "05-17": "Norge feirer grunnlovsdagen med tog, flagg og is.",
-    "07-20": "I 1969 landet Apollo 11 på månen.",
-    "11-09": "I 1989 begynte Berlinmurens fall.",
-  };
-
-  const weatherByMonth = [
-    "Kald vinterluft ute ❄️ – superheltlag på med yttertøy!",
-    "Friskt i lufta 🌬️ – perfekt dag for raske morgenhelter.",
-    "Vårtegn i sikte 🌱 – dagen passer for en energistart.",
-    "Mild vårdag 🌤️ – herlig dag for superhelter på oppdrag.",
-    "Lysere dager ☀️ – godt humør-vær for morgenteamet.",
-    "Sommervibber 🌼 – husk drikkeflaske i sekken.",
-    "Sommer og solbriller 😎 – rask rutine, mer tid ute.",
-    "Lun sensommer 🌇 – fin dag for en ny personlig rekord.",
-    "Klar høstluft 🍂 – god dag for fokus og fart.",
-    "Høstvind og skjerf 🧣 – superheltmodus: på med yttertøy!",
-    "Mørkere morgener 🍁 – ekstra stjerne for å komme raskt i gang.",
-    "Vinterstemning 🎄 – varm start gir sterk dag.",
-  ];
-
-  const dayMission = [
-    "Dagens oppdrag: Fullfør de første 2 oppgavene på under 6 minutter!",
-    "Dagens oppdrag: Ta på yttertøy med superhelt-fart 💨",
-    "Dagens oppdrag: Null mas + masse teamwork = bonus-stemning!",
-    "Dagens oppdrag: Samle minst én ny personlig rekord i dag 🏅",
-    "Dagens oppdrag: Smil etter hver fullførte oppgave 😄",
-    "Dagens oppdrag: Morgenrutine uten pauser i mellom oppgaver!",
-    "Dagens oppdrag: Fullfør alt før favorittsangen er ferdig 🎵",
-  ];
-
-  historyFact.textContent = historicByDate[mmdd] || `På denne datoen (${mmdd}) har verden fått mange små og store helteøyeblikk.`;
-  weatherFact.textContent = weatherByMonth[now.getMonth()];
-  todayFact.textContent = dayMission[now.getDay()];
-}
-
 function renderAll() {
   renderBoards();
   renderStats();
@@ -184,8 +125,16 @@ function renderAll() {
 
 function renderBoards() {
   childBoards.innerHTML = "";
+  const names = Object.keys(state.children);
+  if (!names.length) {
+    emptyState.hidden = false;
+    return;
+  }
+  emptyState.hidden = true;
+
   Object.entries(state.children).forEach(([name, info]) => {
-    const session = sessions[name];
+    const session = sessions[name] || createSession(name);
+    sessions[name] = session;
     const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
     const total = info.routines.length;
     const started = !!session.startedAt;
@@ -201,6 +150,9 @@ function renderBoards() {
           <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
         </div>
       </div>
+      <div class="child-top-actions">
+        <button class="secondary remove-child-btn" type="button">Fjern barn</button>
+      </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p>${doneCount} av ${total} fullført</p>
       <div class="actions">
@@ -212,11 +164,16 @@ function renderBoards() {
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
     board.querySelector(".finish-btn").addEventListener("click", () => finishMorning(name));
+    board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
 
     const taskGrid = board.querySelector(".task-grid");
     info.routines.forEach((task, idx) => {
       const details = session.completedTasks[idx];
       const done = !!details;
+
+      const taskItem = document.createElement("div");
+      taskItem.className = "task-item";
+
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
       taskBtn.disabled = !started;
@@ -225,11 +182,21 @@ function renderBoards() {
         ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
       `;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
-      taskGrid.appendChild(taskBtn);
+
+      const removeTaskBtn = document.createElement("button");
+      removeTaskBtn.className = "secondary remove-task-btn";
+      removeTaskBtn.type = "button";
+      removeTaskBtn.textContent = "Fjern";
+      removeTaskBtn.addEventListener("click", () => removeTask(name, idx));
+
+      taskItem.appendChild(taskBtn);
+      taskItem.appendChild(removeTaskBtn);
+      taskGrid.appendChild(taskItem);
     });
 
     const addTaskBtn = document.createElement("button");
     addTaskBtn.className = "task-btn add-task-btn";
+    addTaskBtn.type = "button";
     addTaskBtn.innerHTML = '<div class="task-text">Legg til oppgave</div>';
     addTaskBtn.addEventListener("click", () => addTask(name));
     taskGrid.appendChild(addTaskBtn);
@@ -238,12 +205,52 @@ function renderBoards() {
   });
 }
 
+function addChild() {
+  const childName = childNameInput.value.trim();
+  if (!childName) return;
+  if (state.children[childName]) {
+    alert("Barn med dette navnet finnes allerede.");
+    return;
+  }
+  state.children[childName] = { age: 0, routines: [] };
+  sessions[childName] = createSession(childName);
+  childNameInput.value = "";
+  saveState();
+  renderAll();
+}
+
+function removeChild(childName) {
+  if (!confirm(`Fjerne ${childName} og all historikk?`)) return;
+  delete state.children[childName];
+  delete sessions[childName];
+  state.history = state.history.filter((entry) => entry.childName !== childName);
+  saveState();
+  renderAll();
+}
+
 function addTask(childName) {
   const title = prompt(`Ny oppgave for ${childName}:`);
   if (!title) return;
   const trimmed = title.trim();
   if (!trimmed) return;
   state.children[childName].routines.push(trimmed);
+  saveState();
+  renderAll();
+}
+
+function removeTask(childName, taskIndex) {
+  const taskName = state.children[childName].routines[taskIndex];
+  if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
+
+  state.children[childName].routines.splice(taskIndex, 1);
+  sessions[childName] = createSession(childName);
+  state.history = state.history.map((entry) => {
+    if (entry.childName !== childName) return entry;
+    return {
+      ...entry,
+      taskEntries: (entry.taskEntries || []).filter((t) => t.taskName !== taskName),
+    };
+  });
   saveState();
   renderAll();
 }
@@ -284,7 +291,7 @@ function toggleTask(childName, taskIndex) {
 
   const total = state.children[childName].routines.length;
   const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
-  if (doneCount === total) {
+  if (total && doneCount === total) {
     finishMorning(childName, true);
     return;
   }
@@ -297,7 +304,7 @@ function finishMorning(childName, automatic = false) {
   const routines = state.children[childName].routines;
   const total = routines.length;
   const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
-  if (!session.startedAt || doneCount !== total) return;
+  if (!session.startedAt || doneCount !== total || total === 0) return;
 
   const finishedAt = Date.now();
   session.score += 20;
@@ -371,7 +378,7 @@ function renderStats() {
       <p>Rekorddag: ${bestScore} poeng</p>
       <p>Raskeste morgen: ${fastest ? formatDuration(fastest) : "-"}</p>
       <h5>Tid per oppgave (snitt)</h5>
-      <div class="graph-list">${graphBars}</div>
+      <div class="graph-list">${graphBars || '<p class="note">Ingen oppgaver ennå.</p>'}</div>
     `;
     weeklyStatsEl.appendChild(card);
   });
@@ -482,40 +489,26 @@ saveSettings.addEventListener("click", () => {
   alert("Innstillinger lagret.");
 });
 
-function setupProfileUI() {
-  if (!profileDialog) return;
-
-  openProfileBtn?.addEventListener("click", () => profileDialog.showModal());
-  closeProfileBtn?.addEventListener("click", () => profileDialog.close());
-
-  googleLoginBtn?.addEventListener("click", () => cloud.signIn("google"));
-  facebookLoginBtn?.addEventListener("click", () => cloud.signIn("facebook"));
-  appleLoginBtn?.addEventListener("click", () => cloud.signIn("apple"));
+function setupAuthUI() {
+  authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
+  authFacebookBtn?.addEventListener("click", () => cloud.signIn("facebook"));
+  authAppleBtn?.addEventListener("click", () => cloud.signIn("apple"));
   logoutBtn?.addEventListener("click", () => cloud.signOut());
 
-  addSetupChild?.addEventListener("click", () => {
-    const childName = setupChildName.value.trim();
-    const tasks = setupTasks.value
-      .split("\n")
-      .map((task) => task.trim())
-      .filter(Boolean);
-
-    if (!childName || !tasks.length) {
-      alert("Legg inn barnets navn og minst én oppgave.");
-      return;
-    }
-
-    state.children[childName] = { age: 0, routines: tasks };
-    sessions[childName] = createSession(childName);
-    saveState();
-    renderAll();
-    setupChildName.value = "";
-    setupTasks.value = "";
+  addChildBtn?.addEventListener("click", addChild);
+  childNameInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") addChild();
   });
 }
 
 function updateAuthStatus(text) {
   if (authStatus) authStatus.textContent = text;
+}
+
+function setSignedInUI(user) {
+  const signedIn = !!user;
+  if (authScreen) authScreen.hidden = signedIn;
+  if (appShell) appShell.hidden = !signedIn;
 }
 
 function createCloudAdapter() {
@@ -583,6 +576,7 @@ function createCloudAdapter() {
 
   function init() {
     if (!isEnabled()) {
+      setSignedInUI(null);
       updateAuthStatus("Firebase ikke konfigurert. Legg inn firebase-config.js for ekte innlogging.");
       return;
     }
@@ -591,14 +585,15 @@ function createCloudAdapter() {
 
     auth.onAuthStateChanged(async (user) => {
       currentUser = user;
+      setSignedInUI(user);
       if (!user) {
         unsubscribeProfile?.();
         unsubscribeProfile = null;
-        updateAuthStatus("Ikke logget inn.");
+        updateAuthStatus("Logg inn for å starte.");
         return;
       }
 
-      updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}. Synk aktiv.`);
+      updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
       await pullState();
     });
@@ -664,15 +659,20 @@ function createCloudAdapter() {
 
   return { init, signIn, signOut, pushState };
 }
+
 function clampNumber(value, min, max, fallback) {
   const num = Number(value);
   if (!Number.isFinite(num)) return fallback;
   return Math.min(max, Math.max(min, Math.round(num)));
 }
 
-window.addEventListener("pointerdown", () => {
-  const ctx = createAudioContext();
-  if (ctx?.state === "suspended") ctx.resume().catch(() => {});
-}, { once: true });
+window.addEventListener(
+  "pointerdown",
+  () => {
+    const ctx = createAudioContext();
+    if (ctx?.state === "suspended") ctx.resume().catch(() => {});
+  },
+  { once: true }
+);
 
 window.addEventListener("beforeunload", saveState);

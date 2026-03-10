@@ -318,3 +318,59 @@ input[type="text"] {
   button { width: 100%; }
   .row button { width: auto; }
 }
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 1.2rem;
+}
+
+.auth-card {
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.child-admin-panel {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.child-create-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.child-create-row input {
+  flex: 1;
+}
+
+.child-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.task-item {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.remove-task-btn,
+.remove-child-btn {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 900px) {
+  .child-create-row {
+    flex-direction: column;
+  }
+  .child-create-row button,
+  .child-create-row input {
+    width: 100%;
+  }
+}
