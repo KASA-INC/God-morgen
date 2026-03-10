@@ -27,7 +27,6 @@
           <button id="authApple" class="primary" type="button">Logg inn med Apple</button>
         </div>
       </div>
-      <button id="skipLoginBtn" class="secondary skip-login-btn" type="button">Midlertidig: Gå til hovedsiden uten innlogging</button>
     </section>
 
     <div id="appShell" class="app" hidden>
@@ -43,10 +42,9 @@
 
       <main>
         <section class="panel child-admin-panel">
-          <h2>Barn</h2>
           <div class="child-create-row">
-            <input id="newChildName" type="text" placeholder="Nytt barnenavn" />
-            <button id="addChildBtn" class="success" type="button">Legg til barn</button>
+            <input id="newChildName" type="text" placeholder="Legg til barn" />
+            <button id="addChildBtn" class="add-child-inline" type="button" aria-label="Legg til barn">+</button>
           </div>
           <p id="emptyState" class="note">Ingen barn lagt til ennå. Legg til første barn for å starte.</p>
         </section>

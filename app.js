@@ -12,7 +12,6 @@ let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
-let manualBypassMode = false;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
@@ -20,7 +19,6 @@ const authStatus = document.getElementById("authStatus");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
 const authAppleBtn = document.getElementById("authApple");
-const skipLoginBtn = document.getElementById("skipLoginBtn");
 
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
@@ -151,9 +149,7 @@ function renderBoards() {
           <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
         </div>
-      </div>
-      <div class="child-top-actions">
-        <button class="secondary remove-child-btn" type="button">Fjern barn</button>
+        <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p>${doneCount} av ${total} fullført</p>
@@ -185,14 +181,27 @@ function renderBoards() {
       `;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
 
+      const controls = document.createElement("div");
+      controls.className = "task-controls";
+
+      const moveTaskBtn = document.createElement("button");
+      moveTaskBtn.className = "icon-btn move-task-btn";
+      moveTaskBtn.type = "button";
+      moveTaskBtn.setAttribute("aria-label", "Flytt oppgave");
+      moveTaskBtn.textContent = "↕";
+      moveTaskBtn.addEventListener("click", () => moveTask(name, idx));
+
       const removeTaskBtn = document.createElement("button");
-      removeTaskBtn.className = "secondary remove-task-btn";
+      removeTaskBtn.className = "icon-btn remove-task-btn";
       removeTaskBtn.type = "button";
-      removeTaskBtn.textContent = "Fjern";
+      removeTaskBtn.setAttribute("aria-label", "Fjern oppgave");
+      removeTaskBtn.textContent = "✕";
       removeTaskBtn.addEventListener("click", () => removeTask(name, idx));
 
+      controls.appendChild(moveTaskBtn);
+      controls.appendChild(removeTaskBtn);
       taskItem.appendChild(taskBtn);
-      taskItem.appendChild(removeTaskBtn);
+      taskItem.appendChild(controls);
       taskGrid.appendChild(taskItem);
     });
 
@@ -236,6 +245,16 @@ function addTask(childName) {
   const trimmed = title.trim();
   if (!trimmed) return;
   state.children[childName].routines.push(trimmed);
+  saveState();
+  renderAll();
+}
+
+function moveTask(childName, taskIndex) {
+  const routines = state.children[childName].routines;
+  if (routines.length < 2) return;
+  const nextIndex = taskIndex === routines.length - 1 ? 0 : taskIndex + 1;
+  [routines[taskIndex], routines[nextIndex]] = [routines[nextIndex], routines[taskIndex]];
+  sessions[childName] = createSession(childName);
   saveState();
   renderAll();
 }
@@ -498,7 +517,6 @@ function setupAuthUI() {
   logoutBtn?.addEventListener("click", () => cloud.signOut());
 
   addChildBtn?.addEventListener("click", addChild);
-  skipLoginBtn?.addEventListener("click", skipToMain);
   childNameInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") addChild();
   });
@@ -510,20 +528,8 @@ function updateAuthStatus(text) {
 
 function setSignedInUI(user) {
   const signedIn = !!user;
-  if (manualBypassMode && !signedIn) {
-    if (authScreen) authScreen.hidden = true;
-    if (appShell) appShell.hidden = false;
-    return;
-  }
-
   if (authScreen) authScreen.hidden = signedIn;
   if (appShell) appShell.hidden = !signedIn;
-}
-
-function skipToMain() {
-  manualBypassMode = true;
-  if (authScreen) authScreen.hidden = true;
-  if (appShell) appShell.hidden = false;
 }
 
 function createCloudAdapter() {
@@ -608,7 +614,6 @@ function createCloudAdapter() {
         return;
       }
 
-      manualBypassMode = false;
       updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
       await pullState();
@@ -643,7 +648,6 @@ function createCloudAdapter() {
   }
 
   async function signOut() {
-    manualBypassMode = false;
     if (!auth) return;
     await auth.signOut();
   }
