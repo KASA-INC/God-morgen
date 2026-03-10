@@ -22,7 +22,10 @@
           <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
 
         </div>
-        <button id="openParentMode" class="secondary">Foreldremodus</button>
+        <div class="topbar-actions">
+          <button id="openParentMode" class="secondary">Foreldremodus</button>
+          <button id="openProfile" class="secondary">Profil</button>
+        </div>
       </header>
 
       <main>
@@ -62,6 +65,35 @@
       </section>
     </dialog>
 
+
+    <dialog id="profileDialog">
+      <section class="profile-panel">
+        <h3>Profil og synk</h3>
+        <p id="authStatus" class="note">Ikke logget inn.</p>
+        <div class="auth-grid">
+          <button id="googleLogin" class="primary" type="button">Logg inn med Google</button>
+          <button id="facebookLogin" class="primary" type="button">Logg inn med Facebook</button>
+          <button id="appleLogin" class="primary" type="button">Logg inn med Apple</button>
+        </div>
+        <button id="logoutBtn" class="secondary" type="button">Logg ut</button>
+        <hr />
+        <h4>Førstegangsoppsett</h4>
+        <label>Barnets navn <input id="setupChildName" type="text" placeholder="F.eks. Emma" /></label>
+        <label>Oppgaver (én per linje)
+          <textarea id="setupTasks" rows="6" placeholder="Stå opp&#10;Spis frokost&#10;Puss tenner"></textarea>
+        </label>
+        <div class="row">
+          <button id="addSetupChild" class="success" type="button">Legg til barn</button>
+          <button id="closeProfile" class="secondary" type="button">Lukk</button>
+        </div>
+      </section>
+    </dialog>
+
+
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
