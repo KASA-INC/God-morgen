@@ -275,3 +275,46 @@ input[type="password"], input[type="number"] {
   color: #1e0046;
   font-variant-numeric: tabular-nums;
 }
+
+.topbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#profileDialog {
+  width: min(560px, calc(100vw - 1.5rem));
+}
+
+.profile-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+textarea,
+input[type="text"] {
+  border: 3px solid #1e0046;
+  background: #fff4ef;
+  color: #1e0046;
+  border-radius: 5px;
+  padding: 0.55rem;
+  font-size: 1rem;
+  font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
+}
+
+@media (max-width: 900px) {
+  html { font-size: 18px; }
+  .topbar { flex-direction: column; align-items: stretch; gap: 0.7rem; }
+  .topbar-actions { justify-content: center; flex-wrap: wrap; }
+  .child-boards { grid-template-columns: 1fr; }
+  .task-grid { grid-template-columns: 1fr; }
+  .actions { flex-wrap: wrap; }
+  button { width: 100%; }
+  .row button { width: auto; }
+}

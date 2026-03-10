@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
     },
   },
   history: [],
+  meta: { updatedAt: 0 },
 };
 
 const STORAGE_KEY = "morgenhelt-state-v1";
@@ -27,6 +28,20 @@ const openParentModeBtn = document.getElementById("openParentMode");
 const historyFact = document.getElementById("historyFact");
 const weatherFact = document.getElementById("weatherFact");
 const todayFact = document.getElementById("todayFact");
+
+const profileDialog = document.getElementById("profileDialog");
+const openProfileBtn = document.getElementById("openProfile");
+const closeProfileBtn = document.getElementById("closeProfile");
+const googleLoginBtn = document.getElementById("googleLogin");
+const facebookLoginBtn = document.getElementById("facebookLogin");
+const appleLoginBtn = document.getElementById("appleLogin");
+const logoutBtn = document.getElementById("logoutBtn");
+const authStatus = document.getElementById("authStatus");
+const setupChildName = document.getElementById("setupChildName");
+const setupTasks = document.getElementById("setupTasks");
+const addSetupChild = document.getElementById("addSetupChild");
+
+const cloud = createCloudAdapter();
 
 const parentDialog = document.getElementById("parentDialog");
 const pinForm = document.getElementById("pinForm");
@@ -44,6 +59,8 @@ renderAll();
 startTimerLoop();
 registerServiceWorker();
 renderDailyFacts();
+setupProfileUI();
+cloud.init();
 
 function createAllSessions() {
   return Object.fromEntries(Object.keys(state.children).map((name) => [name, createSession(name)]));
@@ -96,6 +113,7 @@ function loadState() {
       scoring: { ...structuredClone(DEFAULT_STATE).scoring, ...parsed.scoring },
       children: sanitizeChildren(parsed.children),
       history: Array.isArray(parsed.history) ? parsed.history : [],
+      meta: { updatedAt: Number(parsed?.meta?.updatedAt) || 0 },
     };
   } catch {
     return structuredClone(DEFAULT_STATE);
@@ -103,7 +121,9 @@ function loadState() {
 }
 
 function saveState() {
+  state.meta = { updatedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  cloud.pushState(state);
 }
 
 function registerServiceWorker() {
@@ -184,7 +204,7 @@ function renderBoards() {
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p>${doneCount} av ${total} fullført</p>
       <div class="actions">
-        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${name}</button>
+        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
         <button class="success finish-btn" ${!started || doneCount !== total ? "disabled" : ""}>Fullfør</button>
       </div>
       <div class="task-grid"></div>
@@ -462,6 +482,188 @@ saveSettings.addEventListener("click", () => {
   alert("Innstillinger lagret.");
 });
 
+function setupProfileUI() {
+  if (!profileDialog) return;
+
+  openProfileBtn?.addEventListener("click", () => profileDialog.showModal());
+  closeProfileBtn?.addEventListener("click", () => profileDialog.close());
+
+  googleLoginBtn?.addEventListener("click", () => cloud.signIn("google"));
+  facebookLoginBtn?.addEventListener("click", () => cloud.signIn("facebook"));
+  appleLoginBtn?.addEventListener("click", () => cloud.signIn("apple"));
+  logoutBtn?.addEventListener("click", () => cloud.signOut());
+
+  addSetupChild?.addEventListener("click", () => {
+    const childName = setupChildName.value.trim();
+    const tasks = setupTasks.value
+      .split("\n")
+      .map((task) => task.trim())
+      .filter(Boolean);
+
+    if (!childName || !tasks.length) {
+      alert("Legg inn barnets navn og minst én oppgave.");
+      return;
+    }
+
+    state.children[childName] = { age: 0, routines: tasks };
+    sessions[childName] = createSession(childName);
+    saveState();
+    renderAll();
+    setupChildName.value = "";
+    setupTasks.value = "";
+  });
+}
+
+function updateAuthStatus(text) {
+  if (authStatus) authStatus.textContent = text;
+}
+
+function createCloudAdapter() {
+  let firebaseApp = null;
+  let auth = null;
+  let db = null;
+  let currentUser = null;
+  let unsubscribeProfile = null;
+
+  function getConfig() {
+    const cfg = window.MORGENHELT_FIREBASE_CONFIG;
+    if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId || !cfg.authDomain) return null;
+    return cfg;
+  }
+
+  function isEnabled() {
+    return !!(window.firebase && getConfig());
+  }
+
+  function buildStateFromRemote(remote) {
+    return {
+      ...structuredClone(DEFAULT_STATE),
+      ...remote,
+      scoring: { ...structuredClone(DEFAULT_STATE).scoring, ...remote.scoring },
+      children: sanitizeChildren(remote.children),
+      history: Array.isArray(remote.history) ? remote.history : [],
+      meta: { updatedAt: Number(remote?.meta?.updatedAt) || 0 },
+    };
+  }
+
+  function applyRemoteState(remote) {
+    const nextState = buildStateFromRemote(remote);
+    const remoteUpdatedAt = Number(nextState?.meta?.updatedAt) || 0;
+    const localUpdatedAt = Number(state?.meta?.updatedAt) || 0;
+
+    if (remoteUpdatedAt <= localUpdatedAt) return;
+
+    state = nextState;
+    Object.keys(sessions).forEach((key) => delete sessions[key]);
+    Object.assign(sessions, createAllSessions());
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderAll();
+  }
+
+  function ensureFirebase() {
+    if (!isEnabled()) return false;
+    if (firebaseApp) return true;
+
+    firebaseApp = firebase.initializeApp(getConfig());
+    auth = firebase.auth(firebaseApp);
+    db = firebase.firestore(firebaseApp);
+    return true;
+  }
+
+  function setProfileSubscription(uid) {
+    if (!db || !uid) return;
+    unsubscribeProfile?.();
+    unsubscribeProfile = db.collection("profiles").doc(uid).onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const payload = snap.data()?.state;
+      if (!payload) return;
+      applyRemoteState(payload);
+    });
+  }
+
+  function init() {
+    if (!isEnabled()) {
+      updateAuthStatus("Firebase ikke konfigurert. Legg inn firebase-config.js for ekte innlogging.");
+      return;
+    }
+
+    ensureFirebase();
+
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      if (!user) {
+        unsubscribeProfile?.();
+        unsubscribeProfile = null;
+        updateAuthStatus("Ikke logget inn.");
+        return;
+      }
+
+      updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}. Synk aktiv.`);
+      setProfileSubscription(user.uid);
+      await pullState();
+    });
+  }
+
+  function providerFor(type) {
+    if (type === "google") return new firebase.auth.GoogleAuthProvider();
+    if (type === "facebook") return new firebase.auth.FacebookAuthProvider();
+    if (type === "apple") return new firebase.auth.OAuthProvider("apple.com");
+    return null;
+  }
+
+  async function signIn(providerType) {
+    if (!ensureFirebase()) {
+      alert("Firebase er ikke konfigurert. Se README for oppsett av ekte Gmail/Facebook/Apple-innlogging.");
+      return;
+    }
+
+    const provider = providerFor(providerType);
+    if (!provider) return;
+
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (err) {
+      if (err?.code === "auth/popup-blocked" || err?.code === "auth/cancelled-popup-request") {
+        await auth.signInWithRedirect(provider);
+        return;
+      }
+      alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
+    }
+  }
+
+  async function signOut() {
+    if (!auth) return;
+    await auth.signOut();
+  }
+
+  async function pushState(nextState) {
+    if (!currentUser || !db) return;
+    await db.collection("profiles").doc(currentUser.uid).set(
+      {
+        state: nextState,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+
+  async function pullState() {
+    if (!currentUser || !db) return;
+
+    const snap = await db.collection("profiles").doc(currentUser.uid).get();
+    if (!snap.exists) {
+      await pushState(state);
+      return;
+    }
+
+    const payload = snap.data()?.state;
+    if (!payload) return;
+
+    applyRemoteState(payload);
+  }
+
+  return { init, signIn, signOut, pushState };
+}
 function clampNumber(value, min, max, fallback) {
   const num = Number(value);
   if (!Number.isFinite(num)) return fallback;
