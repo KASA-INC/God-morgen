@@ -12,6 +12,7 @@ let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
+let manualBypassMode = false;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
@@ -19,6 +20,7 @@ const authStatus = document.getElementById("authStatus");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
 const authAppleBtn = document.getElementById("authApple");
+const skipLoginBtn = document.getElementById("skipLoginBtn");
 
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
@@ -517,6 +519,7 @@ function setupAuthUI() {
   logoutBtn?.addEventListener("click", () => cloud.signOut());
 
   addChildBtn?.addEventListener("click", addChild);
+  skipLoginBtn?.addEventListener("click", skipToMain);
   childNameInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") addChild();
   });
@@ -528,8 +531,20 @@ function updateAuthStatus(text) {
 
 function setSignedInUI(user) {
   const signedIn = !!user;
+  if (manualBypassMode && !signedIn) {
+    if (authScreen) authScreen.hidden = true;
+    if (appShell) appShell.hidden = false;
+    return;
+  }
+
   if (authScreen) authScreen.hidden = signedIn;
   if (appShell) appShell.hidden = !signedIn;
+}
+
+function skipToMain() {
+  manualBypassMode = true;
+  if (authScreen) authScreen.hidden = true;
+  if (appShell) appShell.hidden = false;
 }
 
 function createCloudAdapter() {
@@ -614,6 +629,7 @@ function createCloudAdapter() {
         return;
       }
 
+      manualBypassMode = false;
       updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
       await pullState();
@@ -648,6 +664,7 @@ function createCloudAdapter() {
   }
 
   async function signOut() {
+    manualBypassMode = false;
     if (!auth) return;
     await auth.signOut();
   }
