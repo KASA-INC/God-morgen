@@ -12,6 +12,7 @@ let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
+let manualBypassMode = false;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
@@ -509,11 +510,18 @@ function updateAuthStatus(text) {
 
 function setSignedInUI(user) {
   const signedIn = !!user;
+  if (manualBypassMode && !signedIn) {
+    if (authScreen) authScreen.hidden = true;
+    if (appShell) appShell.hidden = false;
+    return;
+  }
+
   if (authScreen) authScreen.hidden = signedIn;
   if (appShell) appShell.hidden = !signedIn;
 }
 
 function skipToMain() {
+  manualBypassMode = true;
   if (authScreen) authScreen.hidden = true;
   if (appShell) appShell.hidden = false;
 }
@@ -600,6 +608,7 @@ function createCloudAdapter() {
         return;
       }
 
+      manualBypassMode = false;
       updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
       await pullState();
@@ -634,6 +643,7 @@ function createCloudAdapter() {
   }
 
   async function signOut() {
+    manualBypassMode = false;
     if (!auth) return;
     await auth.signOut();
   }
