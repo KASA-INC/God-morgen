@@ -56,6 +56,7 @@ p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); font-family: "R
 button {
   border: 3px solid #1e0046;
   border-radius: 5px;
+  width: 100%;
   padding: 0.75rem 1rem;
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   font-weight: 400;
@@ -125,6 +126,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 .progress-wrap {
   height: 10px;
   border-radius: 5px;
+  width: 100%;
   background: rgba(90, 39, 72, 0.2);
   overflow: hidden;
   margin-top: 0.5rem;
@@ -139,9 +141,8 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 .actions { display: flex; gap: 0.55rem; margin-top: 0.8rem; }
 
 .task-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  column-count: 2;
+  column-gap: 5px;
   margin-top: 0.85rem;
 }
 
@@ -150,11 +151,12 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   font-size: 1.33rem;
   text-align: center;
-  padding: 0.8rem;
+  padding: 20px;
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
   border-radius: 5px;
+  width: 100%;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
   flex-direction: column;
@@ -201,6 +203,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 dialog {
   border: 3px solid #1e0046;
   border-radius: 5px;
+  width: 100%;
   width: min(430px, calc(100vw - 2rem));
   background: #ffe5da;
   color: #1e0046;
@@ -214,6 +217,7 @@ input[type="password"], input[type="number"] {
   background: var(--bg);
   color: #1e0046;
   border-radius: 5px;
+  width: 100%;
   padding: 0.55rem;
   font-size: 1rem;
 }
@@ -261,6 +265,7 @@ input[type="password"], input[type="number"] {
 .graph-track {
   height: 8px;
   border-radius: 5px;
+  width: 100%;
   background: rgba(99, 39, 73, 0.22);
   overflow: hidden;
 }
@@ -303,6 +308,7 @@ input[type="text"] {
   background: var(--bg);
   color: #1e0046;
   border-radius: 5px;
+  width: 100%;
   padding: 0.55rem;
   font-size: 1rem;
   font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
@@ -313,7 +319,7 @@ input[type="text"] {
   .topbar { flex-direction: column; align-items: stretch; gap: 0.7rem; }
   .topbar-actions { justify-content: center; flex-wrap: wrap; }
   .child-boards { grid-template-columns: 1fr; }
-  .task-grid { grid-template-columns: 1fr; }
+  .task-grid { column-count: 1; }
   .actions { flex-wrap: wrap; }
   button { width: 100%; }
   .row button { width: auto; }
@@ -363,14 +369,14 @@ input[type="text"] {
 
 .task-item {
   position: relative;
+  break-inside: avoid;
+  margin-bottom: 5px;
 }
 
-.task-controls {
+.remove-task-btn {
   position: absolute;
-  top: 0.35rem;
-  right: 0.35rem;
-  display: flex;
-  gap: 0.2rem;
+  top: 6px;
+  right: 6px;
 }
 
 .icon-btn {
@@ -379,10 +385,7 @@ input[type="text"] {
   color: #1e0046;
   padding: 0.1rem 0.25rem;
   font-size: 1rem;
-}
-
-.task-btn.done + .task-controls .icon-btn {
-  color: #ffa175;
+  width: auto;
 }
 
 @media (max-width: 900px) {

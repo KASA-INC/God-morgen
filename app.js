@@ -183,16 +183,6 @@ function renderBoards() {
       `;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
 
-      const controls = document.createElement("div");
-      controls.className = "task-controls";
-
-      const moveTaskBtn = document.createElement("button");
-      moveTaskBtn.className = "icon-btn move-task-btn";
-      moveTaskBtn.type = "button";
-      moveTaskBtn.setAttribute("aria-label", "Flytt oppgave");
-      moveTaskBtn.textContent = "↕";
-      moveTaskBtn.addEventListener("click", () => moveTask(name, idx));
-
       const removeTaskBtn = document.createElement("button");
       removeTaskBtn.className = "icon-btn remove-task-btn";
       removeTaskBtn.type = "button";
@@ -200,10 +190,8 @@ function renderBoards() {
       removeTaskBtn.textContent = "✕";
       removeTaskBtn.addEventListener("click", () => removeTask(name, idx));
 
-      controls.appendChild(moveTaskBtn);
-      controls.appendChild(removeTaskBtn);
       taskItem.appendChild(taskBtn);
-      taskItem.appendChild(controls);
+      taskItem.appendChild(removeTaskBtn);
       taskGrid.appendChild(taskItem);
     });
 
@@ -247,16 +235,6 @@ function addTask(childName) {
   const trimmed = title.trim();
   if (!trimmed) return;
   state.children[childName].routines.push(trimmed);
-  saveState();
-  renderAll();
-}
-
-function moveTask(childName, taskIndex) {
-  const routines = state.children[childName].routines;
-  if (routines.length < 2) return;
-  const nextIndex = taskIndex === routines.length - 1 ? 0 : taskIndex + 1;
-  [routines[taskIndex], routines[nextIndex]] = [routines[nextIndex], routines[taskIndex]];
-  sessions[childName] = createSession(childName);
   saveState();
   renderAll();
 }
