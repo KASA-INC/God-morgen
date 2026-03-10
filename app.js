@@ -53,6 +53,38 @@ function createSession(childName) {
   return { childName, startedAt: null, lastTaskAt: null, completedTasks: {}, score: 0 };
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function sanitizeChildren(rawChildren) {
+  const defaults = structuredClone(DEFAULT_STATE).children;
+  const source = rawChildren && typeof rawChildren === "object" ? rawChildren : {};
+
+  return Object.fromEntries(
+    Object.entries({ ...defaults, ...source }).map(([name, info]) => {
+      const defaultInfo = defaults[name] || { age: 0, routines: [] };
+      const validInfo = info && typeof info === "object" ? info : {};
+      const routines = Array.isArray(validInfo.routines)
+        ? validInfo.routines.filter((task) => typeof task === "string" && task.trim()).map((task) => task.trim())
+        : defaultInfo.routines;
+
+      return [
+        name,
+        {
+          age: Number.isFinite(validInfo.age) ? Math.max(0, Math.round(validInfo.age)) : defaultInfo.age,
+          routines,
+        },
+      ];
+    })
+  );
+}
+
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -62,7 +94,7 @@ function loadState() {
       ...structuredClone(DEFAULT_STATE),
       ...parsed,
       scoring: { ...structuredClone(DEFAULT_STATE).scoring, ...parsed.scoring },
-      children: { ...structuredClone(DEFAULT_STATE).children, ...parsed.children },
+      children: sanitizeChildren(parsed.children),
       history: Array.isArray(parsed.history) ? parsed.history : [],
     };
   } catch {
@@ -143,7 +175,7 @@ function renderBoards() {
     board.className = "child-board";
     board.innerHTML = `
       <div class="child-head">
-        <h3>${name}</h3>
+        <h3>${escapeHtml(name)}</h3>
         <div class="badges">
           <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
@@ -169,7 +201,7 @@ function renderBoards() {
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
       taskBtn.disabled = !started;
       taskBtn.innerHTML = `
-        <div class="task-text">${task}</div>
+        <div class="task-text">${escapeHtml(task)}</div>
         ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
       `;
       taskBtn.addEventListener("click", () => toggleTask(name, idx));
@@ -305,7 +337,7 @@ function renderStats() {
     const graphBars = averages
       .map((row) => `
         <div class="graph-row">
-          <span class="graph-label">${row.task}</span>
+          <span class="graph-label">${escapeHtml(row.task)}</span>
           <div class="graph-track"><div class="graph-fill" style="width:${Math.max(3, Math.round((row.avgSec / maxAvg) * 100))}%"></div></div>
           <span class="graph-value">${row.avgSec ? formatDuration(row.avgSec) : "-"}</span>
         </div>
@@ -315,7 +347,7 @@ function renderStats() {
     const card = document.createElement("div");
     card.className = "stat-card stat-card-extended";
     card.innerHTML = `
-      <h4>${name}</h4>
+      <h4>${escapeHtml(name)}</h4>
       <p>Rekorddag: ${bestScore} poeng</p>
       <p>Raskeste morgen: ${fastest ? formatDuration(fastest) : "-"}</p>
       <h5>Tid per oppgave (snitt)</h5>
