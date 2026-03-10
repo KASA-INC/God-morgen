@@ -19,6 +19,7 @@ const authStatus = document.getElementById("authStatus");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
 const authAppleBtn = document.getElementById("authApple");
+const skipLoginBtn = document.getElementById("skipLoginBtn");
 
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
@@ -496,6 +497,7 @@ function setupAuthUI() {
   logoutBtn?.addEventListener("click", () => cloud.signOut());
 
   addChildBtn?.addEventListener("click", addChild);
+  skipLoginBtn?.addEventListener("click", skipToMain);
   childNameInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") addChild();
   });
@@ -509,6 +511,11 @@ function setSignedInUI(user) {
   const signedIn = !!user;
   if (authScreen) authScreen.hidden = signedIn;
   if (appShell) appShell.hidden = !signedIn;
+}
+
+function skipToMain() {
+  if (authScreen) authScreen.hidden = true;
+  if (appShell) appShell.hidden = false;
 }
 
 function createCloudAdapter() {
