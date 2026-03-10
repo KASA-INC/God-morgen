@@ -361,9 +361,17 @@ input[type="text"] {
   top: 50%;
   transform: translateY(-50%);
   border: none;
-  padding: 0.2rem 0.45rem;
-  font-size: 1.4rem;
+  background: transparent;
+  padding: 0.1rem 0.45rem;
+  font-size: 2rem;
   line-height: 1;
+  color: #1e0046;
+  width: auto;
+}
+
+.add-child-inline:active,
+.add-child-inline:focus-visible {
+  background: transparent;
   color: #1e0046;
 }
 
