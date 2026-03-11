@@ -18,6 +18,7 @@ const appShell = document.getElementById("appShell");
 const authStatus = document.getElementById("authStatus");
 const authEmailInput = document.getElementById("authEmail");
 const authPasswordInput = document.getElementById("authPassword");
+const authGuestBtn = document.getElementById("authGuest");
 const authEmailSignInBtn = document.getElementById("authEmailSignIn");
 const authEmailCreateBtn = document.getElementById("authEmailCreate");
 const authGoogleBtn = document.getElementById("authGoogle");
@@ -556,6 +557,11 @@ function setupAuthUI() {
   });
   authPasswordInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") submitEmailLogin();
+  });
+
+  authGuestBtn?.addEventListener("click", () => {
+    setSignedInUI({ uid: "guest-local" });
+    updateAuthStatus("Lokal modus uten synk er aktiv.");
   });
 
   authEmailSignInBtn?.addEventListener("click", submitEmailLogin);
