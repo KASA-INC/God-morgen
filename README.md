@@ -23,3 +23,44 @@ En enkel iPad-vennlig webapp som gjør barnas morgenrutiner til et spill, med su
 - Du kan få tidsbonus opp til `maxBonus` (standard 5) for oppgaver gjort tidlig i økten.
 - Bonus trappes ned over tid, men går aldri under minstepoengene.
 - Fullført morgen gir +20 bonus.
+
+## Profil og synk (Firebase)
+
+Denne versjonen bruker ekte Firebase-integrasjon i frontend for:
+- Google-, Facebook- og Apple-innlogging via Firebase Auth.
+- Synk av app-state per bruker via Firestore (`profiles/{uid}`).
+- Realtime oppdatering mellom enheter med `onSnapshot`.
+- Førstegangsoppsett for å legge til barn og oppgaver per barn.
+
+### Oppsett
+
+1. Lag et Firebase-prosjekt.
+2. Aktiver **Authentication** providerne: Google, Facebook, Apple.
+3. Opprett Firestore database.
+4. Fyll inn `firebase-config.js` med verdiene fra Firebase Console.
+5. Sett autoriserte domener i Firebase Auth (f.eks. localhost + produksjonsdomene).
+
+### Eksempel på Firestore-regel (minimum)
+
+```txt
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /profiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
+### iCloud / Apple
+
+iCloud-innlogging i web tilsvarer «Sign in with Apple». I Firebase bruker vi provider `apple.com`.
+
+
+## Ny innloggingsflyt
+
+- Før innlogging vises en ren login-side med kun logo + innloggingsalternativer.
+- Etter innlogging vises hovedsiden.
+- Hovedsiden starter tom hvis brukeren ikke har lagt til barn ennå.
+- Barn og oppgaver kan legges til/fjernes direkte fra hovedsiden (uten profil-dialog).

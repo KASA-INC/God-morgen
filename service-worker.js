@@ -1,10 +1,11 @@
-const CACHE_NAME = "morgenhelt-cache-v1";
+const CACHE_NAME = "morgenhelt-cache-v2";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
+  "./firebase-config.js",
   "./icons/icon.svg",
   "./icons/icon-maskable.svg"
 ];
