@@ -18,7 +18,6 @@ const appShell = document.getElementById("appShell");
 const authStatus = document.getElementById("authStatus");
 const authEmailInput = document.getElementById("authEmail");
 const authPasswordInput = document.getElementById("authPassword");
-const authEmailLoginBtn = document.getElementById("authEmailLogin");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
 
@@ -490,16 +489,17 @@ saveSettings.addEventListener("click", () => {
 });
 
 function setupAuthUI() {
-  authEmailLoginBtn?.addEventListener("click", () => {
+  const submitEmailLogin = () => {
     const email = authEmailInput?.value?.trim() || "";
     const password = authPasswordInput?.value || "";
     cloud.signInWithEmail(email, password);
+  };
+
+  authEmailInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") submitEmailLogin();
   });
   authPasswordInput?.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    const email = authEmailInput?.value?.trim() || "";
-    const password = authPasswordInput?.value || "";
-    cloud.signInWithEmail(email, password);
+    if (event.key === "Enter") submitEmailLogin();
   });
 
   authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
@@ -587,7 +587,7 @@ function createCloudAdapter() {
   function init() {
     if (!isEnabled()) {
       setSignedInUI(null);
-      updateAuthStatus("Firebase ikke konfigurert. Legg inn firebase-config.js for ekte innlogging.");
+      updateAuthStatus("Logg inn for å starte.");
       return;
     }
 
@@ -617,7 +617,7 @@ function createCloudAdapter() {
 
   async function signIn(providerType) {
     if (!ensureFirebase()) {
-      alert("Firebase er ikke konfigurert. Se README for oppsett av ekte Gmail/Facebook/Apple-innlogging.");
+      alert("Innlogging er ikke tilgjengelig akkurat nå.");
       return;
     }
 
@@ -637,7 +637,7 @@ function createCloudAdapter() {
 
   async function signInWithEmail(email, password) {
     if (!ensureFirebase()) {
-      alert("Firebase er ikke konfigurert. Se README for oppsett av innlogging.");
+      alert("Innlogging er ikke tilgjengelig akkurat nå.");
       return;
     }
     if (!email || password.length < 6) {
