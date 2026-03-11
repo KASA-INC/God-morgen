@@ -17,6 +17,8 @@ const appShell = document.getElementById("appShell");
 const authStatus = document.getElementById("authStatus");
 const authEmailInput = document.getElementById("authEmail");
 const authPasswordInput = document.getElementById("authPassword");
+const authEmailSignInBtn = document.getElementById("authEmailSignIn");
+const authEmailCreateBtn = document.getElementById("authEmailCreate");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
 
@@ -484,10 +486,19 @@ closeSettingsX?.addEventListener("click", () => {
 });
 
 function setupAuthUI() {
+  const getEmailCredentials = () => ({
+    email: authEmailInput?.value?.trim() || "",
+    password: authPasswordInput?.value || "",
+  });
+
   const submitEmailLogin = () => {
-    const email = authEmailInput?.value?.trim() || "";
-    const password = authPasswordInput?.value || "";
+    const { email, password } = getEmailCredentials();
     cloud.signInWithEmail(email, password);
+  };
+
+  const submitEmailCreate = () => {
+    const { email, password } = getEmailCredentials();
+    cloud.createAccountWithEmail(email, password);
   };
 
   authEmailInput?.addEventListener("keydown", (event) => {
@@ -497,6 +508,8 @@ function setupAuthUI() {
     if (event.key === "Enter") submitEmailLogin();
   });
 
+  authEmailSignInBtn?.addEventListener("click", submitEmailLogin);
+  authEmailCreateBtn?.addEventListener("click", submitEmailCreate);
   authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
   authFacebookBtn?.addEventListener("click", () => cloud.signIn("facebook"));
 
@@ -644,6 +657,13 @@ function createCloudAdapter() {
     return err?.message || "ukjent feil";
   }
 
+  function shouldPreferRedirect() {
+    const ua = navigator.userAgent || "";
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(ua);
+    return isIOS || isSafari;
+  }
+
   async function signIn(providerType) {
     if (!ensureFirebase()) {
       alert("Innlogging er ikke tilgjengelig akkurat nå. Sjekk firebase-config.js.");
@@ -652,6 +672,16 @@ function createCloudAdapter() {
 
     const provider = providerFor(providerType);
     if (!provider) return;
+
+    if (shouldPreferRedirect()) {
+      try {
+        await auth.signInWithRedirect(provider);
+        return;
+      } catch (redirectErr) {
+        alert(`Innlogging feilet: ${describeAuthError(redirectErr)}`);
+        return;
+      }
+    }
 
     try {
       await auth.signInWithPopup(provider);
@@ -691,17 +721,33 @@ function createCloudAdapter() {
       await auth.signInWithEmailAndPassword(email, password);
       setSignedInUI({ uid: "pending" });
     } catch (err) {
-      if (err?.code === "auth/user-not-found" || err?.code === "auth/invalid-credential") {
-        try {
-          await auth.createUserWithEmailAndPassword(email, password);
-          setSignedInUI({ uid: "pending" });
-          return;
-        } catch (createErr) {
-          alert(`Innlogging feilet: ${createErr?.message || "ukjent feil"}`);
-          return;
-        }
+      if (err?.code === "auth/user-not-found") {
+        alert("Ingen konto funnet for e-posten. Trykk 'Opprett konto' for å registrere deg.");
+        return;
       }
       alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
+    }
+  }
+
+  async function createAccountWithEmail(email, password) {
+    if (!ensureFirebase()) {
+      alert("Innlogging er ikke tilgjengelig akkurat nå.");
+      return;
+    }
+    if (!email || password.length < 6) {
+      alert("Fyll inn e-post og passord (minst 6 tegn).");
+      return;
+    }
+
+    try {
+      await auth.createUserWithEmailAndPassword(email, password);
+      setSignedInUI({ uid: "pending" });
+    } catch (err) {
+      if (err?.code === "auth/email-already-in-use") {
+        alert("Konto finnes allerede. Bruk 'Logg inn med e-post'.");
+        return;
+      }
+      alert(`Kunne ikke opprette konto: ${err?.message || "ukjent feil"}`);
     }
   }
 
@@ -737,7 +783,7 @@ function createCloudAdapter() {
     applyRemoteState(payload);
   }
 
-  return { init, signIn, signInWithEmail, signOut, pushState };
+  return { init, signIn, signInWithEmail, createAccountWithEmail, signOut, pushState };
 }
 
 function clampNumber(value, min, max, fallback) {

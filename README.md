@@ -46,7 +46,7 @@ Hvis Google-innlogging feiler i nettleseren:
 - Bekreft at `firebase-config.js` er fylt ut med riktig `apiKey`, `authDomain`, `projectId` og `appId`.
 - Sjekk at domenet du kjører fra (f.eks. `localhost`, `127.0.0.1` eller produksjonsdomene) ligger i **Authentication → Settings → Authorized domains** i Firebase Console.
 - Sjekk at Google-provider er aktivert i **Authentication → Sign-in method**.
-- Hvis popup blokkeres av nettleseren, prøver appen automatisk redirect-flyt.
+- På iPhone/Safari brukes redirect-flyt for Google-innlogging som standard for bedre kompatibilitet.
 
 ### Eksempel på Firestore-regel (minimum)
 
@@ -69,6 +69,7 @@ iCloud-innlogging i web tilsvarer «Sign in with Apple». I Firebase bruker vi p
 ## Ny innloggingsflyt
 
 - Før innlogging vises en ren login-side med kun logo + innloggingsalternativer.
+- E-post/passord har egne knapper for både «Logg inn» og «Opprett konto».
 - Etter innlogging vises hovedsiden.
 - Hovedsiden starter tom hvis brukeren ikke har lagt til barn ennå.
 - Barn og oppgaver kan legges til/fjernes direkte fra hovedsiden (uten profil-dialog).
