@@ -155,9 +155,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 
 .task-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 44px;
-  grid-auto-flow: dense;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
   margin-top: 0.85rem;
 }
@@ -166,13 +164,13 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
   font-family: "Platypi", "Segoe UI", serif;
   font-size: 1.2rem;
   text-align: center;
-  padding: 10px;
+  padding: 15px;
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
   border-radius: 5px;
   width: 100%;
-  height: 100%;
+  min-height: 130px;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
   flex-direction: column;
@@ -181,6 +179,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
   white-space: normal;
   word-break: break-word;
 }
+
 
 .task-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
 
@@ -248,11 +247,8 @@ input[type="password"], input[type="number"] {
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
-  display: grid;
-  place-items: center;
-  grid-column: span 2;
-  grid-row: span 2;
 }
+
 
 
 .stat-card-extended {
@@ -361,8 +357,6 @@ input[type="text"] {
   .actions { flex-wrap: wrap; }
   button { width: 100%; }
   .row button { width: auto; }
-  .task-w-1 { grid-column: span 1; }
-  .task-w-2 { grid-column: span 2; }
 }
 
 .auth-screen {
@@ -414,10 +408,6 @@ input[type="text"] {
   }
   .task-grid {
     grid-template-columns: 1fr;
-  }
-  .task-w-1,
-  .task-w-2 {
-    grid-column: span 1;
   }
 }
 
@@ -472,11 +462,6 @@ input[type="text"] {
   position: relative;
 }
 
-.task-w-1 { grid-column: span 2; }
-.task-w-2 { grid-column: span 3; }
-.task-h-1 { grid-row: span 2; }
-.task-h-2 { grid-row: span 3; }
-.task-h-3 { grid-row: span 4; }
 
 .remove-task-btn {
   position: absolute;
