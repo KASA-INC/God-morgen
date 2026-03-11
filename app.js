@@ -12,15 +12,15 @@ let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
-let manualBypassMode = false;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
 const authStatus = document.getElementById("authStatus");
+const authEmailInput = document.getElementById("authEmail");
+const authPasswordInput = document.getElementById("authPassword");
+const authEmailLoginBtn = document.getElementById("authEmailLogin");
 const authGoogleBtn = document.getElementById("authGoogle");
 const authFacebookBtn = document.getElementById("authFacebook");
-const authAppleBtn = document.getElementById("authApple");
-const skipLoginBtn = document.getElementById("skipLoginBtn");
 
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
@@ -29,7 +29,6 @@ const childNameInput = document.getElementById("newChildName");
 const emptyState = document.getElementById("emptyState");
 
 const openParentModeBtn = document.getElementById("openParentMode");
-const logoutBtn = document.getElementById("logoutBtn");
 
 const parentDialog = document.getElementById("parentDialog");
 const pinForm = document.getElementById("pinForm");
@@ -491,13 +490,22 @@ saveSettings.addEventListener("click", () => {
 });
 
 function setupAuthUI() {
+  authEmailLoginBtn?.addEventListener("click", () => {
+    const email = authEmailInput?.value?.trim() || "";
+    const password = authPasswordInput?.value || "";
+    cloud.signInWithEmail(email, password);
+  });
+  authPasswordInput?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const email = authEmailInput?.value?.trim() || "";
+    const password = authPasswordInput?.value || "";
+    cloud.signInWithEmail(email, password);
+  });
+
   authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
   authFacebookBtn?.addEventListener("click", () => cloud.signIn("facebook"));
-  authAppleBtn?.addEventListener("click", () => cloud.signIn("apple"));
-  logoutBtn?.addEventListener("click", () => cloud.signOut());
 
   addChildBtn?.addEventListener("click", addChild);
-  skipLoginBtn?.addEventListener("click", skipToMain);
   childNameInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") addChild();
   });
@@ -509,20 +517,8 @@ function updateAuthStatus(text) {
 
 function setSignedInUI(user) {
   const signedIn = !!user;
-  if (manualBypassMode && !signedIn) {
-    if (authScreen) authScreen.hidden = true;
-    if (appShell) appShell.hidden = false;
-    return;
-  }
-
   if (authScreen) authScreen.hidden = signedIn;
   if (appShell) appShell.hidden = !signedIn;
-}
-
-function skipToMain() {
-  manualBypassMode = true;
-  if (authScreen) authScreen.hidden = true;
-  if (appShell) appShell.hidden = false;
 }
 
 function createCloudAdapter() {
@@ -607,7 +603,6 @@ function createCloudAdapter() {
         return;
       }
 
-      manualBypassMode = false;
       updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
       await pullState();
@@ -617,7 +612,6 @@ function createCloudAdapter() {
   function providerFor(type) {
     if (type === "google") return new firebase.auth.GoogleAuthProvider();
     if (type === "facebook") return new firebase.auth.FacebookAuthProvider();
-    if (type === "apple") return new firebase.auth.OAuthProvider("apple.com");
     return null;
   }
 
@@ -641,10 +635,30 @@ function createCloudAdapter() {
     }
   }
 
-  async function signOut() {
-    manualBypassMode = false;
-    if (!auth) return;
-    await auth.signOut();
+  async function signInWithEmail(email, password) {
+    if (!ensureFirebase()) {
+      alert("Firebase er ikke konfigurert. Se README for oppsett av innlogging.");
+      return;
+    }
+    if (!email || password.length < 6) {
+      alert("Fyll inn e-post og passord (minst 6 tegn).");
+      return;
+    }
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      if (err?.code === "auth/user-not-found" || err?.code === "auth/invalid-credential") {
+        try {
+          await auth.createUserWithEmailAndPassword(email, password);
+          return;
+        } catch (createErr) {
+          alert(`Innlogging feilet: ${createErr?.message || "ukjent feil"}`);
+          return;
+        }
+      }
+      alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
+    }
   }
 
   async function pushState(nextState) {
@@ -673,7 +687,7 @@ function createCloudAdapter() {
     applyRemoteState(payload);
   }
 
-  return { init, signIn, signOut, pushState };
+  return { init, signIn, signInWithEmail, pushState };
 }
 
 function clampNumber(value, min, max, fallback) {

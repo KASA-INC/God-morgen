@@ -281,10 +281,20 @@ input[type="password"], input[type="number"] {
   font-variant-numeric: tabular-nums;
 }
 
-.topbar-actions {
+ .topbar-actions {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+.settings-btn {
+  border: none;
+  background: transparent;
+  color: #1e0046;
+  font-size: 1.5rem;
+  line-height: 1;
+  width: auto;
+  padding: 0.2rem;
 }
 
 #profileDialog {
@@ -322,6 +332,7 @@ input[type="text"] {
   .task-grid { column-count: 1; }
   .actions { flex-wrap: wrap; }
   button { width: 100%; }
+  .topbar-actions .settings-btn { width: auto; }
   .row button { width: auto; }
 }
 
@@ -332,12 +343,17 @@ input[type="text"] {
   gap: 1.2rem;
 }
 
-.auth-card {
+ .auth-card {
   max-width: 520px;
   margin: 0 auto;
   display: grid;
   gap: 0.8rem;
   text-align: center;
+}
+
+.email-login-row {
+  display: grid;
+  gap: 0.45rem;
 }
 
 .child-admin-panel {
@@ -400,12 +416,4 @@ input[type="text"] {
   .child-create-row {
     max-width: 100%;
   }
-}
-
-
-
-.skip-login-btn {
-  max-width: 520px;
-  margin: 0 auto;
-  width: 100%;
 }

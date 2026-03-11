@@ -21,13 +21,16 @@
       <div class="auth-card">
         <h2>Logg inn for å starte</h2>
         <p id="authStatus" class="note">Logg inn for å starte.</p>
+        <div class="email-login-row">
+          <input id="authEmail" type="email" placeholder="E-post" autocomplete="email" />
+          <input id="authPassword" type="password" placeholder="Passord" autocomplete="current-password" />
+          <button id="authEmailLogin" class="primary" type="button">Logg inn med e-post</button>
+        </div>
         <div class="auth-grid">
           <button id="authGoogle" class="primary" type="button">Logg inn med Google</button>
           <button id="authFacebook" class="primary" type="button">Logg inn med Facebook</button>
-          <button id="authApple" class="primary" type="button">Logg inn med Apple</button>
         </div>
       </div>
-      <button id="skipLoginBtn" class="secondary skip-login-btn" type="button">Midlertidig: Gå til hovedsiden uten innlogging</button>
     </section>
 
     <div id="appShell" class="app" hidden>
@@ -36,8 +39,7 @@
           <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
         </div>
         <div class="topbar-actions">
-          <button id="openParentMode" class="secondary">Foreldremodus</button>
-          <button id="logoutBtn" class="secondary">Logg ut</button>
+          <button id="openParentMode" class="settings-btn" aria-label="Innstillinger" title="Innstillinger">⚙</button>
         </div>
       </header>
 
