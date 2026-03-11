@@ -126,6 +126,28 @@ function renderAll() {
   renderStats();
 }
 
+
+function taskCardShape(taskText) {
+  const text = String(taskText || "").trim();
+  const len = text.length;
+  const words = text.split(/\s+/).filter(Boolean).length;
+
+  const isVeryLong = len >= 34 || words >= 7;
+  const isLong = len >= 22 || words >= 5;
+  const isShort = len <= 12 && words <= 3;
+
+  let widthClass = "task-w-1";
+  if (isVeryLong) widthClass = "task-w-2";
+  else if (isLong && words >= 6) widthClass = "task-w-2";
+
+  let heightClass = "task-h-1";
+  if (isVeryLong) heightClass = "task-h-3";
+  else if (isLong) heightClass = "task-h-2";
+  else if (isShort) heightClass = "task-h-1";
+
+  return `${widthClass} ${heightClass}`;
+}
+
 function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
@@ -171,7 +193,7 @@ function renderBoards() {
       const done = !!details;
 
       const taskItem = document.createElement("div");
-      taskItem.className = "task-item";
+      taskItem.className = `task-item ${taskCardShape(task)}`;
 
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
