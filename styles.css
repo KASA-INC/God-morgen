@@ -53,9 +53,16 @@ h4 { margin: 0; font-size: 1.8rem; font-weight: 400; color: #1e0046; }
 p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); font-family: "Roboto", "Segoe UI", system-ui, sans-serif; }
 
 
+::placeholder {
+  color: #1e0046;
+  opacity: 0.66;
+}
+
+
 button {
   border: 3px solid #1e0046;
   border-radius: 5px;
+  width: 100%;
   padding: 0.75rem 1rem;
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   font-weight: 400;
@@ -125,6 +132,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 .progress-wrap {
   height: 10px;
   border-radius: 5px;
+  width: 100%;
   background: rgba(90, 39, 72, 0.2);
   overflow: hidden;
   margin-top: 0.5rem;
@@ -139,9 +147,8 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 .actions { display: flex; gap: 0.55rem; margin-top: 0.8rem; }
 
 .task-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  column-count: 2;
+  column-gap: 5px;
   margin-top: 0.85rem;
 }
 
@@ -150,11 +157,12 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   font-size: 1.33rem;
   text-align: center;
-  padding: 0.8rem;
+  padding: 20px;
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
   border-radius: 5px;
+  width: 100%;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
   flex-direction: column;
@@ -201,6 +209,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 dialog {
   border: 3px solid #1e0046;
   border-radius: 5px;
+  width: 100%;
   width: min(430px, calc(100vw - 2rem));
   background: #ffe5da;
   color: #1e0046;
@@ -211,9 +220,10 @@ dialog::backdrop { background: rgba(70, 22, 49, 0.35); }
 label { display: grid; gap: 0.3rem; font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif; font-weight: 400; font-size: 1.02rem; }
 input[type="password"], input[type="number"] {
   border: 3px solid #1e0046;
-  background: #fff4ef;
+  background: var(--bg);
   color: #1e0046;
   border-radius: 5px;
+  width: 100%;
   padding: 0.55rem;
   font-size: 1rem;
 }
@@ -261,6 +271,7 @@ input[type="password"], input[type="number"] {
 .graph-track {
   height: 8px;
   border-radius: 5px;
+  width: 100%;
   background: rgba(99, 39, 73, 0.22);
   overflow: hidden;
 }
@@ -274,4 +285,153 @@ input[type="password"], input[type="number"] {
 .graph-value {
   color: #1e0046;
   font-variant-numeric: tabular-nums;
+}
+
+ .topbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.settings-btn {
+  border: none;
+  background: transparent;
+  color: #1e0046;
+  font-size: 1.5rem;
+  line-height: 1;
+  width: auto;
+  padding: 0.2rem;
+}
+
+#profileDialog {
+  width: min(560px, calc(100vw - 1.5rem));
+}
+
+.profile-panel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+textarea,
+input[type="text"] {
+  border: 3px solid #1e0046;
+  background: var(--bg);
+  color: #1e0046;
+  border-radius: 5px;
+  width: 100%;
+  padding: 0.55rem;
+  font-size: 1rem;
+  font-family: "Roboto", "Segoe UI", system-ui, sans-serif;
+}
+
+@media (max-width: 900px) {
+  html { font-size: 18px; }
+  .topbar { flex-direction: column; align-items: stretch; gap: 0.7rem; }
+  .topbar-actions { justify-content: center; flex-wrap: wrap; }
+  .child-boards { grid-template-columns: 1fr; }
+  .task-grid { column-count: 1; }
+  .actions { flex-wrap: wrap; }
+  button { width: 100%; }
+  .topbar-actions .settings-btn { width: auto; }
+  .row button { width: auto; }
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 1.2rem;
+}
+
+ .auth-card {
+  max-width: 520px;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.email-login-row {
+  display: grid;
+  gap: 0.45rem;
+}
+
+#authScreen input[type="email"],
+#authScreen input[type="password"] {
+  border: 3px solid #1e0046;
+  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  background: transparent;
+  color: #1e0046;
+}
+
+.child-admin-panel {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.child-create-row {
+  position: relative;
+  max-width: 420px;
+}
+
+.child-create-row input {
+  width: 100%;
+  padding-right: 2.3rem;
+}
+
+.add-child-inline {
+  position: absolute;
+  right: 0.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  padding: 0.1rem 0.45rem;
+  font-size: 2rem;
+  line-height: 1;
+  color: #1e0046;
+  width: auto;
+}
+
+.add-child-inline:active,
+.add-child-inline:focus-visible {
+  background: transparent;
+  color: #1e0046;
+}
+
+.task-item {
+  position: relative;
+  break-inside: avoid;
+  margin-bottom: 5px;
+}
+
+.remove-task-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: #1e0046;
+  padding: 0.1rem 0.25rem;
+  font-size: 1rem;
+  width: auto;
+}
+
+@media (max-width: 900px) {
+  .child-create-row {
+    max-width: 100%;
+  }
 }

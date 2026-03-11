@@ -16,16 +16,40 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app">
+    <section id="authScreen" class="auth-screen app">
+      <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
+      <div class="auth-card">
+        <h2>Logg inn for å starte</h2>
+        <p id="authStatus" class="note"></p>
+        <div class="email-login-row">
+          <input id="authEmail" type="email" placeholder="E-post" autocomplete="email" />
+          <input id="authPassword" type="password" placeholder="Passord" autocomplete="current-password" />
+        </div>
+        <div class="auth-grid">
+          <button id="authGoogle" class="primary" type="button">Logg inn med Google</button>
+          <button id="authFacebook" class="primary" type="button">Logg inn med Facebook</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="appShell" class="app" hidden>
       <header class="topbar panel">
         <div>
           <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
-
         </div>
-        <button id="openParentMode" class="secondary">Foreldremodus</button>
+        <div class="topbar-actions">
+          <button id="openParentMode" class="settings-btn" aria-label="Innstillinger" title="Innstillinger">⚙</button>
+        </div>
       </header>
 
       <main>
+        <section class="panel child-admin-panel">
+          <div class="child-create-row">
+            <input id="newChildName" type="text" placeholder="Legg til barn" />
+            <button id="addChildBtn" class="add-child-inline" type="button" aria-label="Legg til barn">+</button>
+          </div>
+          <p id="emptyState" class="note">Ingen barn lagt til ennå. Legg til første barn for å starte.</p>
+        </section>
 
         <section class="panel boards-panel">
           <div id="childBoards" class="child-boards"></div>
@@ -62,6 +86,10 @@
       </section>
     </dialog>
 
+    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
