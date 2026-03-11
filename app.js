@@ -627,9 +627,26 @@ function createCloudAdapter() {
     return null;
   }
 
+  function describeAuthError(err) {
+    const code = err?.code || "";
+    if (code === "auth/unauthorized-domain") {
+      return "Dette domenet er ikke autorisert i Firebase Auth. Legg til domenet under Authentication → Settings → Authorized domains.";
+    }
+    if (code === "auth/operation-not-allowed") {
+      return "Google-innlogging er ikke aktivert i Firebase Console. Aktiver Google-provideren under Authentication → Sign-in method.";
+    }
+    if (code === "auth/popup-closed-by-user") {
+      return "Innlogging ble avbrutt fordi popup-vinduet ble lukket før fullføring.";
+    }
+    if (code === "auth/network-request-failed") {
+      return "Nettverksfeil under innlogging. Sjekk internett og prøv igjen.";
+    }
+    return err?.message || "ukjent feil";
+  }
+
   async function signIn(providerType) {
     if (!ensureFirebase()) {
-      alert("Innlogging er ikke tilgjengelig akkurat nå.");
+      alert("Innlogging er ikke tilgjengelig akkurat nå. Sjekk firebase-config.js.");
       return;
     }
 
@@ -640,11 +657,23 @@ function createCloudAdapter() {
       await auth.signInWithPopup(provider);
       setSignedInUI({ uid: "pending" });
     } catch (err) {
-      if (err?.code === "auth/popup-blocked" || err?.code === "auth/cancelled-popup-request") {
-        await auth.signInWithRedirect(provider);
-        return;
+      const fallbackToRedirect = [
+        "auth/popup-blocked",
+        "auth/cancelled-popup-request",
+        "auth/operation-not-supported-in-this-environment",
+      ].includes(err?.code);
+
+      if (fallbackToRedirect) {
+        try {
+          await auth.signInWithRedirect(provider);
+          return;
+        } catch (redirectErr) {
+          alert(`Innlogging feilet: ${describeAuthError(redirectErr)}`);
+          return;
+        }
       }
-      alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
+
+      alert(`Innlogging feilet: ${describeAuthError(err)}`);
     }
   }
 

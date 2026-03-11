@@ -40,6 +40,14 @@ Denne versjonen bruker ekte Firebase-integrasjon i frontend for:
 4. Fyll inn `firebase-config.js` med verdiene fra Firebase Console.
 5. Sett autoriserte domener i Firebase Auth (f.eks. localhost + produksjonsdomene).
 
+### Feilsøking av Google-innlogging
+
+Hvis Google-innlogging feiler i nettleseren:
+- Bekreft at `firebase-config.js` er fylt ut med riktig `apiKey`, `authDomain`, `projectId` og `appId`.
+- Sjekk at domenet du kjører fra (f.eks. `localhost`, `127.0.0.1` eller produksjonsdomene) ligger i **Authentication → Settings → Authorized domains** i Firebase Console.
+- Sjekk at Google-provider er aktivert i **Authentication → Sign-in method**.
+- Hvis popup blokkeres av nettleseren, prøver appen automatisk redirect-flyt.
+
 ### Eksempel på Firestore-regel (minimum)
 
 ```txt
