@@ -49,7 +49,7 @@ main > .panel {
 }
 
 .site-logo {
-  width: min(2400px, 300%);
+  width: min(800px, 100%);
   height: auto;
   display: block;
   margin: 0 auto;
@@ -346,7 +346,6 @@ input[type="text"] {
 
 @media (max-width: 900px) {
   html { font-size: 18px; }
-  .site-logo { width: min(1200px, 150%); }
   .child-boards { grid-template-columns: 1fr; }
   .task-grid { column-count: 1; }
   .actions { flex-wrap: wrap; }
