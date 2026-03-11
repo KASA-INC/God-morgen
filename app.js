@@ -3,6 +3,7 @@ const DEFAULT_STATE = {
   scoring: { basePoints: 10, maxBonus: 5 },
   children: {},
   history: [],
+  activeSessions: {},
   meta: { updatedAt: 0 },
 };
 
@@ -53,11 +54,57 @@ setupAuthUI();
 cloud.init();
 
 function createAllSessions() {
-  return Object.fromEntries(Object.keys(state.children).map((name) => [name, createSession(name)]));
+  return sanitizeActiveSessions(state.activeSessions, state.children);
 }
 
 function createSession(childName) {
   return { childName, startedAt: null, lastTaskAt: null, completedTasks: {}, score: 0 };
+}
+
+function sanitizeActiveSessions(rawSessions, childrenSource = state.children) {
+  const source = rawSessions && typeof rawSessions === "object" ? rawSessions : {};
+
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const base = createSession(childName);
+      const incoming = source[childName];
+      if (!incoming || typeof incoming !== "object") return [childName, base];
+
+      const startedAt = Number(incoming.startedAt);
+      const lastTaskAt = Number(incoming.lastTaskAt);
+      const score = Number(incoming.score);
+      const completedRaw = incoming.completedTasks && typeof incoming.completedTasks === "object" ? incoming.completedTasks : {};
+      const completedTasks = {};
+
+      Object.entries(completedRaw).forEach(([idx, details]) => {
+        if (!details || typeof details !== "object") return;
+        const points = Number(details.points);
+        const durationSec = Number(details.durationSec);
+        const completedAtMs = Number(details.completedAtMs);
+        if (!Number.isFinite(points) || !Number.isFinite(durationSec) || !Number.isFinite(completedAtMs)) return;
+        completedTasks[idx] = {
+          points: Math.max(0, Math.round(points)),
+          durationSec: Math.max(1, Math.round(durationSec)),
+          completedAtMs: Math.max(0, Math.round(completedAtMs)),
+        };
+      });
+
+      return [
+        childName,
+        {
+          childName,
+          startedAt: Number.isFinite(startedAt) && startedAt > 0 ? Math.round(startedAt) : null,
+          lastTaskAt: Number.isFinite(lastTaskAt) && lastTaskAt > 0 ? Math.round(lastTaskAt) : null,
+          completedTasks,
+          score: Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0,
+        },
+      ];
+    })
+  );
+}
+
+function syncActiveSessionsIntoState() {
+  state.activeSessions = sanitizeActiveSessions(sessions, state.children);
 }
 
 function escapeHtml(value) {
@@ -101,6 +148,7 @@ function loadState() {
       scoring: { ...structuredClone(DEFAULT_STATE).scoring, ...parsed.scoring },
       children: sanitizeChildren(parsed.children),
       history: Array.isArray(parsed.history) ? parsed.history : [],
+      activeSessions: sanitizeActiveSessions(parsed.activeSessions, sanitizeChildren(parsed.children)),
       meta: { updatedAt: Number(parsed?.meta?.updatedAt) || 0 },
     };
   } catch {
@@ -109,6 +157,7 @@ function loadState() {
 }
 
 function saveState() {
+  syncActiveSessionsIntoState();
   state.meta = { updatedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   cloud.pushState(state);
@@ -260,6 +309,7 @@ function startMorning(childName) {
   sessions[childName] = createSession(childName);
   sessions[childName].startedAt = Date.now();
   sessions[childName].lastTaskAt = sessions[childName].startedAt;
+  saveState();
   renderBoards();
 }
 
@@ -297,6 +347,7 @@ function toggleTask(childName, taskIndex) {
     return;
   }
 
+  saveState();
   renderBoards();
 }
 
@@ -568,12 +619,16 @@ function createCloudAdapter() {
       scoring: { ...structuredClone(DEFAULT_STATE).scoring, ...remote.scoring },
       children: sanitizeChildren(remote.children),
       history: Array.isArray(remote.history) ? remote.history : [],
+      activeSessions: sanitizeActiveSessions(remote.activeSessions, sanitizeChildren(remote.children)),
       meta: { updatedAt: Number(remote?.meta?.updatedAt) || 0 },
     };
   }
 
   function applyRemoteState(remote) {
     const nextState = buildStateFromRemote(remote);
+    const remoteUpdatedAt = Number(nextState?.meta?.updatedAt) || 0;
+    const localUpdatedAt = Number(state?.meta?.updatedAt) || 0;
+    if (remoteUpdatedAt && localUpdatedAt && remoteUpdatedAt < localUpdatedAt) return;
     if (JSON.stringify(nextState) === JSON.stringify(state)) return;
 
     state = nextState;

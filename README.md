@@ -30,6 +30,7 @@ Denne versjonen bruker ekte Firebase-integrasjon i frontend for:
 - Google-, Facebook- og Apple-innlogging via Firebase Auth.
 - Synk av app-state per bruker via Firestore (`profiles/{uid}`).
 - Realtime oppdatering mellom enheter med `onSnapshot`.
+- Realtime synk inkluderer også aktive økter (pågående morgen / avhukede oppgaver), slik at oppgavefremdrift vises på alle innloggede enheter.
 - Førstegangsoppsett for å legge til barn og oppgaver per barn.
 
 ### Oppsett
