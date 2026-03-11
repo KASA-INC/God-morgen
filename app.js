@@ -158,13 +158,11 @@ function renderBoards() {
       <p>${doneCount} av ${total} fullført</p>
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
-        <button class="success finish-btn" ${!started || doneCount !== total ? "disabled" : ""}>Fullfør</button>
       </div>
       <div class="task-grid"></div>
     `;
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
-    board.querySelector(".finish-btn").addEventListener("click", () => finishMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
 
     const taskGrid = board.querySelector(".task-grid");

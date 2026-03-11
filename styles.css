@@ -160,21 +160,17 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 }
 
 .task-btn {
-  min-height: 132px;
   font-family: "Platypi", "Segoe UI", serif;
   font-size: 1.33rem;
-  text-align: center;
-  padding: 20px;
+  text-align: left;
+  padding: 10px;
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
   border-radius: 5px;
   width: 100%;
   transition: transform 120ms ease, filter 120ms ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: block;
 }
 
 .task-btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
@@ -191,7 +187,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 }
 
 .task-text {
-  text-align: center;
+  text-align: left;
   margin-top: 0.25rem;
   font-size: inherit;
 }
@@ -385,14 +381,14 @@ input[type="text"] {
 
 #authEmailCreate {
   background: #1f0e46;
-  color: #1f0e46;
+  color: #fda075;
   border: none;
 }
 
 #authEmailCreate:active,
 #authEmailCreate:focus-visible {
   background: #1f0e46;
-  color: #1f0e46;
+  color: #fda075;
   border: none;
 }
 
