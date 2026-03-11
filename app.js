@@ -40,6 +40,7 @@ const soundToggle = document.getElementById("soundToggle");
 const basePoints = document.getElementById("basePoints");
 const bonusPoints = document.getElementById("bonusPoints");
 const saveSettings = document.getElementById("saveSettings");
+const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
@@ -505,6 +506,8 @@ function setupAuthUI() {
   authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
   authFacebookBtn?.addEventListener("click", () => cloud.signIn("facebook"));
 
+  settingsLogout?.addEventListener("click", () => cloud.signOut());
+
   addChildBtn?.addEventListener("click", addChild);
   childNameInput?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") addChild();
@@ -517,8 +520,14 @@ function updateAuthStatus(text) {
 
 function setSignedInUI(user) {
   const signedIn = !!user;
-  if (authScreen) authScreen.hidden = signedIn;
-  if (appShell) appShell.hidden = !signedIn;
+  if (authScreen) {
+    authScreen.hidden = signedIn;
+    authScreen.style.display = signedIn ? "none" : "grid";
+  }
+  if (appShell) {
+    appShell.hidden = !signedIn;
+    appShell.style.display = signedIn ? "block" : "none";
+  }
 }
 
 function createCloudAdapter() {
@@ -627,6 +636,7 @@ function createCloudAdapter() {
 
     try {
       await auth.signInWithPopup(provider);
+      setSignedInUI({ uid: "pending" });
     } catch (err) {
       if (err?.code === "auth/popup-blocked" || err?.code === "auth/cancelled-popup-request") {
         await auth.signInWithRedirect(provider);
@@ -648,10 +658,12 @@ function createCloudAdapter() {
 
     try {
       await auth.signInWithEmailAndPassword(email, password);
+      setSignedInUI({ uid: "pending" });
     } catch (err) {
       if (err?.code === "auth/user-not-found" || err?.code === "auth/invalid-credential") {
         try {
           await auth.createUserWithEmailAndPassword(email, password);
+          setSignedInUI({ uid: "pending" });
           return;
         } catch (createErr) {
           alert(`Innlogging feilet: ${createErr?.message || "ukjent feil"}`);
@@ -660,6 +672,12 @@ function createCloudAdapter() {
       }
       alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
     }
+  }
+
+  async function signOut() {
+    if (!auth) return;
+    await auth.signOut();
+    setSignedInUI(null);
   }
 
   async function pushState(nextState) {
@@ -688,7 +706,7 @@ function createCloudAdapter() {
     applyRemoteState(payload);
   }
 
-  return { init, signIn, signInWithEmail, pushState };
+  return { init, signIn, signInWithEmail, signOut, pushState };
 }
 
 function clampNumber(value, min, max, fallback) {
