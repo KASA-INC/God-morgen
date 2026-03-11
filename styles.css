@@ -383,6 +383,19 @@ input[type="text"] {
   width: 100%;
 }
 
+#authEmailCreate {
+  background: #1f0e46;
+  color: #1f0e46;
+  border: none;
+}
+
+#authEmailCreate:active,
+#authEmailCreate:focus-visible {
+  background: #1f0e46;
+  color: #1f0e46;
+  border: none;
+}
+
 @media (max-width: 520px) {
   .email-auth-actions {
     grid-template-columns: 1fr;
