@@ -177,6 +177,19 @@ function renderAll() {
 }
 
 
+
+function taskCardShape(taskText) {
+  const text = String(taskText || "").trim();
+  const len = text.length;
+  const words = text.split(/\s+/).filter(Boolean).length;
+
+  if (len >= 40 || words >= 8) return "task-w-4 task-h-1";
+  if (len >= 28 || words >= 6) return "task-w-3 task-h-1";
+  if (len >= 18 || words >= 4) return "task-w-2 task-h-1";
+  if (len >= 12 || words >= 3) return "task-w-1 task-h-2";
+  return "task-w-1 task-h-1";
+}
+
 function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
@@ -211,6 +224,7 @@ function renderBoards() {
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
       </div>
       <div class="task-grid"></div>
+      <div class="task-add-row"></div>
     `;
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
@@ -222,7 +236,7 @@ function renderBoards() {
       const done = !!details;
 
       const taskItem = document.createElement("div");
-      taskItem.className = "task-item";
+      taskItem.className = `task-item ${taskCardShape(task)}`;
 
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
@@ -246,11 +260,11 @@ function renderBoards() {
     });
 
     const addTaskBtn = document.createElement("button");
-    addTaskBtn.className = "task-btn add-task-btn";
+    addTaskBtn.className = "add-task-btn";
     addTaskBtn.type = "button";
-    addTaskBtn.innerHTML = '<div class="task-text">Legg til oppgave</div>';
+    addTaskBtn.textContent = "+ Legg til oppgave";
     addTaskBtn.addEventListener("click", () => addTask(name));
-    taskGrid.appendChild(addTaskBtn);
+    board.querySelector(".task-add-row").appendChild(addTaskBtn);
 
     childBoards.appendChild(board);
   });
