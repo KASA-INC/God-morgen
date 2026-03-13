@@ -4,8 +4,23 @@ const DEFAULT_STATE = {
   children: {},
   history: [],
   activeSessions: {},
+  wildcards: {},
+  wildcardHistory: {},
   meta: { updatedAt: 0 },
 };
+
+const WILDCARD_TASKS = [
+  { id: "kompliment", title: "Gi et ekte kompliment til en hjemme i dag" },
+  { id: "rydde-5", title: "Rydd i 5 minutter på et valgfritt sted" },
+  { id: "hjelpe-hand", title: "Tilby hjelp uten å bli spurt" },
+  { id: "vannpause", title: "Drikk et glass vann før dere går" },
+  { id: "smil", title: "Få noen til å smile før dere drar" },
+  { id: "ryggsekk", title: "Sjekk at sekken er klar helt selv" },
+  { id: "bordet", title: "Hjelp med å dekke eller rydde bordet" },
+  { id: "takknemlig", title: "Si én ting du er takknemlig for i dag" },
+];
+const WILDCARD_HISTORY_LIMIT = 20;
+const WILDCARD_REPEAT_GUARD = 4;
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
@@ -81,10 +96,14 @@ function sanitizeActiveSessions(rawSessions, childrenSource = state.children) {
         const durationSec = Number(details.durationSec);
         const completedAtMs = Number(details.completedAtMs);
         if (!Number.isFinite(points) || !Number.isFinite(durationSec) || !Number.isFinite(completedAtMs)) return;
+        const taskName = typeof details.taskName === "string" ? details.taskName : undefined;
+        const isWildcard = !!details.isWildcard;
         completedTasks[idx] = {
           points: Math.max(0, Math.round(points)),
           durationSec: Math.max(1, Math.round(durationSec)),
           completedAtMs: Math.max(0, Math.round(completedAtMs)),
+          ...(taskName ? { taskName } : {}),
+          ...(isWildcard ? { isWildcard } : {}),
         };
       });
 
@@ -136,6 +155,37 @@ function sanitizeChildren(rawChildren) {
   );
 }
 
+function sanitizeWildcards(rawWildcards, childrenSource = state.children) {
+  const source = rawWildcards && typeof rawWildcards === "object" ? rawWildcards : {};
+
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const entry = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
+      return [
+        childName,
+        {
+          dateKey: typeof entry.dateKey === "string" ? entry.dateKey : "",
+          taskId: typeof entry.taskId === "string" ? entry.taskId : "",
+        },
+      ];
+    })
+  );
+}
+
+function sanitizeWildcardHistory(rawHistory, childrenSource = state.children) {
+  const source = rawHistory && typeof rawHistory === "object" ? rawHistory : {};
+
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const entries = Array.isArray(source[childName]) ? source[childName] : [];
+      return [
+        childName,
+        entries.filter((taskId) => typeof taskId === "string" && taskId.trim()).slice(-WILDCARD_HISTORY_LIMIT),
+      ];
+    })
+  );
+}
+
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -148,6 +198,8 @@ function loadState() {
       children: sanitizeChildren(parsed.children),
       history: Array.isArray(parsed.history) ? parsed.history : [],
       activeSessions: sanitizeActiveSessions(parsed.activeSessions, sanitizeChildren(parsed.children)),
+      wildcards: sanitizeWildcards(parsed.wildcards, sanitizeChildren(parsed.children)),
+      wildcardHistory: sanitizeWildcardHistory(parsed.wildcardHistory, sanitizeChildren(parsed.children)),
       meta: { updatedAt: Number(parsed?.meta?.updatedAt) || 0 },
     };
   } catch {
@@ -185,13 +237,20 @@ function renderBoards() {
   }
   emptyState.hidden = true;
 
+  let wildcardStateChanged = false;
+
   Object.entries(state.children).forEach(([name, info]) => {
     const session = sessions[name] || createSession(name);
     sessions[name] = session;
-    const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
+    const doneCount = countRoutineCompletions(session);
     const total = info.routines.length;
     const started = !!session.startedAt;
     const progress = total ? Math.round((doneCount / total) * 100) : 0;
+    const wildcardState = getOrAssignDailyWildcard(name);
+    if (wildcardState.didAssign) wildcardStateChanged = true;
+    const wildcardTask = wildcardState.task;
+    const wildcardTaskKey = `wildcard:${wildcardState.dateKey}`;
+    const wildcardDone = !!session.completedTasks[wildcardTaskKey];
 
     const board = document.createElement("section");
     board.className = "child-board";
@@ -209,11 +268,18 @@ function renderBoards() {
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
       </div>
+      <div class="task-item task-item-wildcard">
+        <button class="task-btn ${wildcardDone ? "done" : ""}" ${started ? "" : "disabled"}>
+          <div class="task-text">⭐ Dagens wildcard: ${escapeHtml(wildcardTask.title)}</div>
+          <small>${wildcardDone ? `Fullført · +${session.completedTasks[wildcardTaskKey].points} poeng` : "Valgfri bonusoppgave"}</small>
+        </button>
+      </div>
       <div class="task-grid"></div>
     `;
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
+    board.querySelector(".task-item-wildcard .task-btn").addEventListener("click", () => toggleWildcardTask(name));
 
     const taskGrid = board.querySelector(".task-grid");
     info.routines.forEach((task, idx) => {
@@ -253,6 +319,8 @@ function renderBoards() {
 
     childBoards.appendChild(board);
   });
+
+  if (wildcardStateChanged) saveState();
 }
 
 function addChild() {
@@ -273,6 +341,8 @@ function removeChild(childName) {
   if (!confirm(`Fjerne ${childName} og all historikk?`)) return;
   delete state.children[childName];
   delete sessions[childName];
+  delete state.wildcards[childName];
+  delete state.wildcardHistory[childName];
   state.history = state.history.filter((entry) => entry.childName !== childName);
   saveState();
   renderAll();
@@ -319,17 +389,7 @@ function toggleTask(childName, taskIndex) {
 
   const current = session.completedTasks[taskIndex];
   if (!current) {
-    const now = Date.now();
-    const segmentStart = session.lastTaskAt || session.startedAt;
-    const elapsedSec = Math.max(1, Math.round((now - segmentStart) / 1000));
-
-    const speedFactor = Math.max(0, 1 - elapsedSec / 480);
-    const bonus = Math.round(state.scoring.maxBonus * speedFactor);
-    const points = Math.max(state.scoring.basePoints, state.scoring.basePoints + bonus);
-
-    session.completedTasks[taskIndex] = { points, durationSec: elapsedSec, completedAtMs: now };
-    session.score += points;
-    session.lastTaskAt = now;
+    completeTask(session, taskIndex);
 
     if (state.soundEnabled) playTaskSound();
   } else {
@@ -341,7 +401,7 @@ function toggleTask(childName, taskIndex) {
   }
 
   const total = state.children[childName].routines.length;
-  const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
+  const doneCount = countRoutineCompletions(session);
   if (total && doneCount === total) {
     finishMorning(childName, true);
     return;
@@ -351,21 +411,71 @@ function toggleTask(childName, taskIndex) {
   renderBoards();
 }
 
+function toggleWildcardTask(childName) {
+  const session = sessions[childName];
+  if (!session?.startedAt) return;
+
+  const wildcardState = getOrAssignDailyWildcard(childName);
+  const wildcardTaskKey = `wildcard:${wildcardState.dateKey}`;
+  const current = session.completedTasks[wildcardTaskKey];
+
+  if (!current) {
+    completeTask(session, wildcardTaskKey, {
+      taskName: `Wildcard: ${wildcardState.task.title}`,
+      isWildcard: true,
+    });
+    if (state.soundEnabled) playTaskSound();
+  } else {
+    delete session.completedTasks[wildcardTaskKey];
+    session.score -= current.points;
+  }
+
+  const remaining = Object.values(session.completedTasks).filter(Boolean);
+  session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => item.completedAtMs)) : session.startedAt;
+
+  saveState();
+  renderBoards();
+}
+
+function completeTask(session, taskKey, extra = {}) {
+  const now = Date.now();
+  const segmentStart = session.lastTaskAt || session.startedAt;
+  const elapsedSec = Math.max(1, Math.round((now - segmentStart) / 1000));
+
+  const speedFactor = Math.max(0, 1 - elapsedSec / 480);
+  const bonus = Math.round(state.scoring.maxBonus * speedFactor);
+  const points = Math.max(state.scoring.basePoints, state.scoring.basePoints + bonus);
+
+  session.completedTasks[taskKey] = { points, durationSec: elapsedSec, completedAtMs: now, ...extra };
+  session.score += points;
+  session.lastTaskAt = now;
+}
+
+function countRoutineCompletions(session) {
+  return Object.keys(session.completedTasks).filter((key) => Number.isInteger(Number(key))).length;
+}
+
 function finishMorning(childName, automatic = false) {
   const session = sessions[childName];
   const routines = state.children[childName].routines;
   const total = routines.length;
-  const doneCount = Object.values(session.completedTasks).filter(Boolean).length;
+  const doneCount = countRoutineCompletions(session);
   if (!session.startedAt || doneCount !== total || total === 0) return;
 
   const finishedAt = Date.now();
   session.score += 20;
 
-  const taskEntries = Object.entries(session.completedTasks).map(([idx, details]) => ({
-    taskName: routines[Number(idx)] || `Oppgave ${Number(idx) + 1}`,
-    durationSec: details.durationSec,
-    points: details.points,
-  }));
+  const taskEntries = Object.entries(session.completedTasks).map(([idx, details]) => {
+    const taskName = Number.isInteger(Number(idx))
+      ? routines[Number(idx)] || `Oppgave ${Number(idx) + 1}`
+      : details.taskName || "Bonusoppgave";
+    return {
+      taskName,
+      durationSec: details.durationSec,
+      points: details.points,
+      isWildcard: !!details.isWildcard,
+    };
+  });
 
   state.history = [
     {
@@ -450,6 +560,39 @@ function formatDuration(totalSec) {
   const min = String(Math.floor(totalSec / 60)).padStart(2, "0");
   const sec = String(totalSec % 60).padStart(2, "0");
   return `${min}:${sec}`;
+}
+
+function getLocalDateKey(ts = Date.now()) {
+  const date = new Date(ts);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function pickWildcardTask(childName, dateKey) {
+  const recent = state.wildcardHistory[childName] || [];
+  const recentSet = new Set(recent.slice(-WILDCARD_REPEAT_GUARD));
+  const candidates = WILDCARD_TASKS.filter((task) => !recentSet.has(task.id));
+  const pool = candidates.length ? candidates : WILDCARD_TASKS;
+  const seed = `${childName}:${dateKey}`;
+  const hash = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return pool[hash % pool.length];
+}
+
+function getOrAssignDailyWildcard(childName) {
+  const dateKey = getLocalDateKey();
+  const existing = state.wildcards[childName];
+  if (existing?.dateKey === dateKey) {
+    const match = WILDCARD_TASKS.find((task) => task.id === existing.taskId) || WILDCARD_TASKS[0];
+    return { task: match, dateKey, didAssign: false };
+  }
+
+  const task = pickWildcardTask(childName, dateKey);
+  state.wildcards[childName] = { dateKey, taskId: task.id };
+  const history = state.wildcardHistory[childName] || [];
+  state.wildcardHistory[childName] = [...history, task.id].slice(-WILDCARD_HISTORY_LIMIT);
+  return { task, dateKey, didAssign: true };
 }
 
 function createAudioContext() {
@@ -648,6 +791,8 @@ function createCloudAdapter() {
       children: sanitizeChildren(remote.children),
       history: Array.isArray(remote.history) ? remote.history : [],
       activeSessions: sanitizeActiveSessions(remote.activeSessions, sanitizeChildren(remote.children)),
+      wildcards: sanitizeWildcards(remote.wildcards, sanitizeChildren(remote.children)),
+      wildcardHistory: sanitizeWildcardHistory(remote.wildcardHistory, sanitizeChildren(remote.children)),
       meta: { updatedAt: Number(remote?.meta?.updatedAt) || 0 },
     };
   }
