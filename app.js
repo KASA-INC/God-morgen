@@ -6,8 +6,18 @@ const DEFAULT_STATE = {
   activeSessions: {},
   wildcards: {},
   wildcardHistory: {},
+  pointBank: {},
+  rewardCatalog: [],
+  rewardRedemptions: [],
   meta: { updatedAt: 0 },
 };
+
+const DEFAULT_REWARD_CATALOG = [
+  { id: "velg-film", title: "Velg filmkveld", cost: 150 },
+  { id: "velg-middag", title: "Velg middag", cost: 250 },
+  { id: "storpremie", title: "Større premie", cost: 500 },
+];
+const POINT_MILESTONES = [100, 250, 500, 750, 1000];
 
 const WILDCARD_TASKS = [
   { id: "kompliment", title: "Gi et ekte kompliment til en hjemme i dag" },
@@ -38,6 +48,7 @@ const authEmailSignInBtn = document.getElementById("authEmailSignIn");
 const authEmailCreateBtn = document.getElementById("authEmailCreate");
 
 const childBoards = document.getElementById("childBoards");
+const pointsOverviewEl = document.getElementById("pointsOverview");
 const weeklyStatsEl = document.getElementById("weeklyStats");
 const addChildBtn = document.getElementById("addChildBtn");
 const childNameInput = document.getElementById("newChildName");
@@ -186,6 +197,41 @@ function sanitizeWildcardHistory(rawHistory, childrenSource = state.children) {
   );
 }
 
+function sanitizePointBank(rawBank, childrenSource = state.children) {
+  const source = rawBank && typeof rawBank === "object" ? rawBank : {};
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const row = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
+      const earnedTotal = Number(row.earnedTotal);
+      const spentTotal = Number(row.spentTotal);
+      const claimedMilestones = Array.isArray(row.claimedMilestones)
+        ? row.claimedMilestones.filter((v) => Number.isFinite(Number(v))).map((v) => Number(v))
+        : [];
+      return [
+        childName,
+        {
+          earnedTotal: Number.isFinite(earnedTotal) ? Math.max(0, Math.round(earnedTotal)) : 0,
+          spentTotal: Number.isFinite(spentTotal) ? Math.max(0, Math.round(spentTotal)) : 0,
+          claimedMilestones,
+        },
+      ];
+    })
+  );
+}
+
+function sanitizeRewardCatalog(rawCatalog) {
+  const source = Array.isArray(rawCatalog) && rawCatalog.length ? rawCatalog : DEFAULT_REWARD_CATALOG;
+  return source
+    .map((item, index) => {
+      const title = typeof item?.title === "string" ? item.title.trim() : "";
+      const id = typeof item?.id === "string" && item.id.trim() ? item.id.trim() : `reward-${index + 1}`;
+      const cost = Number(item?.cost);
+      if (!title || !Number.isFinite(cost) || cost <= 0) return null;
+      return { id, title, cost: Math.round(cost) };
+    })
+    .filter(Boolean);
+}
+
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -200,6 +246,9 @@ function loadState() {
       activeSessions: sanitizeActiveSessions(parsed.activeSessions, sanitizeChildren(parsed.children)),
       wildcards: sanitizeWildcards(parsed.wildcards, sanitizeChildren(parsed.children)),
       wildcardHistory: sanitizeWildcardHistory(parsed.wildcardHistory, sanitizeChildren(parsed.children)),
+      pointBank: sanitizePointBank(parsed.pointBank, sanitizeChildren(parsed.children)),
+      rewardCatalog: sanitizeRewardCatalog(parsed.rewardCatalog),
+      rewardRedemptions: Array.isArray(parsed.rewardRedemptions) ? parsed.rewardRedemptions : [],
       meta: { updatedAt: Number(parsed?.meta?.updatedAt) || 0 },
     };
   } catch {
@@ -223,6 +272,7 @@ function registerServiceWorker() {
 
 function renderAll() {
   renderBoards();
+  renderPointsOverview();
   renderStats();
 }
 
@@ -323,6 +373,70 @@ function renderBoards() {
   if (wildcardStateChanged) saveState();
 }
 
+function ensureChildPointAccount(childName) {
+  if (!state.pointBank[childName]) {
+    state.pointBank[childName] = { earnedTotal: 0, spentTotal: 0, claimedMilestones: [] };
+  }
+  return state.pointBank[childName];
+}
+
+function getSpendablePoints(childName) {
+  const account = ensureChildPointAccount(childName);
+  return Math.max(0, account.earnedTotal - account.spentTotal);
+}
+
+function getNextReward(points) {
+  const sorted = [...state.rewardCatalog].sort((a, b) => a.cost - b.cost);
+  return sorted.find((reward) => reward.cost > points) || sorted[sorted.length - 1] || null;
+}
+
+function renderPointsOverview() {
+  if (!pointsOverviewEl) return;
+  pointsOverviewEl.innerHTML = "";
+
+  Object.keys(state.children).forEach((childName) => {
+    const account = ensureChildPointAccount(childName);
+    const availablePoints = getSpendablePoints(childName);
+    const nextReward = getNextReward(availablePoints);
+    const prevThreshold = state.rewardCatalog
+      .map((r) => r.cost)
+      .filter((cost) => cost <= availablePoints)
+      .sort((a, b) => b - a)[0] || 0;
+    const target = nextReward?.cost || Math.max(availablePoints, 1);
+    const span = Math.max(1, target - prevThreshold);
+    const progress = Math.min(100, Math.round(((availablePoints - prevThreshold) / span) * 100));
+
+    const rewardButtons = state.rewardCatalog
+      .slice()
+      .sort((a, b) => a.cost - b.cost)
+      .map(
+        (reward) => `
+          <button class="secondary reward-redeem-btn" type="button" data-child="${escapeHtml(childName)}" data-reward-id="${escapeHtml(reward.id)}" ${availablePoints < reward.cost ? "disabled" : ""}>
+            Løs inn: ${escapeHtml(reward.title)} (${reward.cost})
+          </button>
+        `
+      )
+      .join("");
+
+    const card = document.createElement("article");
+    card.className = "points-card";
+    card.innerHTML = `
+      <h4>${escapeHtml(childName)}</h4>
+      <p>Totalpoeng: <strong>${account.earnedTotal}</strong></p>
+      <p>Tilgjengelig: <strong>${availablePoints}</strong></p>
+      <div class="points-progress-wrap"><div class="points-progress-bar" style="width:${progress}%"></div></div>
+      <p class="note">Neste premie: ${nextReward ? `${escapeHtml(nextReward.title)} (${nextReward.cost})` : "Ingen premier satt"}</p>
+      <div class="reward-menu">${rewardButtons}</div>
+    `;
+
+    card.querySelectorAll(".reward-redeem-btn").forEach((button) => {
+      button.addEventListener("click", () => redeemReward(childName, button.dataset.rewardId));
+    });
+
+    pointsOverviewEl.appendChild(card);
+  });
+}
+
 function addChild() {
   const childName = childNameInput.value.trim();
   if (!childName) return;
@@ -332,6 +446,7 @@ function addChild() {
   }
   state.children[childName] = { age: 0, routines: [] };
   sessions[childName] = createSession(childName);
+  ensureChildPointAccount(childName);
   childNameInput.value = "";
   saveState();
   renderAll();
@@ -343,6 +458,7 @@ function removeChild(childName) {
   delete sessions[childName];
   delete state.wildcards[childName];
   delete state.wildcardHistory[childName];
+  delete state.pointBank[childName];
   state.history = state.history.filter((entry) => entry.childName !== childName);
   saveState();
   renderAll();
@@ -389,7 +505,8 @@ function toggleTask(childName, taskIndex) {
 
   const current = session.completedTasks[taskIndex];
   if (!current) {
-    completeTask(session, taskIndex);
+    const taskName = state.children[childName].routines[taskIndex] || `Oppgave ${Number(taskIndex) + 1}`;
+    completeTask(childName, session, taskIndex, { taskName });
 
     if (state.soundEnabled) playTaskSound();
   } else {
@@ -420,7 +537,7 @@ function toggleWildcardTask(childName) {
   const current = session.completedTasks[wildcardTaskKey];
 
   if (!current) {
-    completeTask(session, wildcardTaskKey, {
+    completeTask(childName, session, wildcardTaskKey, {
       taskName: `Wildcard: ${wildcardState.task.title}`,
       isWildcard: true,
     });
@@ -437,14 +554,31 @@ function toggleWildcardTask(childName) {
   renderBoards();
 }
 
-function completeTask(session, taskKey, extra = {}) {
+function getAverageDurationForTask(childName, taskName) {
+  const entries = state.history.filter((entry) => entry.childName === childName);
+  const samples = [];
+  entries.forEach((entry) => {
+    (entry.taskEntries || []).forEach((task) => {
+      if (task.taskName === taskName && !task.isWildcard && Number.isFinite(task.durationSec)) {
+        samples.push(task.durationSec);
+      }
+    });
+  });
+  if (!samples.length) return null;
+  return Math.round(samples.reduce((sum, sec) => sum + sec, 0) / samples.length);
+}
+
+function completeTask(childName, session, taskKey, extra = {}) {
   const now = Date.now();
   const segmentStart = session.lastTaskAt || session.startedAt;
   const elapsedSec = Math.max(1, Math.round((now - segmentStart) / 1000));
 
   const speedFactor = Math.max(0, 1 - elapsedSec / 480);
   const bonus = Math.round(state.scoring.maxBonus * speedFactor);
-  const points = Math.max(state.scoring.basePoints, state.scoring.basePoints + bonus);
+  const avgSec = extra.taskName && !extra.isWildcard ? getAverageDurationForTask(childName, extra.taskName) : null;
+  const efficiencyFactor = avgSec && elapsedSec < avgSec ? (avgSec - elapsedSec) / Math.max(1, avgSec) : 0;
+  const efficiencyBonus = Math.round(state.scoring.maxBonus * efficiencyFactor);
+  const points = Math.max(state.scoring.basePoints, state.scoring.basePoints + bonus + efficiencyBonus);
 
   session.completedTasks[taskKey] = { points, durationSec: elapsedSec, completedAtMs: now, ...extra };
   session.score += points;
@@ -453,6 +587,33 @@ function completeTask(session, taskKey, extra = {}) {
 
 function countRoutineCompletions(session) {
   return Object.keys(session.completedTasks).filter((key) => Number.isInteger(Number(key))).length;
+}
+
+function celebrateMilestonesIfNeeded(childName, previousTotal, nextTotal) {
+  const account = ensureChildPointAccount(childName);
+  const reached = POINT_MILESTONES.filter((point) => previousTotal < point && nextTotal >= point && !account.claimedMilestones.includes(point));
+  if (!reached.length) return;
+  account.claimedMilestones = [...account.claimedMilestones, ...reached].sort((a, b) => a - b);
+  alert(`🎉 ${childName} nådde milepæl: ${reached.join(", ")} poeng!`);
+}
+
+function redeemReward(childName, rewardId) {
+  const reward = state.rewardCatalog.find((item) => item.id === rewardId);
+  if (!reward) return;
+
+  const available = getSpendablePoints(childName);
+  if (available < reward.cost) return;
+  if (!confirm(`${childName} vil løse inn "${reward.title}" for ${reward.cost} poeng. Fortsette?`)) return;
+
+  const account = ensureChildPointAccount(childName);
+  account.spentTotal += reward.cost;
+  state.rewardRedemptions = [
+    { childName, rewardId: reward.id, rewardTitle: reward.title, cost: reward.cost, redeemedAt: new Date().toISOString() },
+    ...state.rewardRedemptions,
+  ].slice(0, 200);
+
+  saveState();
+  renderPointsOverview();
 }
 
 function finishMorning(childName, automatic = false) {
@@ -464,6 +625,10 @@ function finishMorning(childName, automatic = false) {
 
   const finishedAt = Date.now();
   session.score += 20;
+  const account = ensureChildPointAccount(childName);
+  const previousTotal = account.earnedTotal;
+  account.earnedTotal += session.score;
+  celebrateMilestonesIfNeeded(childName, previousTotal, account.earnedTotal);
 
   const taskEntries = Object.entries(session.completedTasks).map(([idx, details]) => {
     const taskName = Number.isInteger(Number(idx))
@@ -500,8 +665,6 @@ function renderStats() {
 
   Object.keys(state.children).forEach((name) => {
     const entries = state.history.filter((h) => h.childName === name);
-    const bestScore = entries.length ? Math.max(...entries.map((x) => x.score)) : 0;
-    const fastest = entries.length ? Math.min(...entries.map((x) => x.durationSec)) : null;
 
     const taskMap = new Map();
     state.children[name].routines.forEach((task) => {
@@ -537,8 +700,6 @@ function renderStats() {
     card.className = "stat-card stat-card-extended";
     card.innerHTML = `
       <h4>${escapeHtml(name)}</h4>
-      <p>Rekorddag: ${bestScore} poeng</p>
-      <p>Raskeste morgen: ${fastest ? formatDuration(fastest) : "-"}</p>
       <h5>Tid per oppgave (snitt)</h5>
       <div class="graph-list">${graphBars || '<p class="note">Ingen oppgaver ennå.</p>'}</div>
     `;
@@ -793,6 +954,9 @@ function createCloudAdapter() {
       activeSessions: sanitizeActiveSessions(remote.activeSessions, sanitizeChildren(remote.children)),
       wildcards: sanitizeWildcards(remote.wildcards, sanitizeChildren(remote.children)),
       wildcardHistory: sanitizeWildcardHistory(remote.wildcardHistory, sanitizeChildren(remote.children)),
+      pointBank: sanitizePointBank(remote.pointBank, sanitizeChildren(remote.children)),
+      rewardCatalog: sanitizeRewardCatalog(remote.rewardCatalog),
+      rewardRedemptions: Array.isArray(remote.rewardRedemptions) ? remote.rewardRedemptions : [],
       meta: { updatedAt: Number(remote?.meta?.updatedAt) || 0 },
     };
   }
