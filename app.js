@@ -389,11 +389,6 @@ function getSpendablePoints(childName) {
   return Math.max(0, account.earnedTotal - account.spentTotal);
 }
 
-function getNextReward(points) {
-  const sorted = [...state.rewardCatalog].sort((a, b) => a.cost - b.cost);
-  return sorted.find((reward) => reward.cost > points) || sorted[sorted.length - 1] || null;
-}
-
 function renderPointsOverview() {
   if (!pointsOverviewEl) return;
   pointsOverviewEl.innerHTML = "";
@@ -401,39 +396,36 @@ function renderPointsOverview() {
   Object.keys(state.children).forEach((childName) => {
     const account = ensureChildPointAccount(childName);
     const availablePoints = getSpendablePoints(childName);
-    const nextReward = getNextReward(availablePoints);
-    const prevThreshold = state.rewardCatalog
-      .map((r) => r.cost)
-      .filter((cost) => cost <= availablePoints)
-      .sort((a, b) => b - a)[0] || 0;
-    const target = nextReward?.cost || Math.max(availablePoints, 1);
-    const span = Math.max(1, target - prevThreshold);
-    const progress = Math.min(100, Math.round(((availablePoints - prevThreshold) / span) * 100));
+    const rewards = state.rewardCatalog.slice().sort((a, b) => a.cost - b.cost);
 
-    const rewardButtons = state.rewardCatalog
-      .slice()
-      .sort((a, b) => a.cost - b.cost)
-      .map(
-        (reward) => `
-          <button class="secondary reward-redeem-btn" type="button" data-child="${escapeHtml(childName)}" data-reward-id="${escapeHtml(reward.id)}" ${availablePoints < reward.cost ? "disabled" : ""}>
-            Løs inn: ${escapeHtml(reward.title)} (${reward.cost})
-          </button>
-        `
-      )
-      .join("");
+    const rewardItems = rewards.length
+      ? rewards
+          .map((reward) => {
+            const pct = Math.max(0, Math.min(100, Math.round((availablePoints / Math.max(1, reward.cost)) * 100)));
+            return `
+              <article class="reward-choice" data-child="${escapeHtml(childName)}" data-reward-id="${escapeHtml(reward.id)}">
+                <div class="reward-ring" style="--progress:${pct}%">
+                  <span>${availablePoints}/${reward.cost}</span>
+                </div>
+                <h5>${escapeHtml(reward.title)}</h5>
+                <button class="reward-claim-btn" type="button" data-child="${escapeHtml(childName)}" data-reward-id="${escapeHtml(reward.id)}" ${availablePoints < reward.cost ? "disabled" : ""}>Få premie</button>
+              </article>
+            `;
+          })
+          .join("")
+      : '<p class="note">Ingen premier definert ennå. Legg til premier i Innstillinger.</p>';
 
     const card = document.createElement("article");
     card.className = "points-card";
     card.innerHTML = `
-      <h4>${escapeHtml(childName)}</h4>
-      <p>Totalpoeng: <strong>${account.earnedTotal}</strong></p>
-      <p>Tilgjengelig: <strong>${availablePoints}</strong></p>
-      <div class="points-progress-wrap"><div class="points-progress-bar" style="width:${progress}%"></div></div>
-      <p class="note">Neste premie: ${nextReward ? `${escapeHtml(nextReward.title)} (${nextReward.cost})` : "Ingen premier satt"}</p>
-      <div class="reward-menu">${rewardButtons}</div>
+      <div class="points-header">
+        <h4>${escapeHtml(childName)}</h4>
+        <p>Totalpoeng: <strong>${account.earnedTotal}</strong> · Tilgjengelig: <strong>${availablePoints}</strong></p>
+      </div>
+      <div class="reward-menu reward-menu-rings">${rewardItems}</div>
     `;
 
-    card.querySelectorAll(".reward-redeem-btn").forEach((button) => {
+    card.querySelectorAll(".reward-claim-btn").forEach((button) => {
       button.addEventListener("click", () => redeemReward(childName, button.dataset.rewardId));
     });
 
