@@ -19,7 +19,7 @@ const DEFAULT_REWARD_CATALOG = [
 ];
 const POINT_MILESTONES = [100, 250, 500, 750, 1000];
 
-const WILDCARD_TASKS = [
+const DEFAULT_WILDCARD_TASKS = [
   { id: "kompliment", title: "Gi et ekte kompliment til en hjemme i dag" },
   { id: "rydde-5", title: "Rydd i 5 minutter på et valgfritt sted" },
   { id: "hjelpe-hand", title: "Tilby hjelp uten å bli spurt" },
@@ -31,6 +31,7 @@ const WILDCARD_TASKS = [
 ];
 const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
+let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
@@ -81,6 +82,7 @@ startTimerLoop();
 registerServiceWorker();
 setupAuthUI();
 cloud.init();
+loadWildcardTasks();
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
@@ -185,6 +187,40 @@ function sanitizeWildcards(rawWildcards, childrenSource = state.children) {
       ];
     })
   );
+}
+
+
+function sanitizeWildcardCatalog(rawCatalog) {
+  if (!Array.isArray(rawCatalog)) return [];
+
+  const seen = new Set();
+  const rows = [];
+  rawCatalog.forEach((row, index) => {
+    const title = typeof row?.title === "string" ? row.title.trim() : "";
+    const fromId = typeof row?.id === "string" ? row.id.trim() : "";
+    const fallbackId = `wildcard-${index + 1}`;
+    const id = (fromId || fallbackId).toLowerCase().replace(/[^a-z0-9-]/g, "-");
+    if (!title || !id || seen.has(id)) return;
+    seen.add(id);
+    rows.push({ id, title });
+  });
+
+  return rows;
+}
+
+async function loadWildcardTasks() {
+  try {
+    const response = await fetch("./wildcard-tasks.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const payload = await response.json();
+    const nextTasks = sanitizeWildcardCatalog(payload);
+    if (!nextTasks.length) return;
+
+    wildcardTasks = nextTasks;
+    renderBoards();
+  } catch {
+    // fallback til innebygde wildcard-oppgaver
+  }
 }
 
 function sanitizeWildcardHistory(rawHistory, childrenSource = state.children) {
@@ -750,8 +786,9 @@ function getLocalDateKey(ts = Date.now()) {
 function pickWildcardTask(childName, dateKey) {
   const recent = state.wildcardHistory[childName] || [];
   const recentSet = new Set(recent.slice(-WILDCARD_REPEAT_GUARD));
-  const candidates = WILDCARD_TASKS.filter((task) => !recentSet.has(task.id));
-  const pool = candidates.length ? candidates : WILDCARD_TASKS;
+  const catalog = wildcardTasks.length ? wildcardTasks : DEFAULT_WILDCARD_TASKS;
+  const candidates = catalog.filter((task) => !recentSet.has(task.id));
+  const pool = candidates.length ? candidates : catalog;
   const seed = `${childName}:${dateKey}`;
   const hash = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return pool[hash % pool.length];
@@ -761,7 +798,7 @@ function getOrAssignDailyWildcard(childName) {
   const dateKey = getLocalDateKey();
   const existing = state.wildcards[childName];
   if (existing?.dateKey === dateKey) {
-    const match = WILDCARD_TASKS.find((task) => task.id === existing.taskId) || WILDCARD_TASKS[0];
+    const match = wildcardTasks.find((task) => task.id === existing.taskId) || wildcardTasks[0] || DEFAULT_WILDCARD_TASKS[0];
     return { task: match, dateKey, didAssign: false };
   }
 

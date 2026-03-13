@@ -77,3 +77,26 @@ iCloud-innlogging i web tilsvarer «Sign in with Apple». I Firebase bruker vi p
 - Etter innlogging vises hovedsiden.
 - Hovedsiden starter tom hvis brukeren ikke har lagt til barn ennå.
 - Barn og oppgaver kan legges til/fjernes direkte fra hovedsiden (uten profil-dialog).
+
+## Wildcard-oppgaver fra egen fil
+
+Wildcard-oppgaver leses nå fra `wildcard-tasks.json` i prosjektroten.
+
+### Format
+Filen må være en JSON-liste med objekter:
+
+```json
+[
+  { "id": "kort-id", "title": "Tekst som vises i appen" }
+]
+```
+
+- `id`: unik identifikator (brukes i historikk/rotasjon).
+- `title`: oppgaveteksten barnet ser.
+
+### Workflow (anbefalt)
+1. Rediger `wildcard-tasks.json` for å legge til/fjerne oppgaver.
+2. Deploy appen som vanlig sammen med `index.html`, `app.js` osv.
+3. Last siden på nytt – appen henter filen automatisk.
+
+Hvis filen mangler eller er ugyldig, bruker appen innebygde standard-wildcards som fallback.
