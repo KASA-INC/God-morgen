@@ -5,30 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ff5aa5" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Morgenhelt" />
-    <title>Morgenhelt</title>
+    <meta name="apple-mobile-web-app-title" content="Goood Morgen" />
+    <title>Goood Morgen</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icons/icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Platypi:wght@200&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app">
+    <section id="authScreen" class="auth-screen app">
+      <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
+      <div class="auth-card">
+        <h2>Logg inn for å starte</h2>
+        <p id="authStatus" class="note"></p>
+        <button id="authGuest" class="secondary" type="button">Bruk uten å logge inn</button>
+        <div class="email-login-row">
+          <input id="authEmail" type="email" placeholder="E-post" autocomplete="email" />
+          <input id="authPassword" type="password" placeholder="Passord" autocomplete="current-password" />
+          <div class="email-auth-actions">
+            <button id="authEmailSignIn" class="secondary" type="button">Logg inn med e-post</button>
+            <button id="authEmailCreate" class="secondary" type="button">Opprett konto</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="appShell" class="app" hidden>
       <header class="topbar panel">
         <div>
           <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
-
         </div>
-        <button id="openParentMode" class="secondary">Foreldremodus</button>
+        <div class="topbar-actions">
+          <button id="openParentMode" class="settings-btn" aria-label="Innstillinger" title="Innstillinger">⚙</button>
+        </div>
       </header>
 
       <main>
+        <section class="panel child-admin-panel">
+          <div class="child-create-row">
+            <input id="newChildName" type="text" placeholder="Legg til barn" />
+            <button id="addChildBtn" class="add-child-inline" type="button" aria-label="Legg til barn">+</button>
+          </div>
+          <p id="emptyState" class="note">Ingen barn lagt til ennå. Legg til første barn for å starte.</p>
+        </section>
 
         <section class="panel boards-panel">
           <div id="childBoards" class="child-boards"></div>
+        </section>
+
+        <section class="panel points-panel">
+          <h2>Poeng og premier</h2>
+          <div id="pointsOverview" class="points-overview"></div>
         </section>
 
         <section class="panel stats-panel">
@@ -38,30 +68,44 @@
       </main>
     </div>
 
-    <dialog id="parentDialog">
-      <form method="dialog" id="pinForm" class="pin-form">
-        <h3>Foreldremodus</h3>
-        <label>PIN <input id="pinInput" type="password" inputmode="numeric" minlength="4" maxlength="8" required /></label>
-        <div class="row">
-          <button value="cancel" class="secondary" type="button" id="cancelPin">Avbryt</button>
-          <button value="default" class="primary" type="submit">Åpne</button>
-        </div>
-        <p class="note">Standard PIN er 1234.</p>
-      </form>
-
-      <section id="parentSettings" hidden>
+    <dialog id="parentDialog" class="settings-dialog">
+      <section id="parentSettings" class="parent-settings-panel">
+        <button id="closeSettingsX" class="settings-close-x" type="button" aria-label="Lagre og lukk">✕</button>
         <h3>Innstillinger</h3>
-        <label>Ny PIN <input id="newPin" type="password" inputmode="numeric" minlength="4" maxlength="8" /></label>
         <label class="switch-row"><input id="soundToggle" type="checkbox" /> Lyd på ved fullførte oppgaver</label>
-        <label>Poeng per oppgave <input id="basePoints" type="number" min="1" max="50" /></label>
-        <label>Maks tidsbonus per oppgave <input id="bonusPoints" type="number" min="0" max="20" /></label>
-        <div class="row">
-          <button id="saveSettings" class="success" type="button">Lagre</button>
-          <button id="closeParent" class="secondary" type="button">Lukk</button>
-        </div>
+        <label>Poeng per oppgave
+          <div class="score-stepper" data-target="base">
+            <button id="basePlus" class="step-btn" type="button" aria-label="Øk poeng">+</button>
+            <div id="basePointsDisplay" class="score-value-display">10</div>
+            <button id="baseMinus" class="step-btn" type="button" aria-label="Senk poeng">−</button>
+          </div>
+          <input id="basePoints" type="number" min="1" max="50" hidden />
+        </label>
+        <label>Maks tidsbonus per oppgave
+          <div class="score-stepper" data-target="bonus">
+            <button id="bonusPlus" class="step-btn" type="button" aria-label="Øk bonus">+</button>
+            <div id="bonusPointsDisplay" class="score-value-display">5</div>
+            <button id="bonusMinus" class="step-btn" type="button" aria-label="Senk bonus">−</button>
+          </div>
+          <input id="bonusPoints" type="number" min="0" max="20" hidden />
+        </label>
+        <section class="reward-settings">
+          <h4>Premier</h4>
+          <div id="rewardSettingsList" class="reward-settings-list"></div>
+          <div class="reward-create-row">
+            <input id="rewardTitleInput" type="text" placeholder="Ny premie" />
+            <input id="rewardCostInput" type="number" min="1" step="1" placeholder="Poeng" />
+            <button id="addRewardBtn" class="secondary" type="button">Legg til premie</button>
+          </div>
+        </section>
+        <button id="settingsLogout" class="secondary settings-logout" type="button">Logg ut</button>
       </section>
     </dialog>
 
+    <script src="firebase-config.js?v=4"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = "morgenhelt-cache-v1";
+const CACHE_NAME = "morgenhelt-cache-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -27,6 +27,26 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.pathname.endsWith("/firebase-config.js") || requestUrl.pathname.endsWith("firebase-config.js")) {
+    event.respondWith(fetch(event.request, { cache: "no-store" }).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  if (requestUrl.pathname === "/" || requestUrl.pathname.endsWith("/index.html")) {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
