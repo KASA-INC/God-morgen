@@ -322,20 +322,27 @@ function renderBoards() {
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
       </div>
-      <div class="task-item task-item-wildcard">
-        <button class="task-btn ${wildcardDone ? "done" : ""}" ${started ? "" : "disabled"}>
-          <div class="task-text">⭐ Dagens wildcard: ${escapeHtml(wildcardTask.title)}</div>
-          <small>${wildcardDone ? `Fullført · +${session.completedTasks[wildcardTaskKey].points} poeng` : "Valgfri bonusoppgave"}</small>
-        </button>
-      </div>
       <div class="task-grid"></div>
     `;
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
-    board.querySelector(".task-item-wildcard .task-btn").addEventListener("click", () => toggleWildcardTask(name));
-
     const taskGrid = board.querySelector(".task-grid");
+
+    const wildcardItem = document.createElement("div");
+    wildcardItem.className = "task-item";
+
+    const wildcardBtn = document.createElement("button");
+    wildcardBtn.className = `task-btn ${wildcardDone ? "done" : ""}`;
+    wildcardBtn.disabled = !started;
+    wildcardBtn.innerHTML = `
+      <div class="task-text">${escapeHtml(wildcardTask.title)}</div>
+      ${wildcardDone ? `<small>Fullført · +${session.completedTasks[wildcardTaskKey].points} poeng</small>` : '<small>Bonusoppgave</small>'}
+    `;
+    wildcardBtn.addEventListener("click", () => toggleWildcardTask(name));
+
+    wildcardItem.appendChild(wildcardBtn);
+    taskGrid.appendChild(wildcardItem);
     info.routines.forEach((task, idx) => {
       const details = session.completedTasks[idx];
       const done = !!details;
