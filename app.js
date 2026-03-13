@@ -609,10 +609,34 @@ function createCloudAdapter() {
   let currentUser = null;
   let unsubscribeProfile = null;
 
-  function getConfig() {
-    const cfg = window.MORGENHELT_FIREBASE_CONFIG;
-    if (!cfg || !cfg.apiKey || !cfg.projectId || !cfg.appId || !cfg.authDomain) return null;
+  function normalizeFirebaseConfig(rawCfg) {
+    if (!rawCfg || typeof rawCfg !== "object") return null;
+
+    const cfg = { ...rawCfg };
+    const clean = (value) => String(value || "").trim();
+
+    cfg.apiKey = clean(cfg.apiKey);
+    cfg.projectId = clean(cfg.projectId);
+    cfg.appId = clean(cfg.appId);
+
+    let authDomain = clean(cfg.authDomain);
+    if (authDomain) {
+      authDomain = authDomain
+        .replace(/^https?:\/\//i, "")
+        .replace(/\/.*$/, "")
+        .trim();
+    }
+    if (!authDomain && cfg.projectId) {
+      authDomain = `${cfg.projectId}.firebaseapp.com`;
+    }
+    cfg.authDomain = authDomain;
+
+    if (!cfg.apiKey || !cfg.projectId || !cfg.appId || !cfg.authDomain) return null;
     return cfg;
+  }
+
+  function getConfig() {
+    return normalizeFirebaseConfig(window.MORGENHELT_FIREBASE_CONFIG);
   }
 
   function isEnabled() {
@@ -679,6 +703,11 @@ function createCloudAdapter() {
 
     ensureFirebase();
 
+    const cfg = getConfig();
+    if (cfg?.authDomain && cfg.authDomain.includes("/")) {
+      updateAuthStatus("Firebase authDomain ser feil ut. Bruk kun domenenavn uten https:// og sti.");
+    }
+
     auth.onAuthStateChanged(async (user) => {
       currentUser = user;
       setSignedInUI(user);
@@ -701,14 +730,18 @@ function createCloudAdapter() {
     return null;
   }
 
+  function getAuthDomainHint() {
+    const cfg = getConfig() || {};
+    const runtimeHost = window.location.host || "ukjent-host";
+    const authDomain = cfg.authDomain || "ukjent-authDomain";
+    const projectId = cfg.projectId || "ukjent-projectId";
+    return `Runtime-host: ${runtimeHost}. Config authDomain: ${authDomain} (project: ${projectId}).`;
+  }
+
   function describeAuthError(err) {
     const code = err?.code || "";
     if (code === "auth/unauthorized-domain") {
-      const cfg = getConfig() || {};
-      const runtimeHost = window.location.host || "ukjent-host";
-      const authDomain = cfg.authDomain || "ukjent-authDomain";
-      const projectId = cfg.projectId || "ukjent-projectId";
-      return `Dette domenet er ikke autorisert i Firebase Auth. Runtime-host: ${runtimeHost}. Config authDomain: ${authDomain} (project: ${projectId}). Sjekk at korrekt Firebase-prosjekt brukes på denne enheten og at hosten er lagt til i Authorized domains.`;
+      return `Dette domenet er ikke autorisert i Firebase Auth. ${getAuthDomainHint()} Sjekk at korrekt Firebase-prosjekt brukes på denne enheten og at hosten (inkl. www/ikke-www) er lagt til i Authorized domains.`;
     }
     if (code === "auth/operation-not-allowed") {
       return "Google-innlogging er ikke aktivert i Firebase Console. Aktiver Google-provideren under Authentication → Sign-in method.";
@@ -790,7 +823,7 @@ function createCloudAdapter() {
         alert("Ingen konto funnet for e-posten. Trykk 'Opprett konto' for å registrere deg.");
         return;
       }
-      alert(`Innlogging feilet: ${err?.message || "ukjent feil"}`);
+      alert(`Innlogging feilet: ${describeAuthError(err)}`);
     }
   }
 
@@ -812,7 +845,7 @@ function createCloudAdapter() {
         alert("Konto finnes allerede. Bruk 'Logg inn med e-post'.");
         return;
       }
-      alert(`Kunne ikke opprette konto: ${err?.message || "ukjent feil"}`);
+      alert(`Kunne ikke opprette konto: ${describeAuthError(err)}`);
     }
   }
 
