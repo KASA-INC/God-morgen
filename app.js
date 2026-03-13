@@ -422,6 +422,15 @@ function renderPointsOverview() {
           .join("")
       : '<p class="note">Ingen premier definert ennå. Legg til premier i Innstillinger.</p>';
 
+    const redemptionItems = state.rewardRedemptions
+      .filter((entry) => entry.childName === childName)
+      .slice(0, 6)
+      .map(
+        (entry) =>
+          `<li>${escapeHtml(entry.rewardTitle)} <span class="reward-history-cost">−${Number(entry.cost) || 0} poeng</span></li>`
+      )
+      .join("");
+
     const card = document.createElement("article");
     card.className = "points-card";
     card.innerHTML = `
@@ -430,6 +439,10 @@ function renderPointsOverview() {
         <p>Totalpoeng: <strong>${account.earnedTotal}</strong> · Tilgjengelig: <strong>${availablePoints}</strong></p>
       </div>
       <div class="reward-menu reward-menu-rings">${rewardItems}</div>
+      <section class="reward-history">
+        <h5>Valgte premier</h5>
+        <ul>${redemptionItems || '<li class="note">Ingen premier innløst ennå.</li>'}</ul>
+      </section>
     `;
 
     card.querySelectorAll(".reward-claim-btn").forEach((button) => {

@@ -54,9 +54,15 @@ main > .panel {
   display: block;
   margin: 0 auto;
 }
-h2 { margin: 0 0 0.65rem; font-size: 1.55rem; font-weight: 200; color: #1e0046; }
-h3 { margin: 0; font-size: 1.2rem; font-weight: 200; color: #1e0046; }
-h4 { margin: 0; font-size: 1.8rem; font-weight: 200; color: #1e0046; }
+h1, h2, h3, h4, h5 {
+  margin: 0;
+  font-weight: 200;
+  color: #1e0046;
+}
+h1 { font-size: 1.55rem; margin: 0 0 0.65rem; }
+h2 { font-size: 1.35rem; margin: 0 0 0.6rem; }
+h3 { font-size: 1.15rem; }
+h4, h5 { font-size: 1.1rem; }
 p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); font-family: "Platypi", "Segoe UI", serif; }
 
 
@@ -94,7 +100,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 }
 
 .child-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; }
-.child-head h3 { font-size: 1.8rem; line-height: 1; }
+.child-head h3 { font-size: 1.35rem; line-height: 1; }
 .badges { display: flex; gap: 0.4rem; flex-wrap: nowrap; align-items: baseline; }
 .badge {
   background: transparent;
@@ -224,9 +230,7 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
   gap: 0.7rem;
 }
 
-.points-header h4 {
-  font-size: 1.45rem;
-}
+.points-header h4 { font-size: 1.15rem; }
 
 .reward-menu {
   display: grid;
@@ -272,10 +276,30 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 
 .reward-choice h5 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.1rem;
   font-weight: 200;
   color: #1e0046;
   line-height: 1.05;
+}
+
+.reward-history {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.reward-history ul {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.reward-history li {
+  font-size: 1rem;
+}
+
+.reward-history-cost {
+  font-size: 0.95rem;
 }
 
 .reward-claim-btn {
@@ -619,7 +643,7 @@ input[type="text"] {
   margin-top: 0.2rem;
 }
 
-.reward-settings h4 {
+.reward-settings h3 {
   margin: 0;
   font-size: 1.05rem;
   color: #fda075;
