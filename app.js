@@ -178,18 +178,6 @@ function renderAll() {
 
 
 
-function taskCardShape(taskText) {
-  const text = String(taskText || "").trim();
-  const len = text.length;
-  const words = text.split(/\s+/).filter(Boolean).length;
-
-  if (len >= 40 || words >= 8) return "task-w-4 task-h-1";
-  if (len >= 28 || words >= 6) return "task-w-3 task-h-1";
-  if (len >= 18 || words >= 4) return "task-w-2 task-h-1";
-  if (len >= 12 || words >= 3) return "task-w-1 task-h-2";
-  return "task-w-1 task-h-1";
-}
-
 function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
@@ -224,7 +212,6 @@ function renderBoards() {
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
       </div>
       <div class="task-grid"></div>
-      <div class="task-add-row"></div>
     `;
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
@@ -236,7 +223,7 @@ function renderBoards() {
       const done = !!details;
 
       const taskItem = document.createElement("div");
-      taskItem.className = `task-item ${taskCardShape(task)}`;
+      taskItem.className = "task-item";
 
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
@@ -260,11 +247,11 @@ function renderBoards() {
     });
 
     const addTaskBtn = document.createElement("button");
-    addTaskBtn.className = "add-task-btn";
+    addTaskBtn.className = "task-btn add-task-btn";
     addTaskBtn.type = "button";
-    addTaskBtn.textContent = "+ Legg til oppgave";
+    addTaskBtn.innerHTML = '<div class="task-text">Legg til oppgave</div>';
     addTaskBtn.addEventListener("click", () => addTask(name));
-    board.querySelector(".task-add-row").appendChild(addTaskBtn);
+    taskGrid.appendChild(addTaskBtn);
 
     childBoards.appendChild(board);
   });
@@ -717,7 +704,11 @@ function createCloudAdapter() {
   function describeAuthError(err) {
     const code = err?.code || "";
     if (code === "auth/unauthorized-domain") {
-      return "Dette domenet er ikke autorisert i Firebase Auth. Legg til domenet under Authentication → Settings → Authorized domains.";
+      const cfg = getConfig() || {};
+      const runtimeHost = window.location.host || "ukjent-host";
+      const authDomain = cfg.authDomain || "ukjent-authDomain";
+      const projectId = cfg.projectId || "ukjent-projectId";
+      return `Dette domenet er ikke autorisert i Firebase Auth. Runtime-host: ${runtimeHost}. Config authDomain: ${authDomain} (project: ${projectId}). Sjekk at korrekt Firebase-prosjekt brukes på denne enheten og at hosten er lagt til i Authorized domains.`;
     }
     if (code === "auth/operation-not-allowed") {
       return "Google-innlogging er ikke aktivert i Firebase Console. Aktiver Google-provideren under Authentication → Sign-in method.";

@@ -1,11 +1,10 @@
-const CACHE_NAME = "morgenhelt-cache-v2";
+const CACHE_NAME = "morgenhelt-cache-v3";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./firebase-config.js",
   "./icons/icon.svg",
   "./icons/icon-maskable.svg"
 ];
@@ -28,6 +27,13 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.pathname.endsWith("/firebase-config.js") || requestUrl.pathname.endsWith("firebase-config.js")) {
+    event.respondWith(fetch(event.request, { cache: "no-store" }).catch(() => caches.match(event.request)));
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

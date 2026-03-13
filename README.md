@@ -46,6 +46,7 @@ Denne versjonen bruker ekte Firebase-integrasjon i frontend for:
 Hvis Google-innlogging feiler i nettleseren:
 - Bekreft at `firebase-config.js` er fylt ut med riktig `apiKey`, `authDomain`, `projectId` og `appId`.
 - Sjekk at domenet du kjører fra (f.eks. `localhost`, `127.0.0.1` eller produksjonsdomene) ligger i **Authentication → Settings → Authorized domains** i Firebase Console.
+- Hvis feilen fortsatt vises på mobil: tøm app/cache/service worker på enheten og last siden på nytt, slik at nyeste `firebase-config.js` blir brukt.
 - Sjekk at Google-provider er aktivert i **Authentication → Sign-in method**.
 - På iPhone/Safari brukes redirect-flyt for Google-innlogging som standard for bedre kompatibilitet.
 
