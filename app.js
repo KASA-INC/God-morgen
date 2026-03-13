@@ -708,6 +708,21 @@ function createCloudAdapter() {
       updateAuthStatus("Firebase authDomain ser feil ut. Bruk kun domenenavn uten https:// og sti.");
     }
 
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+
+    auth.getRedirectResult()
+      .then(async (result) => {
+        if (!result?.user) return;
+        currentUser = result.user;
+        setSignedInUI(result.user);
+        updateAuthStatus(`Logget inn som ${result.user.email || result.user.displayName || "bruker"}.`);
+        setProfileSubscription(result.user.uid);
+        await pullState();
+      })
+      .catch((err) => {
+        updateAuthStatus(`Innlogging feilet: ${describeAuthError(err)}`);
+      });
+
     auth.onAuthStateChanged(async (user) => {
       currentUser = user;
       setSignedInUI(user);
@@ -773,6 +788,7 @@ function createCloudAdapter() {
 
     if (shouldPreferRedirect()) {
       try {
+        updateAuthStatus("Sender til innlogging…");
         await auth.signInWithRedirect(provider);
         return;
       } catch (redirectErr) {
@@ -793,7 +809,8 @@ function createCloudAdapter() {
 
       if (fallbackToRedirect) {
         try {
-          await auth.signInWithRedirect(provider);
+          updateAuthStatus("Sender til innlogging…");
+        await auth.signInWithRedirect(provider);
           return;
         } catch (redirectErr) {
           alert(`Innlogging feilet: ${describeAuthError(redirectErr)}`);
