@@ -68,6 +68,10 @@ const bonusPlus = document.getElementById("bonusPlus");
 const bonusMinus = document.getElementById("bonusMinus");
 const basePointsDisplay = document.getElementById("basePointsDisplay");
 const bonusPointsDisplay = document.getElementById("bonusPointsDisplay");
+const rewardSettingsList = document.getElementById("rewardSettingsList");
+const rewardTitleInput = document.getElementById("rewardTitleInput");
+const rewardCostInput = document.getElementById("rewardCostInput");
+const addRewardBtn = document.getElementById("addRewardBtn");
 const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
@@ -220,7 +224,7 @@ function sanitizePointBank(rawBank, childrenSource = state.children) {
 }
 
 function sanitizeRewardCatalog(rawCatalog) {
-  const source = Array.isArray(rawCatalog) && rawCatalog.length ? rawCatalog : DEFAULT_REWARD_CATALOG;
+  const source = Array.isArray(rawCatalog) ? rawCatalog : DEFAULT_REWARD_CATALOG;
   return source
     .map((item, index) => {
       const title = typeof item?.title === "string" ? item.title.trim() : "";
@@ -810,8 +814,68 @@ openParentModeBtn.addEventListener("click", () => {
   basePoints.value = state.scoring.basePoints;
   bonusPoints.value = state.scoring.maxBonus;
   syncScoreDisplays();
+  renderRewardSettings();
   parentDialog.showModal();
 });
+
+function buildRewardId(title) {
+  const normalized = String(title || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .slice(0, 40);
+  const base = normalized || `reward-${Date.now()}`;
+  const exists = new Set((state.rewardCatalog || []).map((item) => item.id));
+  if (!exists.has(base)) return base;
+  let n = 2;
+  while (exists.has(`${base}-${n}`)) n += 1;
+  return `${base}-${n}`;
+}
+
+function renderRewardSettings() {
+  if (!rewardSettingsList) return;
+  rewardSettingsList.innerHTML = "";
+
+  state.rewardCatalog
+    .slice()
+    .sort((a, b) => a.cost - b.cost)
+    .forEach((reward) => {
+      const row = document.createElement("div");
+      row.className = "reward-settings-item";
+      row.innerHTML = `
+        <span>${escapeHtml(reward.title)}</span>
+        <span>${reward.cost} poeng</span>
+        <button class="reward-remove-btn" type="button" aria-label="Fjern premie">✕</button>
+      `;
+      row.querySelector(".reward-remove-btn")?.addEventListener("click", () => {
+        state.rewardCatalog = state.rewardCatalog.filter((item) => item.id !== reward.id);
+        saveState();
+        renderRewardSettings();
+        renderPointsOverview();
+      });
+      rewardSettingsList.appendChild(row);
+    });
+}
+
+function addRewardFromSettings() {
+  const title = rewardTitleInput?.value?.trim() || "";
+  const cost = clampNumber(rewardCostInput?.value, 1, 100000, 100);
+  if (!title) return;
+
+  state.rewardCatalog = sanitizeRewardCatalog([
+    ...state.rewardCatalog,
+    { id: buildRewardId(title), title, cost },
+  ]);
+
+  if (rewardTitleInput) rewardTitleInput.value = "";
+  if (rewardCostInput) rewardCostInput.value = "";
+
+  saveState();
+  renderRewardSettings();
+  renderPointsOverview();
+}
 
 function syncScoreDisplays() {
   if (basePointsDisplay) basePointsDisplay.textContent = String(basePoints.value || state.scoring.basePoints);
@@ -878,6 +942,13 @@ function setupAuthUI() {
   baseMinus?.addEventListener("click", () => changeScoreValue("base", -1));
   bonusPlus?.addEventListener("click", () => changeScoreValue("bonus", 1));
   bonusMinus?.addEventListener("click", () => changeScoreValue("bonus", -1));
+  addRewardBtn?.addEventListener("click", addRewardFromSettings);
+  rewardTitleInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") addRewardFromSettings();
+  });
+  rewardCostInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") addRewardFromSettings();
+  });
 
   addChildBtn?.addEventListener("click", addChild);
   childNameInput?.addEventListener("keydown", (event) => {

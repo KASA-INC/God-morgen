@@ -89,6 +89,15 @@
           </div>
           <input id="bonusPoints" type="number" min="0" max="20" hidden />
         </label>
+        <section class="reward-settings">
+          <h4>Premier</h4>
+          <div id="rewardSettingsList" class="reward-settings-list"></div>
+          <div class="reward-create-row">
+            <input id="rewardTitleInput" type="text" placeholder="Ny premie" />
+            <input id="rewardCostInput" type="number" min="1" step="1" placeholder="Poeng" />
+            <button id="addRewardBtn" class="secondary" type="button">Legg til premie</button>
+          </div>
+        </section>
         <button id="settingsLogout" class="secondary settings-logout" type="button">Logg ut</button>
       </section>
     </dialog>
