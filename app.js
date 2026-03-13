@@ -21,8 +21,6 @@ const authPasswordInput = document.getElementById("authPassword");
 const authGuestBtn = document.getElementById("authGuest");
 const authEmailSignInBtn = document.getElementById("authEmailSignIn");
 const authEmailCreateBtn = document.getElementById("authEmailCreate");
-const authGoogleBtn = document.getElementById("authGoogle");
-const authFacebookBtn = document.getElementById("authFacebook");
 
 const childBoards = document.getElementById("childBoards");
 const weeklyStatsEl = document.getElementById("weeklyStats");
@@ -161,7 +159,7 @@ function saveState() {
   syncActiveSessionsIntoState();
   state.meta = { updatedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  cloud.pushState(state);
+  cloud.pushState(structuredClone(state));
 }
 
 function registerServiceWorker() {
@@ -567,9 +565,6 @@ function setupAuthUI() {
 
   authEmailSignInBtn?.addEventListener("click", submitEmailLogin);
   authEmailCreateBtn?.addEventListener("click", submitEmailCreate);
-  authGoogleBtn?.addEventListener("click", () => cloud.signIn("google"));
-  authFacebookBtn?.addEventListener("click", () => cloud.signIn("facebook"));
-
   settingsLogout?.addEventListener("click", async () => {
     await cloud.signOut();
     parentDialog.close();
@@ -608,6 +603,8 @@ function createCloudAdapter() {
   let db = null;
   let currentUser = null;
   let unsubscribeProfile = null;
+  let pendingPushState = null;
+  let pushInFlight = false;
 
   function normalizeFirebaseConfig(rawCfg) {
     if (!rawCfg || typeof rawCfg !== "object") return null;
@@ -694,6 +691,38 @@ function createCloudAdapter() {
     );
   }
 
+
+  function enqueuePush(nextState) {
+    pendingPushState = structuredClone(nextState);
+    void flushPush();
+  }
+
+  async function flushPush() {
+    if (pushInFlight || !pendingPushState || !currentUser || !db) return;
+
+    pushInFlight = true;
+    const payload = pendingPushState;
+    pendingPushState = null;
+
+    try {
+      await db.collection("profiles").doc(currentUser.uid).set(
+        {
+          state: payload,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch {
+      pendingPushState = payload;
+      setTimeout(() => {
+        void flushPush();
+      }, 1500);
+    } finally {
+      pushInFlight = false;
+      if (pendingPushState) void flushPush();
+    }
+  }
+
   function init() {
     if (!isEnabled()) {
       setSignedInUI(null);
@@ -717,7 +746,11 @@ function createCloudAdapter() {
         setSignedInUI(result.user);
         updateAuthStatus(`Logget inn som ${result.user.email || result.user.displayName || "bruker"}.`);
         setProfileSubscription(result.user.uid);
-        await pullState();
+        try {
+          await pullState();
+        } finally {
+          void flushPush();
+        }
       })
       .catch((err) => {
         updateAuthStatus(`Innlogging feilet: ${describeAuthError(err)}`);
@@ -735,7 +768,11 @@ function createCloudAdapter() {
 
       updateAuthStatus(`Logget inn som ${user.email || user.displayName || "bruker"}.`);
       setProfileSubscription(user.uid);
-      await pullState();
+      try {
+        await pullState();
+      } finally {
+        void flushPush();
+      }
     });
   }
 
@@ -872,23 +909,22 @@ function createCloudAdapter() {
     setSignedInUI(null);
   }
 
-  async function pushState(nextState) {
-    if (!currentUser || !db) return;
-    await db.collection("profiles").doc(currentUser.uid).set(
-      {
-        state: nextState,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
+  function pushState(nextState) {
+    enqueuePush(nextState);
   }
 
   async function pullState() {
     if (!currentUser || !db) return;
 
-    const snap = await db.collection("profiles").doc(currentUser.uid).get();
+    let snap = null;
+    try {
+      snap = await db.collection("profiles").doc(currentUser.uid).get({ source: "server" });
+    } catch {
+      snap = await db.collection("profiles").doc(currentUser.uid).get();
+    }
+
     if (!snap.exists) {
-      await pushState(state);
+      pushState(state);
       return;
     }
 
