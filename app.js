@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
   wildcards: {},
   wildcardHistory: {},
   pointBank: {},
+  levelProgress: {},
   rewardCatalog: [],
   rewardRedemptions: [],
   meta: { updatedAt: 0 },
@@ -33,6 +34,40 @@ const DEFAULT_WILDCARD_TASKS = [
 const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
+
+const DEFAULT_LEVEL_DEFINITIONS = [
+  { level: 1, name: "Maur", requiredCompletedTasks: 0 },
+  { level: 2, name: "Marihøne", requiredCompletedTasks: 5 },
+  { level: 3, name: "Sommerfugl", requiredCompletedTasks: 12 },
+  { level: 4, name: "Bie", requiredCompletedTasks: 22 },
+  { level: 5, name: "Gresshoppe", requiredCompletedTasks: 35 },
+  { level: 6, name: "Frosk", requiredCompletedTasks: 52 },
+  { level: 7, name: "Mus", requiredCompletedTasks: 74 },
+  { level: 8, name: "Ekorn", requiredCompletedTasks: 102 },
+  { level: 9, name: "Pinnsvin", requiredCompletedTasks: 138 },
+  { level: 10, name: "Ravn", requiredCompletedTasks: 184 },
+  { level: 11, name: "Rev", requiredCompletedTasks: 242 },
+  { level: 12, name: "Gaupe", requiredCompletedTasks: 314 },
+  { level: 13, name: "Ulv", requiredCompletedTasks: 402 },
+  { level: 14, name: "Hjort", requiredCompletedTasks: 510 },
+  { level: 15, name: "Elg", requiredCompletedTasks: 642 },
+  { level: 16, name: "Løve", requiredCompletedTasks: 804 },
+  { level: 17, name: "Tiger", requiredCompletedTasks: 1002 },
+  { level: 18, name: "Neshorn", requiredCompletedTasks: 1244 },
+  { level: 19, name: "Isbjørn", requiredCompletedTasks: 1540 },
+  { level: 20, name: "Flodhest", requiredCompletedTasks: 1902 },
+  { level: 21, name: "Sjøløve", requiredCompletedTasks: 2344 },
+  { level: 22, name: "Hvalross", requiredCompletedTasks: 2882 },
+  { level: 23, name: "Delfin", requiredCompletedTasks: 3538 },
+  { level: 24, name: "Havskilpadde", requiredCompletedTasks: 4336 },
+  { level: 25, name: "Hammerhai", requiredCompletedTasks: 5308 },
+  { level: 26, name: "Spekkhogger", requiredCompletedTasks: 6492 },
+  { level: 27, name: "Kjempeblekksprut", requiredCompletedTasks: 7934 },
+  { level: 28, name: "Pukkelhval", requiredCompletedTasks: 9692 },
+  { level: 29, name: "Finhval", requiredCompletedTasks: 11836 },
+  { level: 30, name: "Blåhval", requiredCompletedTasks: 20000 },
+];
+let levelDefinitions = [...DEFAULT_LEVEL_DEFINITIONS];
 
 const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
 
@@ -106,6 +141,7 @@ registerServiceWorker();
 setupAuthUI();
 cloud.init();
 loadWildcardTasks();
+loadAnimalLevels();
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
@@ -246,6 +282,86 @@ async function loadWildcardTasks() {
   }
 }
 
+function sanitizeLevelDefinitions(rawDefinitions) {
+  if (!Array.isArray(rawDefinitions)) return [];
+
+  const rows = rawDefinitions
+    .map((row) => ({
+      level: Number(row?.level),
+      name: typeof row?.name === "string" ? row.name.trim() : "",
+      requiredCompletedTasks: Number(row?.requiredCompletedTasks),
+    }))
+    .filter((row) => Number.isFinite(row.level) && row.level > 0 && row.name && Number.isFinite(row.requiredCompletedTasks) && row.requiredCompletedTasks >= 0)
+    .map((row) => ({
+      level: Math.round(row.level),
+      name: row.name,
+      requiredCompletedTasks: Math.round(row.requiredCompletedTasks),
+    }))
+    .sort((a, b) => a.requiredCompletedTasks - b.requiredCompletedTasks || a.level - b.level);
+
+  const dedup = [];
+  const seen = new Set();
+  rows.forEach((row) => {
+    if (seen.has(row.level)) return;
+    seen.add(row.level);
+    dedup.push(row);
+  });
+  return dedup;
+}
+
+async function loadAnimalLevels() {
+  try {
+    const response = await fetch("./animal-levels.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const payload = await response.json();
+    const nextDefs = sanitizeLevelDefinitions(payload);
+    if (!nextDefs.length) return;
+
+    levelDefinitions = nextDefs;
+    renderBoards();
+  } catch {
+    // fallback til innebygde nivådefinisjoner
+  }
+}
+
+function sanitizeLevelProgress(rawProgress, childrenSource = state.children) {
+  const source = rawProgress && typeof rawProgress === "object" ? rawProgress : {};
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const row = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
+      const completedTasksTotal = Number(row.completedTasksTotal);
+      return [childName, { completedTasksTotal: Number.isFinite(completedTasksTotal) ? Math.max(0, Math.round(completedTasksTotal)) : 0 }];
+    })
+  );
+}
+
+function resolveLevelInfo(completedTasksTotal) {
+  const defs = levelDefinitions.length ? levelDefinitions : DEFAULT_LEVEL_DEFINITIONS;
+  const total = Math.max(0, Math.round(Number(completedTasksTotal) || 0));
+
+  let current = defs[0];
+  let next = null;
+  defs.forEach((row, idx) => {
+    if (total >= row.requiredCompletedTasks) {
+      current = row;
+      next = defs[idx + 1] || null;
+    }
+  });
+
+  const progressPct = next
+    ? Math.max(0, Math.min(100, Math.round(((total - current.requiredCompletedTasks) / Math.max(1, next.requiredCompletedTasks - current.requiredCompletedTasks)) * 100)))
+    : 100;
+
+  return { current, next, total, progressPct };
+}
+
+function ensureChildLevelProgress(childName) {
+  if (!state.levelProgress[childName]) {
+    state.levelProgress[childName] = { completedTasksTotal: 0 };
+  }
+  return state.levelProgress[childName];
+}
+
 function sanitizeWildcardHistory(rawHistory, childrenSource = state.children) {
   const source = rawHistory && typeof rawHistory === "object" ? rawHistory : {};
 
@@ -310,6 +426,7 @@ function loadState() {
       wildcards: sanitizeWildcards(parsed.wildcards, sanitizeChildren(parsed.children)),
       wildcardHistory: sanitizeWildcardHistory(parsed.wildcardHistory, sanitizeChildren(parsed.children)),
       pointBank: sanitizePointBank(parsed.pointBank, sanitizeChildren(parsed.children)),
+      levelProgress: sanitizeLevelProgress(parsed.levelProgress, sanitizeChildren(parsed.children)),
       rewardCatalog: sanitizeRewardCatalog(parsed.rewardCatalog),
       rewardRedemptions: Array.isArray(parsed.rewardRedemptions) ? parsed.rewardRedemptions : [],
       meta: { updatedAt: Number(parsed?.meta?.updatedAt) || 0 },
@@ -374,16 +491,29 @@ function renderBoards() {
         <div class="badges">
           <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
+          <span class="badge badge-level"></span>
         </div>
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p>${doneCount} av ${total} fullført</p>
+      <p class="level-progress-note"></p>
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
       </div>
       <div class="task-grid"></div>
     `;
+
+    const levelProgress = ensureChildLevelProgress(name);
+    const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
+    const levelBadge = board.querySelector(".badge-level");
+    if (levelBadge) levelBadge.textContent = `Nivå ${levelInfo.current.level}: ${levelInfo.current.name}`;
+    const levelNote = board.querySelector(".level-progress-note");
+    if (levelNote) {
+      levelNote.textContent = levelInfo.next
+        ? `${levelInfo.total} fullførte oppgaver · ${Math.max(0, levelInfo.next.requiredCompletedTasks - levelInfo.total)} igjen til ${levelInfo.next.name}`
+        : `${levelInfo.total} fullførte oppgaver · Toppnivå nådd (${levelInfo.current.name})`;
+    }
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
@@ -525,6 +655,7 @@ function addChild() {
   state.children[childName] = { age: 0, routines: [] };
   sessions[childName] = createSession(childName);
   ensureChildPointAccount(childName);
+  ensureChildLevelProgress(childName);
   childNameInput.value = "";
   saveState();
   renderAll();
@@ -537,6 +668,7 @@ function removeChild(childName) {
   delete state.wildcards[childName];
   delete state.wildcardHistory[childName];
   delete state.pointBank[childName];
+  delete state.levelProgress[childName];
   state.history = state.history.filter((entry) => entry.childName !== childName);
   saveState();
   renderAll();
@@ -707,6 +839,10 @@ function finishMorning(childName, automatic = false) {
   const previousTotal = account.earnedTotal;
   account.earnedTotal += session.score;
   celebrateMilestonesIfNeeded(childName, previousTotal, account.earnedTotal);
+
+  const levelProgress = ensureChildLevelProgress(childName);
+  const taskCompletionCount = Object.values(session.completedTasks).filter(Boolean).length;
+  levelProgress.completedTasksTotal += taskCompletionCount;
 
   const taskEntries = Object.entries(session.completedTasks).map(([idx, details]) => {
     const taskName = Number.isInteger(Number(idx))
@@ -1119,6 +1255,7 @@ function createCloudAdapter() {
       wildcards: sanitizeWildcards(remote.wildcards, sanitizeChildren(remote.children)),
       wildcardHistory: sanitizeWildcardHistory(remote.wildcardHistory, sanitizeChildren(remote.children)),
       pointBank: sanitizePointBank(remote.pointBank, sanitizeChildren(remote.children)),
+      levelProgress: sanitizeLevelProgress(remote.levelProgress, sanitizeChildren(remote.children)),
       rewardCatalog: sanitizeRewardCatalog(remote.rewardCatalog),
       rewardRedemptions: Array.isArray(remote.rewardRedemptions) ? remote.rewardRedemptions : [],
       meta: { updatedAt: Number(remote?.meta?.updatedAt) || 0 },

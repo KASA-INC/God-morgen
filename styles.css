@@ -132,6 +132,19 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   gap: 0.2rem;
 }
 
+.badge-level {
+  font-size: 0.8rem;
+  color: var(--ink);
+  background: transparent;
+  line-height: 1.1;
+  padding-top: 0.15rem;
+}
+
+.level-progress-note {
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+}
+
 .score-star {
   font-size: 0.5em;
   color: var(--ink);

@@ -100,3 +100,20 @@ Filen må være en JSON-liste med objekter:
 3. Last siden på nytt – appen henter filen automatisk.
 
 Hvis filen mangler eller er ugyldig, bruker appen innebygde standard-wildcards som fallback.
+
+## Nivåsystem (dyreriket)
+
+Nivåsystemet er separat fra premiepoeng og baseres kun på antall fullførte oppgaver.
+
+- Nivåtabellen ligger i `animal-levels.json`.
+- Hver rad har feltene:
+  - `level`
+  - `name`
+  - `requiredCompletedTasks`
+- Appen laster filen ved oppstart og faller tilbake til innebygde nivåer hvis filen mangler/er ugyldig.
+
+Eksempel:
+
+```json
+{ "level": 7, "name": "Mus", "requiredCompletedTasks": 74 }
+```
