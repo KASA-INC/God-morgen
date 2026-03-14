@@ -34,6 +34,26 @@ const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
 
+const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa"];
+
+function hexToRgbString(hex) {
+  const clean = String(hex || "").replace("#", "").trim();
+  if (clean.length !== 6) return "253, 160, 117";
+  const r = Number.parseInt(clean.slice(0, 2), 16);
+  const g = Number.parseInt(clean.slice(2, 4), 16);
+  const b = Number.parseInt(clean.slice(4, 6), 16);
+  if (![r, g, b].every(Number.isFinite)) return "253, 160, 117";
+  return `${r}, ${g}, ${b}`;
+}
+
+function applyRandomAccentTheme() {
+  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#f082aa";
+  document.documentElement.style.setProperty("--accent", color);
+  document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute("content", color);
+}
+
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
 const sessions = createAllSessions();
@@ -79,6 +99,7 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
+applyRandomAccentTheme();
 renderAll();
 startTimerLoop();
 registerServiceWorker();
