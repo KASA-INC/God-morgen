@@ -34,7 +34,7 @@ const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
 
-const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa"];
+const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
 
 function hexToRgbString(hex) {
   const clean = String(hex || "").replace("#", "").trim();
@@ -47,7 +47,7 @@ function hexToRgbString(hex) {
 }
 
 function applyRandomAccentTheme() {
-  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#f082aa";
+  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#fda075";
   document.documentElement.style.setProperty("--accent", color);
   document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
   const themeMeta = document.querySelector('meta[name="theme-color"]');
