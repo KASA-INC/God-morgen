@@ -7,6 +7,8 @@ const DEFAULT_STATE = {
   activeSessions: {},
   wildcards: {},
   wildcardHistory: {},
+  dayStatusOverrides: {},
+  streaks: {},
   pointBank: {},
   levelProgress: {},
   rewardCatalog: [],
@@ -20,6 +22,10 @@ const DEFAULT_REWARD_CATALOG = [
   { id: "storpremie", title: "Større premie", cost: 500 },
 ];
 const POINT_MILESTONES = [100, 250, 500, 750, 1000];
+const DAY_BONUSES = {
+  sickBonus: 10,
+  weekendSickBonus: 20,
+};
 
 const DEFAULT_WILDCARD_TASKS = [
   { id: "kompliment", title: "Gi et ekte kompliment til en hjemme i dag" },
@@ -398,6 +404,38 @@ function sanitizePointBank(rawBank, childrenSource = state.children) {
   );
 }
 
+function sanitizeDayStatusOverrides(rawOverrides, childrenSource = state.children) {
+  const source = rawOverrides && typeof rawOverrides === "object" ? rawOverrides : {};
+  const validStatuses = new Set(["normal", "holiday", "sick"]);
+
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const childRows = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
+      const cleanRows = Object.fromEntries(
+        Object.entries(childRows).filter(([dateKey, status]) => /^\d{4}-\d{2}-\d{2}$/.test(dateKey) && validStatuses.has(status))
+      );
+      return [childName, cleanRows];
+    })
+  );
+}
+
+function sanitizeStreaks(rawStreaks, childrenSource = state.children) {
+  const source = rawStreaks && typeof rawStreaks === "object" ? rawStreaks : {};
+  return Object.fromEntries(
+    Object.keys(childrenSource).map((childName) => {
+      const row = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
+      const count = Number(row.count);
+      return [
+        childName,
+        {
+          count: Number.isFinite(count) ? Math.max(0, Math.round(count)) : 0,
+          lastCompletedDate: typeof row.lastCompletedDate === "string" ? row.lastCompletedDate : "",
+        },
+      ];
+    })
+  );
+}
+
 function sanitizeRewardCatalog(rawCatalog) {
   const source = Array.isArray(rawCatalog) ? rawCatalog : DEFAULT_REWARD_CATALOG;
   return source
@@ -425,6 +463,8 @@ function loadState() {
       activeSessions: sanitizeActiveSessions(parsed.activeSessions, sanitizeChildren(parsed.children)),
       wildcards: sanitizeWildcards(parsed.wildcards, sanitizeChildren(parsed.children)),
       wildcardHistory: sanitizeWildcardHistory(parsed.wildcardHistory, sanitizeChildren(parsed.children)),
+      dayStatusOverrides: sanitizeDayStatusOverrides(parsed.dayStatusOverrides, sanitizeChildren(parsed.children)),
+      streaks: sanitizeStreaks(parsed.streaks, sanitizeChildren(parsed.children)),
       pointBank: sanitizePointBank(parsed.pointBank, sanitizeChildren(parsed.children)),
       levelProgress: sanitizeLevelProgress(parsed.levelProgress, sanitizeChildren(parsed.children)),
       rewardCatalog: sanitizeRewardCatalog(parsed.rewardCatalog),
@@ -474,8 +514,13 @@ function renderBoards() {
     sessions[name] = session;
     const doneCount = countRoutineCompletions(session);
     const total = info.routines.length;
+    const todayKey = getLocalDateKey();
+    const manualStatus = getChildDayOverride(name, todayKey);
+    const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
+    const requiredCount = getRequiredRoutineCount(total, effectiveMode);
+    const streak = ensureChildStreak(name);
     const started = !!session.startedAt;
-    const progress = total ? Math.round((doneCount / total) * 100) : 0;
+    const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
     const wildcardEnabled = state.bonusTasksEnabled !== false;
     const wildcardState = wildcardEnabled ? getOrAssignDailyWildcard(name) : null;
     if (wildcardState?.didAssign) wildcardStateChanged = true;
@@ -492,11 +537,23 @@ function renderBoards() {
           <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
           <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
           <span class="badge badge-level"></span>
+          <span class="badge badge-streak">🔥 ${streak.count}</span>
         </div>
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
-      <p>${doneCount} av ${total} fullført</p>
+      <p>${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
+      <div class="day-status-row">
+        <small>Automatisk: ${getBaseDayType(todayKey) === "weekend" ? "Helg" : "Ukedag"}</small>
+        <label>Dagens status
+          <select class="day-status-select">
+            <option value="normal" ${manualStatus === "normal" ? "selected" : ""}>Vanlig dag</option>
+            <option value="holiday" ${manualStatus === "holiday" ? "selected" : ""}>Fridag</option>
+            <option value="sick" ${manualStatus === "sick" ? "selected" : ""}>Syk</option>
+          </select>
+        </label>
+      </div>
+      <p class="day-mode-note"></p>
       <p class="level-progress-note"></p>
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
@@ -515,11 +572,28 @@ function renderBoards() {
         : `${levelInfo.total} fullførte oppgaver · Toppnivå nådd (${levelInfo.current.name})`;
     }
 
+    const dayModeNote = board.querySelector(".day-mode-note");
+    if (dayModeNote) {
+      if (effectiveMode.endsWith("_holiday")) {
+        dayModeNote.textContent = "I dag er det fridag";
+      } else if (effectiveMode === "weekend_sick") {
+        dayModeNote.textContent = "Helg og sykedag – ekstra godt jobbet i dag";
+      } else if (effectiveMode.endsWith("_sick")) {
+        dayModeNote.textContent = "Vi tar det litt rolig i dag";
+      } else {
+        dayModeNote.textContent = "";
+      }
+    }
+
+    board.querySelector(".day-status-select")?.addEventListener("change", (event) => {
+      setChildDayStatusForToday(name, event.target.value);
+    });
+
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
     const taskGrid = board.querySelector(".task-grid");
 
-    if (wildcardEnabled && wildcardTask && wildcardTaskKey) {
+    if (wildcardEnabled && wildcardTask && wildcardTaskKey && !effectiveMode.endsWith("_holiday")) {
       const wildcardItem = document.createElement("div");
       wildcardItem.className = "task-item";
 
@@ -544,7 +618,7 @@ function renderBoards() {
 
       const taskBtn = document.createElement("button");
       taskBtn.className = `task-btn ${done ? "done" : ""}`;
-      taskBtn.disabled = !started;
+      taskBtn.disabled = !started || effectiveMode.endsWith("_holiday");
       taskBtn.innerHTML = `
         <div class="task-text">${escapeHtml(task)}</div>
         ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
@@ -667,6 +741,8 @@ function removeChild(childName) {
   delete sessions[childName];
   delete state.wildcards[childName];
   delete state.wildcardHistory[childName];
+  delete state.dayStatusOverrides[childName];
+  delete state.streaks[childName];
   delete state.pointBank[childName];
   delete state.levelProgress[childName];
   state.history = state.history.filter((entry) => entry.childName !== childName);
@@ -728,8 +804,11 @@ function toggleTask(childName, taskIndex) {
   }
 
   const total = state.children[childName].routines.length;
+  const todayKey = getLocalDateKey();
+  const effectiveMode = getEffectiveDayMode(todayKey, getChildDayOverride(childName, todayKey));
+  const requiredCount = getRequiredRoutineCount(total, effectiveMode);
   const doneCount = countRoutineCompletions(session);
-  if (total && doneCount === total) {
+  if (requiredCount > 0 && doneCount >= requiredCount) {
     finishMorning(childName, true);
     return;
   }
@@ -830,11 +909,15 @@ function finishMorning(childName, automatic = false) {
   const session = sessions[childName];
   const routines = state.children[childName].routines;
   const total = routines.length;
+  const todayKey = getLocalDateKey();
+  const effectiveMode = getEffectiveDayMode(todayKey, getChildDayOverride(childName, todayKey));
+  const requiredCount = getRequiredRoutineCount(total, effectiveMode);
   const doneCount = countRoutineCompletions(session);
-  if (!session.startedAt || doneCount !== total || total === 0) return;
+  if (!session.startedAt || requiredCount === 0 || doneCount < requiredCount) return;
 
   const finishedAt = Date.now();
   session.score += 20;
+  session.score += getDayModeBonus(effectiveMode);
   const account = ensureChildPointAccount(childName);
   const previousTotal = account.earnedTotal;
   account.earnedTotal += session.score;
@@ -843,6 +926,7 @@ function finishMorning(childName, automatic = false) {
   const levelProgress = ensureChildLevelProgress(childName);
   const taskCompletionCount = Object.values(session.completedTasks).filter(Boolean).length;
   levelProgress.completedTasksTotal += taskCompletionCount;
+  updateChildStreakOnCompletion(childName, todayKey);
 
   const taskEntries = Object.entries(session.completedTasks).map(([idx, details]) => {
     const taskName = Number.isInteger(Number(idx))
@@ -943,6 +1027,97 @@ function getLocalDateKey(ts = Date.now()) {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function dateKeyToDate(dateKey) {
+  const [y, m, d] = String(dateKey).split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+
+function getBaseDayType(dateKey) {
+  const day = dateKeyToDate(dateKey).getDay();
+  return day === 0 || day === 6 ? "weekend" : "weekday";
+}
+
+function getChildDayOverride(childName, dateKey) {
+  const status = state.dayStatusOverrides?.[childName]?.[dateKey];
+  return status === "holiday" || status === "sick" || status === "normal" ? status : "normal";
+}
+
+function getEffectiveDayMode(dateKey, manualStatus) {
+  const base = getBaseDayType(dateKey);
+  return `${base}_${manualStatus || "normal"}`;
+}
+
+function getRequiredRoutineCount(totalRoutines, effectiveMode) {
+  if (effectiveMode.endsWith("_holiday")) return 0;
+  if (effectiveMode.endsWith("_sick")) return Math.max(1, Math.ceil(totalRoutines * 0.5));
+  if (effectiveMode === "weekend_normal") return Math.max(1, Math.ceil(totalRoutines * 0.7));
+  return totalRoutines;
+}
+
+function getDayModeBonus(effectiveMode) {
+  if (effectiveMode === "weekend_sick") return DAY_BONUSES.weekendSickBonus;
+  if (effectiveMode.endsWith("_sick")) return DAY_BONUSES.sickBonus;
+  return 0;
+}
+
+function ensureChildStreak(childName) {
+  if (!state.streaks[childName]) state.streaks[childName] = { count: 0, lastCompletedDate: "" };
+  return state.streaks[childName];
+}
+
+function nextDateKey(dateKey) {
+  const date = dateKeyToDate(dateKey);
+  date.setDate(date.getDate() + 1);
+  return getLocalDateKey(date.getTime());
+}
+
+function dayIsProtectedForStreak(childName, dateKey) {
+  const manual = getChildDayOverride(childName, dateKey);
+  return manual === "holiday" || manual === "sick";
+}
+
+function canBridgeStreak(childName, fromDateKey, toDateKey) {
+  let cursor = nextDateKey(fromDateKey);
+  while (cursor < toDateKey) {
+    if (!dayIsProtectedForStreak(childName, cursor)) return false;
+    cursor = nextDateKey(cursor);
+  }
+  return true;
+}
+
+function updateChildStreakOnCompletion(childName, completionDateKey) {
+  const streak = ensureChildStreak(childName);
+  if (!streak.lastCompletedDate) {
+    streak.count = 1;
+    streak.lastCompletedDate = completionDateKey;
+    return;
+  }
+
+  const expectedNext = nextDateKey(streak.lastCompletedDate);
+  if (completionDateKey === streak.lastCompletedDate) return;
+
+  if (completionDateKey === expectedNext || canBridgeStreak(childName, streak.lastCompletedDate, completionDateKey)) {
+    streak.count += 1;
+  } else {
+    streak.count = 1;
+  }
+  streak.lastCompletedDate = completionDateKey;
+}
+
+function setChildDayStatusForToday(childName, status) {
+  const dateKey = getLocalDateKey();
+  if (!state.dayStatusOverrides[childName]) state.dayStatusOverrides[childName] = {};
+
+  if (status === "normal") {
+    delete state.dayStatusOverrides[childName][dateKey];
+  } else {
+    state.dayStatusOverrides[childName][dateKey] = status;
+  }
+
+  saveState();
+  renderBoards();
 }
 
 function getUsedWildcardIdsForDate(dateKey, excludeChildName) {
@@ -1254,6 +1429,8 @@ function createCloudAdapter() {
       activeSessions: sanitizeActiveSessions(remote.activeSessions, sanitizeChildren(remote.children)),
       wildcards: sanitizeWildcards(remote.wildcards, sanitizeChildren(remote.children)),
       wildcardHistory: sanitizeWildcardHistory(remote.wildcardHistory, sanitizeChildren(remote.children)),
+      dayStatusOverrides: sanitizeDayStatusOverrides(remote.dayStatusOverrides, sanitizeChildren(remote.children)),
+      streaks: sanitizeStreaks(remote.streaks, sanitizeChildren(remote.children)),
       pointBank: sanitizePointBank(remote.pointBank, sanitizeChildren(remote.children)),
       levelProgress: sanitizeLevelProgress(remote.levelProgress, sanitizeChildren(remote.children)),
       rewardCatalog: sanitizeRewardCatalog(remote.rewardCatalog),

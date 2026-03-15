@@ -140,6 +140,40 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   padding-top: 0.15rem;
 }
 
+.badge-streak {
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: transparent;
+  line-height: 1.1;
+}
+
+.day-status-row {
+  margin-top: 0.2rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.day-status-row label {
+  display: grid;
+  gap: 0.15rem;
+  max-width: 240px;
+}
+
+.day-status-row select {
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 5px;
+  font-family: "Platypi", "Segoe UI", serif;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.day-mode-note {
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+}
+
 .level-progress-note {
   margin-top: 0.15rem;
   font-size: 0.9rem;
