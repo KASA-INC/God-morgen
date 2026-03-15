@@ -23,3 +23,97 @@ En enkel iPad-vennlig webapp som gjør barnas morgenrutiner til et spill, med su
 - Du kan få tidsbonus opp til `maxBonus` (standard 5) for oppgaver gjort tidlig i økten.
 - Bonus trappes ned over tid, men går aldri under minstepoengene.
 - Fullført morgen gir +20 bonus.
+
+## Profil og synk (Firebase)
+
+Denne versjonen bruker ekte Firebase-integrasjon i frontend for:
+- Google-, Facebook- og Apple-innlogging via Firebase Auth.
+- Synk av app-state per bruker via Firestore (`profiles/{uid}`).
+- Realtime oppdatering mellom enheter med `onSnapshot`.
+- Realtime synk inkluderer også aktive økter (pågående morgen / avhukede oppgaver), slik at oppgavefremdrift vises på alle innloggede enheter.
+- Førstegangsoppsett for å legge til barn og oppgaver per barn.
+
+### Oppsett
+
+1. Lag et Firebase-prosjekt.
+2. Aktiver **Authentication** providerne: Google, Facebook, Apple.
+3. Opprett Firestore database.
+4. Fyll inn `firebase-config.js` med verdiene fra Firebase Console.
+5. Sett autoriserte domener i Firebase Auth (f.eks. localhost + produksjonsdomene).
+
+### Feilsøking av Google-innlogging
+
+Hvis Google-innlogging feiler i nettleseren:
+- Bekreft at `firebase-config.js` er fylt ut med riktig `apiKey`, `authDomain`, `projectId` og `appId`.
+- `authDomain` i `firebase-config.js` må være rent domenenavn (f.eks. `your-project.firebaseapp.com`) uten `https://` og uten `/` på slutten.
+- Sjekk at domenet du kjører fra (f.eks. `localhost`, `127.0.0.1` eller produksjonsdomene) ligger i **Authentication → Settings → Authorized domains** i Firebase Console.
+- Legg inn både `example.com` og `www.example.com` hvis begge kan brukes, siden Firebase behandler disse som ulike domener.
+- Hvis feilen fortsatt vises på mobil: tøm app/cache/service worker på enheten og last siden på nytt, slik at nyeste `firebase-config.js` blir brukt.
+- Sjekk at Google-provider er aktivert i **Authentication → Sign-in method**.
+- På iPhone/Safari brukes redirect-flyt for Google-innlogging som standard for bedre kompatibilitet.
+
+### Eksempel på Firestore-regel (minimum)
+
+```txt
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /profiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
+```
+
+### iCloud / Apple
+
+iCloud-innlogging i web tilsvarer «Sign in with Apple». I Firebase bruker vi provider `apple.com`.
+
+
+## Ny innloggingsflyt
+
+- Før innlogging vises en ren login-side med kun logo + innloggingsalternativer.
+- E-post/passord har egne knapper for både «Logg inn» og «Opprett konto».
+- Etter innlogging vises hovedsiden.
+- Hovedsiden starter tom hvis brukeren ikke har lagt til barn ennå.
+- Barn og oppgaver kan legges til/fjernes direkte fra hovedsiden (uten profil-dialog).
+
+## Wildcard-oppgaver fra egen fil
+
+Wildcard-oppgaver leses nå fra `wildcard-tasks.json` i prosjektroten.
+
+### Format
+Filen må være en JSON-liste med objekter:
+
+```json
+[
+  { "id": "kort-id", "title": "Tekst som vises i appen" }
+]
+```
+
+- `id`: unik identifikator (brukes i historikk/rotasjon).
+- `title`: oppgaveteksten barnet ser.
+
+### Workflow (anbefalt)
+1. Rediger `wildcard-tasks.json` for å legge til/fjerne oppgaver.
+2. Deploy appen som vanlig sammen med `index.html`, `app.js` osv.
+3. Last siden på nytt – appen henter filen automatisk.
+
+Hvis filen mangler eller er ugyldig, bruker appen innebygde standard-wildcards som fallback.
+
+## Nivåsystem (dyreriket)
+
+Nivåsystemet er separat fra premiepoeng og baseres kun på antall fullførte oppgaver.
+
+- Nivåtabellen ligger i `animal-levels.json`.
+- Hver rad har feltene:
+  - `level`
+  - `name`
+  - `requiredCompletedTasks`
+- Appen laster filen ved oppstart og faller tilbake til innebygde nivåer hvis filen mangler/er ugyldig.
+
+Eksempel:
+
+```json
+{ "level": 7, "name": "Mus", "requiredCompletedTasks": 74 }
+```
