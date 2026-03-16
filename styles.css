@@ -51,7 +51,7 @@ main > .panel {
 }
 
 .site-logo {
-  width: min(800px, 100%);
+  width: min(2400px, 100%);
   height: auto;
   display: block;
   margin: 0 auto;
@@ -591,6 +591,13 @@ input[type="password"], input[type="number"] {
 .settings-btn:focus-visible {
   background: transparent;
   color: var(--text);
+}
+
+.settings-icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: block;
+  object-fit: contain;
 }
 
 #profileDialog {

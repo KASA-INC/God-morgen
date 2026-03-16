@@ -13,6 +13,7 @@
     <link rel="preload" href="icons/streak.svg" as="image" type="image/svg+xml" />
     <link rel="preload" href="icons/star.svg" as="image" type="image/svg+xml" />
     <link rel="preload" href="icons/level-badge.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="icons/settings.svg" as="image" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -22,10 +23,13 @@
     <div class="app">
       <header class="topbar panel">
         <div>
-          <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="800" height="289" />
-
+          <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="2400" height="867" />
         </div>
-        <button id="openParentMode" class="secondary">Foreldremodus</button>
+        <div class="topbar-actions">
+          <button id="openSettings" class="settings-btn" type="button" aria-label="Åpne innstillinger">
+            <img src="icons/settings.svg" alt="" aria-hidden="true" class="settings-icon" />
+          </button>
+        </div>
       </header>
 
       <main>
@@ -47,27 +51,36 @@
       </main>
     </div>
 
-    <dialog id="parentDialog">
-      <form method="dialog" id="pinForm" class="pin-form">
-        <h3>Foreldremodus</h3>
-        <label>PIN <input id="pinInput" type="password" inputmode="numeric" minlength="4" maxlength="8" required /></label>
-        <div class="row">
-          <button value="cancel" class="secondary" type="button" id="cancelPin">Avbryt</button>
-          <button value="default" class="primary" type="submit">Åpne</button>
-        </div>
-        <p class="note">Standard PIN er 1234.</p>
-      </form>
-
-      <section id="parentSettings" hidden>
+    <dialog id="parentDialog" class="settings-dialog">
+      <section id="parentSettings" class="parent-settings-panel">
+        <button id="closeSettingsX" class="settings-close-x" type="button" aria-label="Lukk innstillinger">✕</button>
         <h3>Innstillinger</h3>
-        <label>Ny PIN <input id="newPin" type="password" inputmode="numeric" minlength="4" maxlength="8" /></label>
         <label class="switch-row"><input id="soundToggle" type="checkbox" /> Lyd på ved fullførte oppgaver</label>
-        <label>Poeng per oppgave <input id="basePoints" type="number" min="1" max="50" /></label>
-        <label>Maks tidsbonus per oppgave <input id="bonusPoints" type="number" min="0" max="20" /></label>
-        <div class="row">
-          <button id="saveSettings" class="success" type="button">Lagre</button>
-          <button id="closeParent" class="secondary" type="button">Lukk</button>
+        <label class="switch-row"><input id="bonusTasksToggle" type="checkbox" /> Bonusoppgaver på</label>
+
+        <div class="score-stepper">
+          <button id="baseMinus" class="step-btn" type="button" aria-label="Senk poeng per oppgave">−</button>
+          <label>Poeng per oppgave <input id="basePoints" type="number" min="1" max="50" hidden /><span id="basePointsDisplay" class="score-value-display"></span></label>
+          <button id="basePlus" class="step-btn" type="button" aria-label="Øk poeng per oppgave">+</button>
         </div>
+
+        <div class="score-stepper">
+          <button id="bonusMinus" class="step-btn" type="button" aria-label="Senk maks tidsbonus">−</button>
+          <label>Maks tidsbonus per oppgave <input id="bonusPoints" type="number" min="0" max="20" hidden /><span id="bonusPointsDisplay" class="score-value-display"></span></label>
+          <button id="bonusPlus" class="step-btn" type="button" aria-label="Øk maks tidsbonus">+</button>
+        </div>
+
+        <section class="reward-settings">
+          <h3>Premier</h3>
+          <div id="rewardSettingsList" class="reward-settings-list"></div>
+          <div class="reward-create-row">
+            <input id="rewardTitleInput" type="text" placeholder="Premietittel" />
+            <input id="rewardCostInput" type="number" min="1" max="100000" placeholder="Poeng" />
+            <button id="addRewardBtn" class="success" type="button">Legg til premie</button>
+          </div>
+        </section>
+
+        <button id="settingsLogout" class="settings-logout" type="button">Logg ut</button>
       </section>
     </dialog>
 

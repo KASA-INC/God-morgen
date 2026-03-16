@@ -117,7 +117,7 @@ const addChildBtn = document.getElementById("addChildBtn");
 const childNameInput = document.getElementById("newChildName");
 const emptyState = document.getElementById("emptyState");
 
-const openParentModeBtn = document.getElementById("openParentMode");
+const openSettingsBtn = document.getElementById("openSettings");
 
 const parentDialog = document.getElementById("parentDialog");
 const parentSettings = document.getElementById("parentSettings");
@@ -1249,7 +1249,7 @@ function playCompletionJingle() {
   });
 }
 
-openParentModeBtn.addEventListener("click", () => {
+openSettingsBtn?.addEventListener("click", () => {
   soundToggle.checked = !!state.soundEnabled;
   if (bonusTasksToggle) bonusTasksToggle.checked = state.bonusTasksEnabled !== false;
   basePoints.value = state.scoring.basePoints;
