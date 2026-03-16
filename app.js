@@ -512,9 +512,11 @@ function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
   if (!names.length) {
-    emptyState.hidden = false;
+    document.body.classList.add("setup-only");
+    emptyState.hidden = true;
     return;
   }
+  document.body.classList.remove("setup-only");
   emptyState.hidden = true;
 
   let wildcardStateChanged = false;
