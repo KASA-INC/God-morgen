@@ -65,12 +65,14 @@ body.setup-only .boards-panel {
 }
 
 .topbar > div {
-  flex: 0 1 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
   text-align: center;
 }
 
 .site-logo {
-  width: min(2400px, 100%);
+  width: min(1400px, 100%);
   max-width: 100%;
   height: auto;
   display: block;
@@ -180,7 +182,11 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .badge-streak {
   justify-self: start;
-  font-size: 1.6rem;
+}
+
+.badge-streak,
+.badge-score {
+  font-size: 1.5rem;
 }
 
 .flame-icon {
@@ -192,7 +198,6 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .badge-score {
   justify-self: end;
-  font-size: 1.6rem;
 }
 
 .badge-level {
@@ -222,6 +227,12 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   width: 1em;
   height: 1em;
   object-fit: contain;
+}
+
+.streak-value,
+.score-value {
+  font-size: 1em;
+  line-height: 1;
 }
 
 .day-status-row {
@@ -770,7 +781,7 @@ input[type="text"] {
   }
 
   .site-logo {
-    width: 100%;
+    width: min(1100px, 100%);
     max-width: 100%;
     padding-block: 0.3rem;
   }
@@ -804,8 +815,9 @@ input[type="text"] {
     font-size: 0.85rem;
   }
 
+  .badge-streak,
   .badge-score {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
   }
 
   .day-status-control,
@@ -886,7 +898,7 @@ input[type="text"] {
   }
   .badge-streak,
   .badge-score {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
   }
   .badge-level {
     width: 3rem;
