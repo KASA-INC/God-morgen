@@ -59,7 +59,8 @@ body.setup-only .boards-panel {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  margin-bottom: 2.5rem;
+  margin-top: 0.9rem;
+  margin-bottom: 3.4rem;
   overflow: visible;
 }
 
@@ -73,6 +74,7 @@ body.setup-only .boards-panel {
   height: auto;
   display: block;
   margin: 0 auto;
+  padding-block: 0.45rem;
 }
 h1, h2, h3, h4, h5 {
   margin: 0;
@@ -745,11 +747,13 @@ input[type="text"] {
   }
 
   .topbar {
-    margin-bottom: 1.8rem;
+    margin-top: 0.45rem;
+    margin-bottom: 2.4rem;
   }
 
   .site-logo {
     width: min(2500px, 180%);
+    padding-block: 0.3rem;
   }
 
   .topbar-actions {

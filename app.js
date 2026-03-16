@@ -940,6 +940,13 @@ function abortMorning(childName) {
     streak.lastCompletedDate = "";
   }
 
+  if (session.score > 0) {
+    const account = ensureChildPointAccount(childName);
+    const previousTotal = account.earnedTotal;
+    account.earnedTotal += session.score;
+    celebrateMilestonesIfNeeded(childName, previousTotal, account.earnedTotal);
+  }
+
   sessions[childName] = createSession(childName);
   saveState();
   renderAll();
