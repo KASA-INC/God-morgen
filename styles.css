@@ -131,7 +131,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 1.45rem;
+  font-size: 1.1rem;
   margin-top: 0.2rem;
 }
 
@@ -159,7 +159,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .badge-streak {
   justify-self: start;
-  font-size: 2rem;
+  font-size: 1.35rem;
 }
 
 .flame-icon {
@@ -287,7 +287,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 .actions .secondary {
   width: 100%;
   max-width: 265px;
-  font-size: 2rem;
+  font-size: 1.35rem;
   line-height: 1;
   padding: 0.8rem 1.15rem;
   border-radius: 12px;
@@ -348,7 +348,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  font-size: 2rem;
+  font-size: 1.35rem;
 }
 
 .task-grid {
@@ -731,7 +731,7 @@ input[type="text"] {
     font-size: 3rem;
   }
   .child-level-name {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
   .badge-streak,
   .badge-score {
@@ -752,13 +752,13 @@ input[type="text"] {
   }
   .actions .primary,
   .actions .secondary {
-    font-size: 1.55rem;
-    max-width: 200px;
-    padding: 0.62rem 0.85rem;
+    font-size: 1.15rem;
+    max-width: 185px;
+    padding: 0.56rem 0.75rem;
   }
   .progress-count {
-    font-size: 1.35rem;
-    letter-spacing: 0.17em;
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
   }
 }
 
