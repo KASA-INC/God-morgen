@@ -11,7 +11,7 @@
 
 
 * { box-sizing: border-box; }
-html { font-size: 20px; }
+html { font-size: 16px; }
 body {
   margin: 0;
   font-family: "Platypi", "Segoe UI", serif;
@@ -78,11 +78,11 @@ h1, h2, h3, h4, h5 {
   font-weight: 200;
   color: var(--ink);
 }
-h1 { font-size: 1.55rem; margin: 0 0 0.65rem; }
-h2 { font-size: 1.35rem; margin: 0 0 0.6rem; }
-h3 { font-size: 1.15rem; }
-h4, h5 { font-size: 1.1rem; }
-p { margin: 0.45rem 0 0; font-size: 1.1rem; color: var(--muted); font-family: "Platypi", "Segoe UI", serif; }
+h1 { font-size: 1.35rem; margin: 0 0 0.65rem; }
+h2 { font-size: 1.15rem; margin: 0 0 0.6rem; }
+h3 { font-size: 0.95rem; }
+h4, h5 { font-size: 0.9rem; }
+p { margin: 0.45rem 0 0; font-size: 0.9rem; color: var(--muted); font-family: "Platypi", "Segoe UI", serif; }
 
 
 ::placeholder {
@@ -110,7 +110,7 @@ button {
   font-family: "Platypi", "Segoe UI", serif;
   font-weight: 200;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button:active,
@@ -138,7 +138,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .child-board h3 {
-  font-size: 4rem;
+  font-size: 3.8rem;
   text-align: center;
   line-height: 0.9;
   margin-top: 0.2rem;
@@ -148,7 +148,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   margin-top: 0.2rem;
 }
 
@@ -176,7 +176,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .badge-streak {
   justify-self: start;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
 }
 
 .flame-icon {
@@ -188,12 +188,12 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .badge-score {
   justify-self: end;
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
 
 .badge-level {
   justify-self: center;
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   text-align: center;
   color: var(--accent);
   width: 4.2rem;
@@ -209,7 +209,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .badge-clock {
-  font-size: 3.3rem;
+  font-size: 3.1rem;
   font-variant-numeric: tabular-nums;
   justify-self: center;
 }
@@ -272,7 +272,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   width: min(320px, 92%);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 
 .day-status-labels span {
@@ -281,7 +281,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .day-mode-note {
   margin-top: 0.55rem;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   text-align: center;
   background: var(--ink);
   color: var(--accent);
@@ -304,7 +304,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 .actions .secondary {
   width: 100%;
   max-width: 265px;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   line-height: 1;
   padding: 0.8rem 1.15rem;
   border-radius: 12px;
@@ -324,7 +324,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .actions .badge-clock {
-  font-size: 4rem;
+  font-size: 3.8rem;
   letter-spacing: 0.03em;
 }
 
@@ -365,7 +365,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
 }
 
 .task-grid {
@@ -379,7 +379,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .task-btn {
   font-family: "Platypi", "Segoe UI", serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-align: center;
   padding: 15px;
   background: transparent;
@@ -422,7 +422,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 .task-btn small {
   display: block;
   margin-top: 0.3rem;
-  font-size: 0.88rem;
+  font-size: 0.68rem;
   font-weight: 200;
 }
 
@@ -439,7 +439,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   gap: 0.7rem;
 }
 
-.points-header h4 { font-size: 1.15rem; }
+.points-header h4 { font-size: 0.95rem; }
 
 .reward-menu {
   display: grid;
@@ -479,13 +479,13 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 .reward-ring span {
   grid-area: 1 / 1;
   z-index: 1;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   color: var(--ink);
 }
 
 .reward-choice h5 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 200;
   color: var(--ink);
   line-height: 1.05;
@@ -504,18 +504,18 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .reward-history li {
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 
 .reward-history-cost {
-  font-size: 0.95rem;
+  font-size: 0.75rem;
 }
 
 .reward-claim-btn {
   width: auto;
   min-width: 0;
   padding: 0.375rem 0.5rem;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   background: var(--ink);
   color: var(--accent);
   border: none;
@@ -537,7 +537,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 .stat-card {
   padding: 0.5rem 0.1rem;
-  font-size: 1.02rem;
+  font-size: 0.82rem;
 }
 
 dialog {
@@ -551,7 +551,7 @@ dialog {
 
 dialog::backdrop { background: rgba(var(--ink-rgb), 0.35); }
 .pin-form, #parentSettings { display: grid; gap: 0.7rem; }
-label { display: grid; gap: 0.3rem; font-family: "Platypi", "Segoe UI", serif; font-weight: 200; font-size: 1.02rem; }
+label { display: grid; gap: 0.3rem; font-family: "Platypi", "Segoe UI", serif; font-weight: 200; font-size: 0.82rem; }
 input[type="password"], input[type="number"] {
   border: 3px solid var(--ink);
   background: var(--bg);
@@ -559,7 +559,7 @@ input[type="password"], input[type="number"] {
   border-radius: 5px;
   width: 100%;
   padding: 0.55rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 .row { display: flex; justify-content: flex-end; gap: 0.5rem; }
 .switch-row { grid-template-columns: auto 1fr; align-items: center; }
@@ -581,7 +581,7 @@ input[type="password"], input[type="number"] {
 
 .stat-card-extended h5 {
   margin: 0.8rem 0 0.5rem;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   color: var(--ink);
 }
 
@@ -595,7 +595,7 @@ input[type="password"], input[type="number"] {
   grid-template-columns: 1fr 1.4fr auto;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
 }
 
 .graph-label {
@@ -635,7 +635,7 @@ input[type="password"], input[type="number"] {
   border: none;
   background: transparent;
   color: var(--text);
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   line-height: 1;
   width: auto;
   padding: 0;
@@ -677,17 +677,17 @@ input[type="text"] {
   border-radius: 5px;
   width: 100%;
   padding: 0.55rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-family: "Platypi", "Segoe UI", serif;
 }
 
 @media (max-width: 900px) {
-  html { font-size: 18px; }
+  html { font-size: 14px; }
   .child-boards { grid-template-columns: 1fr; }
   .task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .child-board h3 { font-size: 3.4rem; }
-  .badge-clock { font-size: 3rem; }
-  .progress-count { font-size: 1.28rem; }
+  .child-board h3 { font-size: 3.2rem; }
+  .badge-clock { font-size: 2.8rem; }
+  .progress-count { font-size: 1.08rem; }
   button { width: 100%; }
   .row button { width: auto; }
   .reward-menu-rings { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
@@ -762,7 +762,7 @@ input[type="text"] {
   }
 
   .child-board h3 {
-    font-size: 2.45rem;
+    font-size: 2.25rem;
     line-height: 0.95;
   }
 
@@ -777,11 +777,11 @@ input[type="text"] {
   }
 
   .badge-level-value {
-    font-size: 1.05rem;
+    font-size: 0.85rem;
   }
 
   .badge-score {
-    font-size: 1.45rem;
+    font-size: 1.25rem;
   }
 
   .day-status-control,
@@ -795,12 +795,12 @@ input[type="text"] {
   }
 
   .actions .badge-clock {
-    font-size: 2.35rem;
+    font-size: 2.15rem;
   }
 
   .actions .primary,
   .actions .secondary {
-    font-size: 1.02rem;
+    font-size: 0.82rem;
     max-width: 145px;
     padding: 0.52rem 0.5rem;
     border-radius: 10px;
@@ -812,7 +812,7 @@ input[type="text"] {
 
   .progress-count {
     margin-top: 0.82rem;
-    font-size: 0.96rem;
+    font-size: 0.76rem;
     letter-spacing: 0.12em;
   }
 
@@ -824,13 +824,13 @@ input[type="text"] {
   .task-btn {
     min-height: 95px;
     padding: 0.55rem;
-    font-size: 1.02rem;
+    font-size: 0.82rem;
   }
 
   .remove-task-btn {
     top: 4px;
     right: 6px;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 }
 
@@ -848,29 +848,29 @@ input[type="text"] {
   .add-child-inline {
     width: 2.7rem;
     min-height: 2.7rem;
-    font-size: 1.35rem;
+    font-size: 1.15rem;
   }
   .child-create-row input[type="text"] {
     min-height: 2.7rem;
   }
   .child-board h3 {
-    font-size: 2.15rem;
+    font-size: 1.95rem;
   }
   .child-level-name {
-    font-size: 0.86rem;
+    font-size: 0.66rem;
     letter-spacing: 0.12em;
   }
   .badge-streak,
   .badge-score {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
   }
   .badge-level {
     width: 3rem;
     height: 3rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
   .badge-clock {
-    font-size: 2.05rem;
+    font-size: 1.85rem;
   }
   .actions {
     grid-template-columns: 1fr auto 1fr;
@@ -879,12 +879,12 @@ input[type="text"] {
   }
   .actions .primary,
   .actions .secondary {
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     max-width: 122px;
     padding: 0.48rem 0.35rem;
   }
   .progress-count {
-    font-size: 0.84rem;
+    font-size: 0.64rem;
     letter-spacing: 0.08em;
   }
 }
@@ -896,7 +896,7 @@ input[type="text"] {
   padding: 0.75rem 1rem;
   font-family: "Platypi", "Segoe UI", serif;
   font-weight: 200;
-  font-size: 1rem;
+  font-size: 0.8rem;
   background: transparent;
   color: var(--ink);
 }
@@ -930,7 +930,7 @@ input[type="text"] {
   background: var(--ink);
   color: var(--accent);
   padding: 0;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   line-height: 1;
   display: grid;
   place-items: center;
@@ -955,7 +955,7 @@ input[type="text"] {
   border: none;
   background: transparent;
   color: var(--ink);
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   line-height: 1;
   padding: 0;
 }
@@ -966,7 +966,7 @@ input[type="text"] {
   background: transparent;
   color: var(--ink);
   padding: 0.1rem 0.25rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
   width: auto;
 }
 
@@ -1013,7 +1013,7 @@ input[type="text"] {
 
 .reward-settings h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
   color: var(--accent);
 }
 
@@ -1035,7 +1035,7 @@ input[type="text"] {
   color: var(--accent);
   width: auto;
   padding: 0.15rem 0.35rem;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .reward-create-row {
@@ -1057,7 +1057,7 @@ input[type="text"] {
   color: var(--accent);
   width: auto;
   padding: 0.2rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 
@@ -1079,7 +1079,7 @@ input[type="text"] {
 .settings-dialog input[type="checkbox"]:checked::before {
   content: "✓";
   color: var(--accent);
-  font-size: 0.78rem;
+  font-size: 0.6rem;
   line-height: 1;
 }
 
@@ -1096,14 +1096,14 @@ input[type="text"] {
   color: var(--accent);
   width: auto;
   padding: 0.1rem 0.4rem;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   line-height: 1;
 }
 
 .score-value-display {
   text-align: center;
   color: var(--accent);
-  font-size: 1.05rem;
+  font-size: 0.85rem;
 }
 
 .settings-logout {
