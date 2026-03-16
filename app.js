@@ -528,6 +528,7 @@ function renderBoards() {
     const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
     const requiredCount = getRequiredRoutineCount(total, effectiveMode);
     const streak = ensureChildStreak(name);
+    const account = ensureChildPointAccount(name);
     const started = !!session.startedAt;
     const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
     const wildcardEnabled = state.bonusTasksEnabled !== false;
@@ -541,29 +542,30 @@ function renderBoards() {
     board.className = "child-board";
     board.innerHTML = `
       <div class="child-head">
-        <h3>${escapeHtml(name)}</h3>
-        <div class="badges">
-          <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
-          <span class="badge badge-score"><span class="score-star">★</span> <span class="score-value">${session.score}</span></span>
-          <span class="badge badge-level"></span>
-          <span class="badge badge-streak">🔥 ${streak.count}</span>
-        </div>
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
-      <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
-      <p>${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
+      <h3>${escapeHtml(name)}</h3>
+      <p class="child-level-name"></p>
+      <div class="board-top-stats">
+        <span class="badge badge-streak">🔥 ${streak.count}</span>
+        <span class="badge badge-level"></span>
+        <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <span class="score-star">★</span></span>
+      </div>
       <div class="day-status-row">
-        <span>Dagens status</span>
+        <span class="sr-only">Dagens status</span>
         <div class="day-status-toggles">
           <label><input type="checkbox" class="day-status-toggle" data-status="holiday" ${manualStatus.holiday ? "checked" : ""}> Fridag</label>
           <label><input type="checkbox" class="day-status-toggle" data-status="sick" ${manualStatus.sick ? "checked" : ""}> Syk</label>
         </div>
       </div>
       <p class="day-mode-note"></p>
-      <p class="level-progress-note"></p>
       <div class="actions">
-        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk ${escapeHtml(name)}</button>
+        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk</button>
+        <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
+        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Avslutt dag</button>
       </div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
+      <p class="progress-count">${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
       <div class="task-grid"></div>
     `;
 
@@ -571,18 +573,14 @@ function renderBoards() {
     const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
     const levelBadge = board.querySelector(".badge-level");
     if (levelBadge) levelBadge.textContent = `Nivå ${levelInfo.current.level}: ${levelInfo.current.name}`;
-    const levelNote = board.querySelector(".level-progress-note");
-    if (levelNote) {
-      levelNote.textContent = levelInfo.next
-        ? `${levelInfo.total} fullførte oppgaver · ${Math.max(0, levelInfo.next.requiredCompletedTasks - levelInfo.total)} igjen til ${levelInfo.next.name}`
-        : `${levelInfo.total} fullførte oppgaver · Toppnivå nådd (${levelInfo.current.name})`;
-    }
+    const levelName = board.querySelector(".child-level-name");
+    if (levelName) levelName.textContent = levelInfo.current.name;
 
     const dayModeNote = board.querySelector(".day-mode-note");
     if (dayModeNote) {
       if (effectiveMode.includes("_holiday")) {
         dayModeNote.textContent = "I dag er det fridag";
-      } else if (effectiveMode === "weekend_sick") {
+      } else if (effectiveMode.includes("weekend") && effectiveMode.includes("_sick")) {
         dayModeNote.textContent = "Helg og sykedag – ekstra godt jobbet i dag";
       } else if (effectiveMode.includes("_sick")) {
         dayModeNote.textContent = "Vi tar det litt rolig i dag";
@@ -598,6 +596,7 @@ function renderBoards() {
     });
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
+    board.querySelector(".finish-btn")?.addEventListener("click", () => finishMorning(name, false));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
     const taskGrid = board.querySelector(".task-grid");
 
@@ -648,7 +647,7 @@ function renderBoards() {
     const addTaskBtn = document.createElement("button");
     addTaskBtn.className = "task-btn add-task-btn";
     addTaskBtn.type = "button";
-    addTaskBtn.innerHTML = '<div class="task-text">Legg til oppgave</div>';
+    addTaskBtn.innerHTML = '<div class="task-text">+<br>Legg til oppgave</div>';
     addTaskBtn.addEventListener("click", () => addTask(name));
     taskGrid.appendChild(addTaskBtn);
 
@@ -727,8 +726,15 @@ function renderPointsOverview() {
   });
 }
 
+function getPendingChildName() {
+  const fromInput = childNameInput?.value?.trim();
+  if (fromInput) return fromInput;
+  const fromPrompt = prompt("Navn på barn:");
+  return fromPrompt ? fromPrompt.trim() : "";
+}
+
 function addChild() {
-  const childName = childNameInput.value.trim();
+  const childName = getPendingChildName();
   if (!childName) return;
   if (state.children[childName]) {
     alert("Barn med dette navnet finnes allerede.");
@@ -738,7 +744,7 @@ function addChild() {
   sessions[childName] = createSession(childName);
   ensureChildPointAccount(childName);
   ensureChildLevelProgress(childName);
-  childNameInput.value = "";
+  if (childNameInput) childNameInput.value = "";
   saveState();
   renderAll();
 }
