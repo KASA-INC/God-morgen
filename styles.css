@@ -21,7 +21,7 @@ body {
 }
 
 .app { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.1rem 2rem; }
-main { display: grid; gap: 1.6rem; justify-items: center; }
+main { display: grid; gap: 2rem; justify-items: center; }
 
 main > .panel {
   width: 100%;
@@ -29,7 +29,6 @@ main > .panel {
   margin-inline: auto;
 }
 
-body.setup-only .topbar,
 body.setup-only .points-panel,
 body.setup-only .stats-panel,
 body.setup-only #emptyState,
@@ -60,7 +59,7 @@ body.setup-only .boards-panel {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.25rem;
 }
 
 .topbar > div {
@@ -745,7 +744,7 @@ input[type="text"] {
   }
 
   .topbar {
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.9rem;
   }
 
   .site-logo {
@@ -843,7 +842,7 @@ input[type="text"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .child-create-row {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr auto;
     gap: 0.4rem;
   }
   .add-child-inline {
@@ -906,13 +905,15 @@ input[type="text"] {
   display: grid;
   gap: 0.8rem;
   justify-items: center;
+  margin-top: 0.4rem;
+  margin-bottom: 1.25rem;
 }
 
 .child-create-row {
   max-width: 520px;
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto;
   align-items: stretch;
   gap: 0.5rem;
 }
