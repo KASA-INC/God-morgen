@@ -406,23 +406,24 @@ function sanitizePointBank(rawBank, childrenSource = state.children) {
 
 function sanitizeDayStatusOverrides(rawOverrides, childrenSource = state.children) {
   const source = rawOverrides && typeof rawOverrides === "object" ? rawOverrides : {};
-  const validStatuses = new Set(["normal", "holiday", "sick"]);
 
   return Object.fromEntries(
     Object.keys(childrenSource).map((childName) => {
       const childRows = source[childName] && typeof source[childName] === "object" ? source[childName] : {};
-      const cleanRows = Object.fromEntries(Object.entries(childRows)
-        .filter(([dateKey]) => /^\d{4}-\d{2}-\d{2}$/.test(dateKey))
-        .map(([dateKey, status]) => {
-          if (status && typeof status === "object") {
-            return [dateKey, { holiday: !!status.holiday, sick: !!status.sick }];
-          }
-          if (validStatuses.has(status) && status !== "normal") {
-            return [dateKey, { holiday: status === "holiday", sick: status === "sick" }];
-          }
-          return [dateKey, { holiday: false, sick: false }];
-        })
-        .filter(([, status]) => status.holiday || status.sick));
+      const cleanRows = Object.fromEntries(
+        Object.entries(childRows)
+          .filter(([dateKey]) => /^\d{4}-\d{2}-\d{2}$/.test(dateKey))
+          .map(([dateKey, status]) => {
+            if (status && typeof status === "object") {
+              if (status.sick) return [dateKey, "sick"];
+              if (status.holiday) return [dateKey, "holiday"];
+              return [dateKey, "normal"];
+            }
+            if (status === "holiday" || status === "sick") return [dateKey, status];
+            return [dateKey, "normal"];
+          })
+          .filter(([, status]) => status !== "normal")
+      );
       return [childName, cleanRows];
     })
   );
@@ -547,22 +548,25 @@ function renderBoards() {
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
       <div class="board-top-stats">
-        <span class="badge badge-streak">🔥 ${streak.count}</span>
+        <span class="badge badge-streak"><span class="flame-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M12 2c1.9 3.1 2.8 5 2.8 7.1 0 1.4-.4 2.6-1.3 3.7-.7.9-1.9 1.8-3.3 2.7 3.1.3 5.8 2.8 5.8 6.3 0 3.8-3 6.2-7 6.2s-7-2.4-7-6.2c0-2.7 1.4-4.8 3.9-6.1 1.4-.7 2.3-1.6 2.9-2.7.8-1.4 1-2.9.6-4.8 1.8 1 3.1 2.3 3.8 3.9.6-.9.8-1.8.8-2.9C14.2 6.9 13.4 4.9 12 2z"/></svg>
+          </span><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"></span>
         <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <span class="score-star">★</span></span>
       </div>
       <div class="day-status-row">
-        <span class="sr-only">Dagens status</span>
-        <div class="day-status-toggles">
-          <label><input type="checkbox" class="day-status-toggle" data-status="holiday" ${manualStatus.holiday ? "checked" : ""}> Fridag</label>
-          <label><input type="checkbox" class="day-status-toggle" data-status="sick" ${manualStatus.sick ? "checked" : ""}> Syk</label>
+        <div class="day-status-control" role="radiogroup" aria-label="Dagens status">
+          <button class="day-status-step ${manualStatus === "holiday" ? "active" : ""}" type="button" data-status="holiday" role="radio" aria-checked="${manualStatus === "holiday"}"></button>
+          <button class="day-status-step ${manualStatus === "normal" ? "active" : ""}" type="button" data-status="normal" role="radio" aria-checked="${manualStatus === "normal"}"></button>
+          <button class="day-status-step ${manualStatus === "sick" ? "active" : ""}" type="button" data-status="sick" role="radio" aria-checked="${manualStatus === "sick"}"></button>
         </div>
+        <div class="day-status-labels"><span>Fri</span><span>Vanlig dag</span><span>Syk</span></div>
       </div>
       <p class="day-mode-note"></p>
       <div class="actions">
         <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk</button>
         <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
-        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Avslutt dag</button>
+        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Avslutt</button>
       </div>
       <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       <p class="progress-count">${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
@@ -572,7 +576,7 @@ function renderBoards() {
     const levelProgress = ensureChildLevelProgress(name);
     const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
     const levelBadge = board.querySelector(".badge-level");
-    if (levelBadge) levelBadge.textContent = `Nivå ${levelInfo.current.level}: ${levelInfo.current.name}`;
+    if (levelBadge) levelBadge.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
 
@@ -589,14 +593,14 @@ function renderBoards() {
       }
     }
 
-    board.querySelectorAll(".day-status-toggle").forEach((toggle) => {
-      toggle.addEventListener("change", (event) => {
-        setChildDayStatusForToday(name, event.target.dataset.status, event.target.checked);
+    board.querySelectorAll(".day-status-step").forEach((stepBtn) => {
+      stepBtn.addEventListener("click", () => {
+        setChildDayStatusForToday(name, stepBtn.dataset.status);
       });
     });
 
     board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
-    board.querySelector(".finish-btn")?.addEventListener("click", () => finishMorning(name, false));
+    board.querySelector(".finish-btn")?.addEventListener("click", () => abortMorning(name));
     board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
     const taskGrid = board.querySelector(".task-grid");
 
@@ -919,6 +923,28 @@ function redeemReward(childName, rewardId) {
   renderPointsOverview();
 }
 
+
+function abortMorning(childName) {
+  const session = sessions[childName];
+  if (!session?.startedAt) return;
+
+  const total = state.children[childName].routines.length;
+  const todayKey = getLocalDateKey();
+  const effectiveMode = getEffectiveDayMode(todayKey, getChildDayOverride(childName, todayKey));
+  const requiredCount = getRequiredRoutineCount(total, effectiveMode);
+  const doneCount = countRoutineCompletions(session);
+
+  if (requiredCount > 0 && doneCount < requiredCount) {
+    const streak = ensureChildStreak(childName);
+    streak.count = 0;
+    streak.lastCompletedDate = "";
+  }
+
+  sessions[childName] = createSession(childName);
+  saveState();
+  renderAll();
+}
+
 function finishMorning(childName, automatic = false) {
   const session = sessions[childName];
   const routines = state.children[childName].routines;
@@ -1055,27 +1081,12 @@ function getBaseDayType(dateKey) {
 
 function getChildDayOverride(childName, dateKey) {
   const status = state.dayStatusOverrides?.[childName]?.[dateKey];
-  if (status && typeof status === "object") {
-    return { holiday: !!status.holiday, sick: !!status.sick };
-  }
-  if (status === "holiday") return { holiday: true, sick: false };
-  if (status === "sick") return { holiday: false, sick: true };
-  return { holiday: false, sick: false };
+  return status === "holiday" || status === "sick" ? status : "normal";
 }
 
 function getEffectiveDayMode(dateKey, manualStatus) {
   const base = getBaseDayType(dateKey);
-  const flags = manualStatus && typeof manualStatus === "object"
-    ? { holiday: !!manualStatus.holiday, sick: !!manualStatus.sick }
-    : {
-      holiday: manualStatus === "holiday",
-      sick: manualStatus === "sick",
-    };
-
-  if (flags.holiday && flags.sick) return `${base}_holiday_sick`;
-  if (flags.holiday) return `${base}_holiday`;
-  if (flags.sick) return `${base}_sick`;
-  return `${base}_normal`;
+  return `${base}_${manualStatus || "normal"}`;
 }
 
 function getRequiredRoutineCount(totalRoutines, effectiveMode) {
@@ -1104,7 +1115,7 @@ function nextDateKey(dateKey) {
 
 function dayIsProtectedForStreak(childName, dateKey) {
   const manual = getChildDayOverride(childName, dateKey);
-  return manual.holiday || manual.sick;
+  return manual === "holiday" || manual === "sick";
 }
 
 function canBridgeStreak(childName, fromDateKey, toDateKey) {
@@ -1135,17 +1146,14 @@ function updateChildStreakOnCompletion(childName, completionDateKey) {
   streak.lastCompletedDate = completionDateKey;
 }
 
-function setChildDayStatusForToday(childName, statusKey, enabled) {
+function setChildDayStatusForToday(childName, status) {
   const dateKey = getLocalDateKey();
   if (!state.dayStatusOverrides[childName]) state.dayStatusOverrides[childName] = {};
 
-  const current = getChildDayOverride(childName, dateKey);
-  const next = { ...current, [statusKey]: !!enabled };
-
-  if (!next.holiday && !next.sick) {
+  if (status === "normal") {
     delete state.dayStatusOverrides[childName][dateKey];
   } else {
-    state.dayStatusOverrides[childName][dateKey] = next;
+    state.dayStatusOverrides[childName][dateKey] = status;
   }
 
   saveState();
