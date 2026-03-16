@@ -70,7 +70,7 @@ body.setup-only .boards-panel {
 }
 
 .site-logo {
-  width: min(4800px, 200%);
+  width: min(3200px, 134%);
   height: auto;
   display: block;
   margin: 0 auto;
@@ -631,6 +631,7 @@ input[type="password"], input[type="number"] {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 3;
 }
 
 .settings-btn {
@@ -642,6 +643,18 @@ input[type="password"], input[type="number"] {
   line-height: 1;
   width: auto;
   padding: 0;
+  position: relative;
+  min-width: 1.6rem;
+  min-height: 1.6rem;
+}
+
+.settings-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  line-height: 1;
 }
 
 .settings-btn:active,
@@ -655,6 +668,8 @@ input[type="password"], input[type="number"] {
   height: 1.6rem;
   display: block;
   object-fit: contain;
+  position: relative;
+  z-index: 1;
 }
 
 #profileDialog {
@@ -752,7 +767,7 @@ input[type="text"] {
   }
 
   .site-logo {
-    width: min(2500px, 180%);
+    width: min(1675px, 120%);
     padding-block: 0.3rem;
   }
 
