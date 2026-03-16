@@ -1,4 +1,4 @@
-const CACHE_NAME = "morgenhelt-cache-v1";
+const CACHE_NAME = "morgenhelt-cache-v2";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,10 @@ const APP_ASSETS = [
   "./app.js",
   "./manifest.webmanifest",
   "./icons/icon.svg",
-  "./icons/icon-maskable.svg"
+  "./icons/icon-maskable.svg",
+  "./icons/streak.svg",
+  "./icons/star.svg",
+  "./icons/level-badge.svg"
 ];
 
 self.addEventListener("install", (event) => {
