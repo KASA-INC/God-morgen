@@ -1,4 +1,4 @@
-const CACHE_NAME = "morgenhelt-cache-v1";
+const CACHE_NAME = "morgenhelt-cache-v5";
 const APP_ASSETS = [
   "./",
   "./index.html",
