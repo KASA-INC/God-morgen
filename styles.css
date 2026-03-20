@@ -143,12 +143,37 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   margin: 0;
 }
 
-.child-level-icon {
+.child-level-icon-wrap {
   width: min(140px, 42vw);
+  margin: 0 auto 0.35rem;
+  display: grid;
+  place-items: center;
+}
+
+.child-level-icon {
+  width: 100%;
   height: auto;
   display: block;
-  margin: 0 auto 0.35rem;
   object-fit: contain;
+}
+
+.child-level-icon-fallback {
+  width: 100%;
+  min-height: 4.75rem;
+  display: grid;
+  place-items: center;
+  padding: 0.8rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 238, 183, 0.95), rgba(255, 184, 79, 0.95));
+  border: 2px solid rgba(154, 88, 31, 0.22);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.55),
+    0 6px 14px rgba(255, 122, 188, 0.12);
+  color: #8a4a12;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 0.92rem;
+  text-align: center;
 }
 
 .child-board h3 {
@@ -204,6 +229,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   min-width: 1em;
   min-height: 1em;
   line-height: 1;
+  fill: currentColor;
 }
 
 .badge-score {
@@ -248,6 +274,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   min-height: 1em;
   line-height: 1;
   color: #d67f00;
+  fill: currentColor;
 }
 
 .streak-value,
@@ -689,6 +716,12 @@ input[type="password"], input[type="number"] {
   line-height: 1;
 }
 
+.settings-inline-icon {
+  width: 1.45rem;
+  height: 1.45rem;
+  fill: currentColor;
+}
+
 .settings-btn:active,
 .settings-btn:focus-visible {
   background: transparent;
@@ -802,7 +835,7 @@ input[type="text"] {
     right: 0.2rem;
   }
 
-  .child-level-icon {
+  .child-level-icon-wrap {
     width: min(110px, 34vw);
     margin-bottom: 0.28rem;
   }
@@ -904,7 +937,7 @@ input[type="text"] {
   .child-create-row input[type="text"] {
     min-height: 2.7rem;
   }
-  .child-level-icon {
+  .child-level-icon-wrap {
     width: min(96px, 32vw);
     margin-bottom: 0.22rem;
   }
