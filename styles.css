@@ -144,22 +144,24 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .child-level-icon-wrap {
-  width: min(140px, 42vw);
+  width: min(160px, 46vw);
+  height: 140px;
   margin: 0 auto 0.35rem;
   display: grid;
   place-items: center;
 }
 
 .child-level-icon {
-  width: 100%;
-  height: auto;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
   display: block;
   object-fit: contain;
 }
 
 .child-level-icon-fallback {
   width: 100%;
-  min-height: 4.75rem;
+  height: 100%;
   display: grid;
   place-items: center;
   padding: 0.8rem;
@@ -174,6 +176,10 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   letter-spacing: 0.12em;
   font-size: 0.92rem;
   text-align: center;
+}
+
+.child-level-icon-wrap.has-level-icon .child-level-icon-fallback {
+  display: none;
 }
 
 .child-board h3 {
@@ -232,6 +238,19 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   fill: currentColor;
 }
 
+.icon-with-fallback {
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon-with-fallback > * {
+  grid-area: 1 / 1;
+}
+
+.icon-with-fallback img[src=""] {
+  display: none;
+}
+
 .badge-score {
   justify-self: end;
 }
@@ -247,9 +266,13 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   place-items: center;
   line-height: 1;
   border-radius: 999px;
-  background:
+  background-image:
+    url("./icons/level-badge.svg"),
     radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.92) 0 18%, transparent 19%),
     linear-gradient(180deg, #ffeeb7 0%, #ffd76f 45%, #ffb84f 100%);
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: contain, auto, auto;
   border: 2px solid rgba(154, 88, 31, 0.22);
   box-shadow:
     inset 0 2px 4px rgba(255, 255, 255, 0.55),
@@ -722,6 +745,38 @@ input[type="password"], input[type="number"] {
   fill: currentColor;
 }
 
+.flame-icon-file,
+.score-star-file,
+.settings-icon-file {
+  object-fit: contain;
+}
+
+.flame-icon-file,
+.flame-icon-fallback,
+.score-star-file,
+.score-star-fallback {
+  width: 1em;
+  height: 1em;
+}
+
+.settings-icon-file,
+.settings-icon-fallback {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.icon-with-fallback img + svg {
+  display: inline-flex;
+}
+
+.icon-with-fallback img {
+  display: inline-block;
+}
+
+.icon-with-fallback img:not([src=""]) {
+  background: transparent;
+}
+
 .settings-btn:active,
 .settings-btn:focus-visible {
   background: transparent;
@@ -836,7 +891,8 @@ input[type="text"] {
   }
 
   .child-level-icon-wrap {
-    width: min(110px, 34vw);
+    width: min(132px, 36vw);
+    height: 110px;
     margin-bottom: 0.28rem;
   }
 
@@ -938,7 +994,8 @@ input[type="text"] {
     min-height: 2.7rem;
   }
   .child-level-icon-wrap {
-    width: min(96px, 32vw);
+    width: min(112px, 34vw);
+    height: 96px;
     margin-bottom: 0.22rem;
   }
 

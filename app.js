@@ -506,8 +506,36 @@ function registerServiceWorker() {
   });
 }
 
+function syncIconFallbacks(root = document) {
+  root.querySelectorAll(".icon-with-fallback").forEach((wrapper) => {
+    const fileIcon = wrapper.querySelector("img");
+    const fallbackIcon = wrapper.querySelector("svg");
+    if (!fileIcon || !fallbackIcon) return;
+
+    const showFileIcon = () => {
+      fileIcon.hidden = false;
+      fallbackIcon.hidden = true;
+    };
+    const showFallbackIcon = () => {
+      fileIcon.hidden = true;
+      fallbackIcon.hidden = false;
+    };
+
+    fileIcon.onload = showFileIcon;
+    fileIcon.onerror = showFallbackIcon;
+
+    if (fileIcon.complete) {
+      if (fileIcon.naturalWidth > 0) showFileIcon();
+      else showFallbackIcon();
+    } else {
+      showFallbackIcon();
+    }
+  });
+}
+
 function renderAll() {
   renderBoards();
+  syncIconFallbacks();
   renderPointsOverview();
   renderStats();
 }
@@ -560,9 +588,9 @@ function renderBoards() {
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
       <div class="board-top-stats">
-        <span class="badge badge-streak"><svg class="flame-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.8 2.4c.4 2.2-.5 3.7-1.8 5.1-1 1-2 2.1-2 4 0 1.9 1.4 3.3 3.1 3.3 1.8 0 3.4-1.4 3.4-3.7 0-1.3-.4-2.4-1.4-3.8 2.7.7 5.3 3.7 5.3 7.2 0 4.2-3.2 7.4-7.6 7.4C7.3 21.9 4 18.5 4 14.2c0-4.7 3.2-7.9 8.8-11.8Z"/></svg><span class="streak-value">${streak.count}</span></span>
+        <span class="badge badge-streak"><span class="icon-with-fallback"><img class="flame-icon flame-icon-file" src="./icons/streak.svg" alt="" aria-hidden="true" /><svg class="flame-icon flame-icon-fallback" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.8 2.4c.4 2.2-.5 3.7-1.8 5.1-1 1-2 2.1-2 4 0 1.9 1.4 3.3 3.1 3.3 1.8 0 3.4-1.4 3.4-3.7 0-1.3-.4-2.4-1.4-3.8 2.7.7 5.3 3.7 5.3 7.2 0 4.2-3.2 7.4-7.6 7.4C7.3 21.9 4 18.5 4 14.2c0-4.7 3.2-7.9 8.8-11.8Z"/></svg></span><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"><span class="badge-level-value"></span></span>
-        <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <svg class="score-star" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.6 2.9 5.88 6.49.94-4.69 4.57 1.11 6.46L12 17.42l-5.81 3.03 1.11-6.46L2.61 9.42l6.49-.94L12 2.6Z"/></svg></span>
+        <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <span class="icon-with-fallback"><img class="score-star score-star-file" src="./icons/star.svg" alt="" aria-hidden="true" /><svg class="score-star score-star-fallback" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.6 2.9 5.88 6.49.94-4.69 4.57 1.11 6.46L12 17.42l-5.81 3.03 1.11-6.46L2.61 9.42l6.49-.94L12 2.6Z"/></svg></span></span>
       </div>
       <div class="day-status-row">
         <div class="day-status-control" role="radiogroup" aria-label="Dagens status">
@@ -588,19 +616,28 @@ function renderBoards() {
     const levelBadgeValue = board.querySelector(".badge-level-value");
     if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelIcon = board.querySelector(".child-level-icon");
+    const levelIconWrap = board.querySelector(".child-level-icon-wrap");
     const levelIconFallback = board.querySelector(".child-level-icon-fallback");
     if (levelIconFallback) levelIconFallback.textContent = `LEVEL ${String(levelInfo.current.level).padStart(3, "0")}`;
     if (levelIcon) {
-      levelIcon.hidden = true;
-      levelIcon.onload = () => {
+      const showLevelIcon = () => {
         levelIcon.hidden = false;
         if (levelIconFallback) levelIconFallback.hidden = true;
+        if (levelIconWrap) levelIconWrap.classList.add("has-level-icon");
       };
-      levelIcon.onerror = () => {
+      const showLevelFallback = () => {
         levelIcon.hidden = true;
         if (levelIconFallback) levelIconFallback.hidden = false;
+        if (levelIconWrap) levelIconWrap.classList.remove("has-level-icon");
       };
+      showLevelFallback();
+      levelIcon.onload = showLevelIcon;
+      levelIcon.onerror = showLevelFallback;
       levelIcon.src = getLevelIconPath(levelInfo.current.level);
+      if (levelIcon.complete) {
+        if (levelIcon.naturalWidth > 0) showLevelIcon();
+        else showLevelFallback();
+      }
     }
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
