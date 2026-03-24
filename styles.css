@@ -148,9 +148,9 @@ button:focus-visible { background: #1f0e46; color: #ffa175; }
 .task-btn {
   min-height: 132px;
   font-family: "Italiana", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  font-size: 1.33rem;
+  font-size: 1.25rem;
   text-align: center;
-  padding: 0.8rem;
+  padding: 8px;
   background: transparent;
   border: 3px solid #1e0046;
   color: #1e0046;
@@ -274,4 +274,18 @@ input[type="password"], input[type="number"] {
 .graph-value {
   color: #1e0046;
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 700px) {
+  .task-btn {
+    font-size: 1.08rem;
+    padding: 0.34rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .task-btn {
+    font-size: 1.02rem;
+    padding: 0.32rem;
+  }
 }
