@@ -23,3 +23,9 @@ En enkel iPad-vennlig webapp som gjør barnas morgenrutiner til et spill, med su
 - Du kan få tidsbonus opp til `maxBonus` (standard 5) for oppgaver gjort tidlig i økten.
 - Bonus trappes ned over tid, men går aldri under minstepoengene.
 - Fullført morgen gir +20 bonus.
+
+## Redigerbare datafiler
+
+- Dyrenavn, nivåer og terskler kan redigeres i `animal-levels.json`.
+- Bonusoppgaver kan redigeres i `wildcard-tasks.json`.
+- Hvis disse filene mangler eller inneholder ugyldig innhold, faller appen tilbake til de innebygde standardverdiene i `app.js`.
