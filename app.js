@@ -283,8 +283,8 @@ async function loadWildcardTasks() {
 
     wildcardTasks = nextTasks;
     renderBoards();
-  } catch {
-    // fallback til innebygde wildcard-oppgaver
+  } catch (error) {
+    console.warn("Kunne ikke laste wildcard-tasks.json, bruker innebygde bonusoppgaver.", error);
   }
 }
 
@@ -325,8 +325,8 @@ async function loadAnimalLevels() {
 
     levelDefinitions = nextDefs;
     renderBoards();
-  } catch {
-    // fallback til innebygde nivådefinisjoner
+  } catch (error) {
+    console.warn("Kunne ikke laste animal-levels.json, bruker innebygde nivånavn.", error);
   }
 }
 

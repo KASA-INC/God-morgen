@@ -1,4 +1,4 @@
-const CACHE_NAME = "morgenhelt-cache-v5";
+const CACHE_NAME = "morgenhelt-cache-v6";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -27,14 +27,33 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const requestUrl = new URL(event.request.url);
+  const isJsonDataRequest = requestUrl.pathname.endsWith(".json");
+
+  if (isJsonDataRequest || event.request.cache === "no-store") {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .then((response) => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request)
         .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
           return response;
         })
         .catch(() => caches.match("./index.html"));
