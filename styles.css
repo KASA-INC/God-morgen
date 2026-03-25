@@ -427,7 +427,6 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .task-grid > * {
   width: 100%;
-  max-width: 170px;
   justify-self: center;
 }
 
@@ -923,7 +922,7 @@ input[type="text"] {
     padding-bottom: 2.2rem;
   }
   .task-grid > * {
-    max-width: 145px;
+    width: 100%;
   }
   .task-btn {
     font-size: 0.9rem;

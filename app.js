@@ -94,13 +94,16 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
-renderAll();
-startTimerLoop();
-registerServiceWorker();
-setupAuthUI();
-cloud.init();
-loadWildcardTasks();
-loadAnimalLevels();
+void initApp();
+
+async function initApp() {
+  setupAuthUI();
+  cloud.init();
+  await Promise.all([loadWildcardTasks(), loadAnimalLevels()]);
+  renderAll();
+  startTimerLoop();
+  registerServiceWorker();
+}
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
