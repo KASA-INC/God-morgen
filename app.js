@@ -528,6 +528,10 @@ function renderBoards() {
       </div>
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
+      <div class="child-level-progress" aria-hidden="true">
+        <div class="child-level-progress-bar"></div>
+      </div>
+      <p class="child-level-progress-text"></p>
       <div class="board-top-stats">
         <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"><span class="badge-level-value"></span></span>
@@ -558,6 +562,14 @@ function renderBoards() {
     if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
+    const levelProgressBar = board.querySelector(".child-level-progress-bar");
+    if (levelProgressBar) levelProgressBar.style.width = `${levelInfo.progressPct}%`;
+    const levelProgressText = board.querySelector(".child-level-progress-text");
+    if (levelProgressText) {
+      levelProgressText.textContent = levelInfo.next
+        ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} til nivå ${levelInfo.next.level}`
+        : "Maksnivå nådd";
+    }
 
     const dayModeNote = board.querySelector(".day-mode-note");
     if (dayModeNote) {
