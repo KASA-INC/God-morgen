@@ -783,7 +783,26 @@ function removeTask(childName, taskIndex) {
   if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
 
   state.children[childName].routines.splice(taskIndex, 1);
-  sessions[childName] = createSession(childName);
+  const session = sessions[childName];
+  if (session && session.startedAt) {
+    const nextCompletedTasks = {};
+    Object.entries(session.completedTasks || {}).forEach(([key, details]) => {
+      const numericKey = Number(key);
+      if (!Number.isInteger(numericKey)) {
+        nextCompletedTasks[key] = details;
+        return;
+      }
+      if (numericKey === taskIndex) return;
+      const shiftedKey = numericKey > taskIndex ? numericKey - 1 : numericKey;
+      nextCompletedTasks[String(shiftedKey)] = details;
+    });
+    session.completedTasks = nextCompletedTasks;
+    session.score = Object.values(nextCompletedTasks).reduce((sum, entry) => sum + (Number(entry?.points) || 0), 0);
+    const remaining = Object.values(nextCompletedTasks).filter(Boolean);
+    session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => Number(item.completedAtMs) || 0)) : session.startedAt;
+  } else {
+    sessions[childName] = createSession(childName);
+  }
   state.history = state.history.map((entry) => {
     if (entry.childName !== childName) return entry;
     return {
@@ -1018,6 +1037,7 @@ function renderStats() {
 
     entries.forEach((entry) => {
       (entry.taskEntries || []).forEach((t) => {
+        if (t?.isWildcard) return;
         if (!taskMap.has(t.taskName)) taskMap.set(t.taskName, { totalSec: 0, count: 0 });
         const row = taskMap.get(t.taskName);
         row.totalSec += t.durationSec;
