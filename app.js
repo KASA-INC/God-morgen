@@ -229,11 +229,51 @@ function sanitizeWildcardCatalog(rawCatalog) {
   return rows;
 }
 
+async function fetchJsonCandidates(fileName) {
+  const candidates = [
+    `./${fileName}`,
+    fileName,
+    `/${fileName}`,
+    new URL(fileName, window.location.href).href,
+  ];
+  const tried = new Set();
+
+  for (const candidate of candidates) {
+    const target = String(candidate || "").trim();
+    if (!target || tried.has(target)) continue;
+    tried.add(target);
+    try {
+      const response = await fetch(target, { cache: "no-store" });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      return payload;
+    } catch {
+      // prøv neste kandidatsti
+    }
+  }
+
+  if ("caches" in window) {
+    for (const candidate of candidates) {
+      const target = String(candidate || "").trim();
+      if (!target) continue;
+      try {
+        const cached = await caches.match(target);
+        if (!cached || !cached.ok) continue;
+        const payload = await cached.json();
+        return payload;
+      } catch {
+        // ignorer og prøv videre
+      }
+    }
+  }
+
+  return null;
+}
+
 async function loadWildcardTasks() {
   try {
-    const response = await fetch("./wildcard-tasks.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("wildcard-tasks.json");
+    if (!payload) return;
     const nextTasks = sanitizeWildcardCatalog(payload);
     if (!nextTasks.length) return;
 
@@ -273,9 +313,8 @@ function sanitizeLevelDefinitions(rawDefinitions) {
 
 async function loadAnimalLevels() {
   try {
-    const response = await fetch("./animal-levels.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("animal-levels.json");
+    if (!payload) return;
     const nextDefs = sanitizeLevelDefinitions(payload);
     if (!nextDefs.length) return;
 
