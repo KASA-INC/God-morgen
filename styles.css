@@ -151,8 +151,9 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .child-level-animal {
-  width: 96px;
-  height: 96px;
+  width: 400px;
+  height: 400px;
+  max-width: min(92vw, 400px);
   object-fit: contain;
   display: block;
   margin: 0 auto 0.35rem;
@@ -402,7 +403,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   border-radius: 999px;
   background: var(--ink);
   position: absolute;
-  left: 0;
+  left: 100%;
   top: 50%;
   transform: translate(-50%, -50%);
 }

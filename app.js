@@ -500,7 +500,7 @@ function renderBoards() {
       <div class="child-head">
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
-      <img class="child-level-animal" src="" alt="" width="250" height="250" hidden />
+      <img class="child-level-animal" src="" alt="" width="400" height="400" hidden />
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
       <div class="child-level-progress" aria-hidden="true">
