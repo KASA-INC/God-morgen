@@ -384,25 +384,35 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .task-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.7rem;
+  row-gap: 0.25rem;
   margin-top: 1rem;
 }
 
+.task-grid > * {
+  flex: 0 1 calc(33.333% - 0.7rem);
+  max-width: 150px;
+}
 
+.task-grid > :nth-child(3n + 2) {
+  transform: translateY(1rem);
+}
 
 .task-btn {
   font-family: "Platypi", "Segoe UI", serif;
-  font-size: 1.25rem;
+  font-size: 1.08rem;
   text-align: center;
-  padding: 8px;
+  padding: 0.8rem;
   background: transparent;
   border: 3px solid var(--ink);
   color: var(--ink);
-  border-radius: 5px;
+  border-radius: 999px;
   width: 100%;
-  min-height: 118px;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
   flex-direction: column;
@@ -714,7 +724,16 @@ input[type="text"] {
 @media (max-width: 900px) {
   html { font-size: 14px; }
   .child-boards { grid-template-columns: 1fr; }
-  .task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .task-grid > * {
+    flex-basis: calc(50% - 0.7rem);
+    max-width: 170px;
+  }
+  .task-grid > :nth-child(3n + 2) {
+    transform: none;
+  }
+  .task-grid > :nth-child(even) {
+    transform: translateY(0.85rem);
+  }
   .child-board h3 { font-size: 3.2rem; }
   .badge-clock { font-size: 2.8rem; }
   .progress-count { font-size: 1.08rem; }
@@ -858,9 +877,8 @@ input[type="text"] {
   }
 
   .task-btn {
-    min-height: 95px;
-    padding: 0.34rem;
-    font-size: 1.08rem;
+    padding: 0.35rem;
+    font-size: 0.96rem;
   }
 
   .remove-task-btn {
@@ -875,10 +893,14 @@ input[type="text"] {
     grid-template-columns: 1fr;
   }
   .task-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.5rem;
+  }
+  .task-grid > * {
+    flex-basis: calc(50% - 0.5rem);
+    max-width: 145px;
   }
   .task-btn {
-    font-size: 1.02rem;
+    font-size: 0.9rem;
     padding: 0.32rem;
   }
   .child-create-row {
