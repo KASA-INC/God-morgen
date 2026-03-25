@@ -1,8 +1,8 @@
 :root {
   --ink: #1f0e46;
   --ink-rgb: 31, 14, 70;
-  --accent: #f082aa;
-  --accent-rgb: 240, 130, 170;
+  --accent: #ffffff;
+  --accent-rgb: 255, 255, 255;
   --bg: var(--accent);
   --text: var(--ink);
   --muted: var(--ink);

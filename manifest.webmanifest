@@ -3,8 +3,8 @@
   "short_name": "Morgenhelt",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f6fff3",
-  "theme_color": "#5b5df9",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "lang": "no",
   "icons": [
     {
