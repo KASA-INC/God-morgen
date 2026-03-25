@@ -41,59 +41,12 @@ const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
 
-const DEFAULT_LEVEL_DEFINITIONS = [
-  { level: 1, name: "Maur", requiredCompletedTasks: 0 },
-  { level: 2, name: "Marihøne", requiredCompletedTasks: 5 },
-  { level: 3, name: "Sommerfugl", requiredCompletedTasks: 12 },
-  { level: 4, name: "Bie", requiredCompletedTasks: 22 },
-  { level: 5, name: "Gresshoppe", requiredCompletedTasks: 35 },
-  { level: 6, name: "Frosk", requiredCompletedTasks: 52 },
-  { level: 7, name: "Mus", requiredCompletedTasks: 74 },
-  { level: 8, name: "Ekorn", requiredCompletedTasks: 102 },
-  { level: 9, name: "Pinnsvin", requiredCompletedTasks: 138 },
-  { level: 10, name: "Ravn", requiredCompletedTasks: 184 },
-  { level: 11, name: "Rev", requiredCompletedTasks: 242 },
-  { level: 12, name: "Gaupe", requiredCompletedTasks: 314 },
-  { level: 13, name: "Ulv", requiredCompletedTasks: 402 },
-  { level: 14, name: "Hjort", requiredCompletedTasks: 510 },
-  { level: 15, name: "Elg", requiredCompletedTasks: 642 },
-  { level: 16, name: "Løve", requiredCompletedTasks: 804 },
-  { level: 17, name: "Tiger", requiredCompletedTasks: 1002 },
-  { level: 18, name: "Neshorn", requiredCompletedTasks: 1244 },
-  { level: 19, name: "Isbjørn", requiredCompletedTasks: 1540 },
-  { level: 20, name: "Flodhest", requiredCompletedTasks: 1902 },
-  { level: 21, name: "Sjøløve", requiredCompletedTasks: 2344 },
-  { level: 22, name: "Hvalross", requiredCompletedTasks: 2882 },
-  { level: 23, name: "Delfin", requiredCompletedTasks: 3538 },
-  { level: 24, name: "Havskilpadde", requiredCompletedTasks: 4336 },
-  { level: 25, name: "Hammerhai", requiredCompletedTasks: 5308 },
-  { level: 26, name: "Spekkhogger", requiredCompletedTasks: 6492 },
-  { level: 27, name: "Kjempeblekksprut", requiredCompletedTasks: 7934 },
-  { level: 28, name: "Pukkelhval", requiredCompletedTasks: 9692 },
-  { level: 29, name: "Finhval", requiredCompletedTasks: 11836 },
-  { level: 30, name: "Blåhval", requiredCompletedTasks: 20000 },
-];
+const DEFAULT_LEVEL_DEFINITIONS = Array.from({ length: 200 }, (_, idx) => ({
+  level: idx + 1,
+  name: `Nivå ${idx + 1}`,
+  requiredCompletedTasks: idx * 50,
+}));
 let levelDefinitions = [...DEFAULT_LEVEL_DEFINITIONS];
-
-const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
-
-function hexToRgbString(hex) {
-  const clean = String(hex || "").replace("#", "").trim();
-  if (clean.length !== 6) return "253, 160, 117";
-  const r = Number.parseInt(clean.slice(0, 2), 16);
-  const g = Number.parseInt(clean.slice(2, 4), 16);
-  const b = Number.parseInt(clean.slice(4, 6), 16);
-  if (![r, g, b].every(Number.isFinite)) return "253, 160, 117";
-  return `${r}, ${g}, ${b}`;
-}
-
-function applyRandomAccentTheme() {
-  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#fda075";
-  document.documentElement.style.setProperty("--accent", color);
-  document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", color);
-}
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
@@ -140,7 +93,6 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
-applyRandomAccentTheme();
 renderAll();
 startTimerLoop();
 registerServiceWorker();
@@ -549,6 +501,10 @@ function renderBoards() {
       </div>
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
+      <div class="child-level-progress" aria-hidden="true">
+        <div class="child-level-progress-bar"></div>
+      </div>
+      <p class="child-level-progress-text"></p>
       <div class="board-top-stats">
         <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"><span class="badge-level-value"></span></span>
@@ -579,6 +535,14 @@ function renderBoards() {
     if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
+    const levelProgressBar = board.querySelector(".child-level-progress-bar");
+    if (levelProgressBar) levelProgressBar.style.width = `${levelInfo.progressPct}%`;
+    const levelProgressText = board.querySelector(".child-level-progress-text");
+    if (levelProgressText) {
+      levelProgressText.textContent = levelInfo.next
+        ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} til nivå ${levelInfo.next.level}`
+        : "Maksnivå nådd";
+    }
 
     const dayModeNote = board.querySelector(".day-mode-note");
     if (dayModeNote) {
@@ -783,7 +747,26 @@ function removeTask(childName, taskIndex) {
   if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
 
   state.children[childName].routines.splice(taskIndex, 1);
-  sessions[childName] = createSession(childName);
+  const session = sessions[childName];
+  if (session && session.startedAt) {
+    const nextCompletedTasks = {};
+    Object.entries(session.completedTasks || {}).forEach(([key, details]) => {
+      const numericKey = Number(key);
+      if (!Number.isInteger(numericKey)) {
+        nextCompletedTasks[key] = details;
+        return;
+      }
+      if (numericKey === taskIndex) return;
+      const shiftedKey = numericKey > taskIndex ? numericKey - 1 : numericKey;
+      nextCompletedTasks[String(shiftedKey)] = details;
+    });
+    session.completedTasks = nextCompletedTasks;
+    session.score = Object.values(nextCompletedTasks).reduce((sum, entry) => sum + (Number(entry?.points) || 0), 0);
+    const remaining = Object.values(nextCompletedTasks).filter(Boolean);
+    session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => Number(item.completedAtMs) || 0)) : session.startedAt;
+  } else {
+    sessions[childName] = createSession(childName);
+  }
   state.history = state.history.map((entry) => {
     if (entry.childName !== childName) return entry;
     return {
@@ -1018,6 +1001,7 @@ function renderStats() {
 
     entries.forEach((entry) => {
       (entry.taskEntries || []).forEach((t) => {
+        if (t?.isWildcard) return;
         if (!taskMap.has(t.taskName)) taskMap.set(t.taskName, { totalSec: 0, count: 0 });
         const row = taskMap.get(t.taskName);
         row.totalSec += t.durationSec;
