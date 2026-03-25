@@ -1,8 +1,8 @@
 :root {
   --ink: #1f0e46;
   --ink-rgb: 31, 14, 70;
-  --accent: #f082aa;
-  --accent-rgb: 240, 130, 170;
+  --accent: #ffffff;
+  --accent-rgb: 255, 255, 255;
   --bg: var(--accent);
   --text: var(--ink);
   --muted: var(--ink);
@@ -150,12 +150,44 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   margin-top: 0.2rem;
 }
 
+.child-level-animal {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 0.35rem;
+}
+
 .child-level-name {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.9rem;
   margin-top: 0.2rem;
+}
+
+.child-level-progress {
+  width: min(260px, 92%);
+  height: 8px;
+  margin: 0.45rem auto 0;
+  background: rgba(var(--ink-rgb), 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.child-level-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: var(--ink);
+  border-radius: inherit;
+  transition: width 220ms ease;
+}
+
+.child-level-progress-text {
+  margin-top: 0.3rem;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
 }
 
 .board-top-stats {
@@ -386,23 +418,34 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 .task-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
+  column-gap: 5px;
+  row-gap: 0.7rem;
   margin-top: 1rem;
+  padding-bottom: 3rem;
 }
 
+.task-grid > * {
+  width: 100%;
+  max-width: 170px;
+  justify-self: center;
+}
 
+.task-grid > :nth-child(even) {
+  transform: translateY(50%);
+}
 
 .task-btn {
   font-family: "Platypi", "Segoe UI", serif;
-  font-size: 1.25rem;
+  font-size: 1.08rem;
   text-align: center;
-  padding: 8px;
+  padding: 0.8rem;
   background: transparent;
   border: 3px solid var(--ink);
   color: var(--ink);
-  border-radius: 5px;
+  border-radius: 999px;
   width: 100%;
-  min-height: 118px;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
   flex-direction: column;
@@ -714,7 +757,7 @@ input[type="text"] {
 @media (max-width: 900px) {
   html { font-size: 14px; }
   .child-boards { grid-template-columns: 1fr; }
-  .task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .task-grid { padding-bottom: 2.6rem; }
   .child-board h3 { font-size: 3.2rem; }
   .badge-clock { font-size: 2.8rem; }
   .progress-count { font-size: 1.08rem; }
@@ -858,9 +901,8 @@ input[type="text"] {
   }
 
   .task-btn {
-    min-height: 95px;
-    padding: 0.34rem;
-    font-size: 1.08rem;
+    padding: 0.35rem;
+    font-size: 0.96rem;
   }
 
   .remove-task-btn {
@@ -875,10 +917,15 @@ input[type="text"] {
     grid-template-columns: 1fr;
   }
   .task-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 5px;
+    row-gap: 0.5rem;
+    padding-bottom: 2.2rem;
+  }
+  .task-grid > * {
+    max-width: 145px;
   }
   .task-btn {
-    font-size: 1.02rem;
+    font-size: 0.9rem;
     padding: 0.32rem;
   }
   .child-create-row {
