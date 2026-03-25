@@ -1,9 +1,11 @@
-const CACHE_NAME = "morgenhelt-cache-v3";
+const CACHE_NAME = "morgenhelt-cache-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./animal-levels.json",
+  "./wildcard-tasks.json",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon-maskable.svg",
