@@ -40,60 +40,10 @@ const DEFAULT_WILDCARD_TASKS = [
 const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
+const WILDCARD_REFRESH_KEY = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const DEFAULT_LEVEL_DEFINITIONS = [
-  { level: 1, name: "Maur", requiredCompletedTasks: 0 },
-  { level: 2, name: "Marihøne", requiredCompletedTasks: 5 },
-  { level: 3, name: "Sommerfugl", requiredCompletedTasks: 12 },
-  { level: 4, name: "Bie", requiredCompletedTasks: 22 },
-  { level: 5, name: "Gresshoppe", requiredCompletedTasks: 35 },
-  { level: 6, name: "Frosk", requiredCompletedTasks: 52 },
-  { level: 7, name: "Mus", requiredCompletedTasks: 74 },
-  { level: 8, name: "Ekorn", requiredCompletedTasks: 102 },
-  { level: 9, name: "Pinnsvin", requiredCompletedTasks: 138 },
-  { level: 10, name: "Ravn", requiredCompletedTasks: 184 },
-  { level: 11, name: "Rev", requiredCompletedTasks: 242 },
-  { level: 12, name: "Gaupe", requiredCompletedTasks: 314 },
-  { level: 13, name: "Ulv", requiredCompletedTasks: 402 },
-  { level: 14, name: "Hjort", requiredCompletedTasks: 510 },
-  { level: 15, name: "Elg", requiredCompletedTasks: 642 },
-  { level: 16, name: "Løve", requiredCompletedTasks: 804 },
-  { level: 17, name: "Tiger", requiredCompletedTasks: 1002 },
-  { level: 18, name: "Neshorn", requiredCompletedTasks: 1244 },
-  { level: 19, name: "Isbjørn", requiredCompletedTasks: 1540 },
-  { level: 20, name: "Flodhest", requiredCompletedTasks: 1902 },
-  { level: 21, name: "Sjøløve", requiredCompletedTasks: 2344 },
-  { level: 22, name: "Hvalross", requiredCompletedTasks: 2882 },
-  { level: 23, name: "Delfin", requiredCompletedTasks: 3538 },
-  { level: 24, name: "Havskilpadde", requiredCompletedTasks: 4336 },
-  { level: 25, name: "Hammerhai", requiredCompletedTasks: 5308 },
-  { level: 26, name: "Spekkhogger", requiredCompletedTasks: 6492 },
-  { level: 27, name: "Kjempeblekksprut", requiredCompletedTasks: 7934 },
-  { level: 28, name: "Pukkelhval", requiredCompletedTasks: 9692 },
-  { level: 29, name: "Finhval", requiredCompletedTasks: 11836 },
-  { level: 30, name: "Blåhval", requiredCompletedTasks: 20000 },
-];
+const DEFAULT_LEVEL_DEFINITIONS = [{ level: 1, name: "Laster nivådata…", requiredCompletedTasks: 0 }];
 let levelDefinitions = [...DEFAULT_LEVEL_DEFINITIONS];
-
-const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
-
-function hexToRgbString(hex) {
-  const clean = String(hex || "").replace("#", "").trim();
-  if (clean.length !== 6) return "253, 160, 117";
-  const r = Number.parseInt(clean.slice(0, 2), 16);
-  const g = Number.parseInt(clean.slice(2, 4), 16);
-  const b = Number.parseInt(clean.slice(4, 6), 16);
-  if (![r, g, b].every(Number.isFinite)) return "253, 160, 117";
-  return `${r}, ${g}, ${b}`;
-}
-
-function applyRandomAccentTheme() {
-  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#fda075";
-  document.documentElement.style.setProperty("--accent", color);
-  document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", color);
-}
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
@@ -140,14 +90,16 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
-applyRandomAccentTheme();
-renderAll();
-startTimerLoop();
-registerServiceWorker();
-setupAuthUI();
-cloud.init();
-loadWildcardTasks();
-loadAnimalLevels();
+void initApp();
+
+async function initApp() {
+  setupAuthUI();
+  cloud.init();
+  await Promise.all([loadWildcardTasks(), loadAnimalLevels()]);
+  renderAll();
+  startTimerLoop();
+  registerServiceWorker();
+}
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
@@ -273,11 +225,62 @@ function sanitizeWildcardCatalog(rawCatalog) {
   return rows;
 }
 
+async function fetchJsonCandidates(fileName) {
+  const candidates = [
+    `./${fileName}`,
+    fileName,
+    `/${fileName}`,
+    new URL(fileName, window.location.href).href,
+  ];
+  const tried = new Set();
+
+  for (const candidate of candidates) {
+    const target = String(candidate || "").trim();
+    if (!target || tried.has(target)) continue;
+    tried.add(target);
+    try {
+      const response = await fetch(target, { cache: "no-store" });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      return payload;
+    } catch {
+      // prøv neste kandidatsti
+    }
+  }
+
+  if ("caches" in window) {
+    for (const candidate of candidates) {
+      const target = String(candidate || "").trim();
+      if (!target) continue;
+      try {
+        const cached = await caches.match(target);
+        if (!cached || !cached.ok) continue;
+        const payload = await cached.json();
+        return payload;
+      } catch {
+        // ignorer og prøv videre
+      }
+    }
+  }
+
+  const embeddedId = fileName === "animal-levels.json" ? "animalLevelsData" : (fileName === "wildcard-tasks.json" ? "wildcardTasksData" : "");
+  if (embeddedId) {
+    try {
+      const embeddedNode = document.getElementById(embeddedId);
+      const embeddedText = embeddedNode?.textContent?.trim();
+      if (embeddedText) return JSON.parse(embeddedText);
+    } catch {
+      // fallback til null
+    }
+  }
+
+  return null;
+}
+
 async function loadWildcardTasks() {
   try {
-    const response = await fetch("./wildcard-tasks.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("wildcard-tasks.json");
+    if (!payload) return;
     const nextTasks = sanitizeWildcardCatalog(payload);
     if (!nextTasks.length) return;
 
@@ -317,9 +320,8 @@ function sanitizeLevelDefinitions(rawDefinitions) {
 
 async function loadAnimalLevels() {
   try {
-    const response = await fetch("./animal-levels.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("animal-levels.json");
+    if (!payload) return;
     const nextDefs = sanitizeLevelDefinitions(payload);
     if (!nextDefs.length) return;
 
@@ -547,8 +549,13 @@ function renderBoards() {
       <div class="child-head">
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
+      <img class="child-level-animal" src="" alt="" width="400" height="400" hidden />
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
+      <div class="child-level-progress" aria-hidden="true">
+        <div class="child-level-progress-bar"></div>
+      </div>
+      <p class="child-level-progress-text"></p>
       <div class="board-top-stats">
         <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"><span class="badge-level-value"></span></span>
@@ -579,6 +586,26 @@ function renderBoards() {
     if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
+    const levelAnimalImage = board.querySelector(".child-level-animal");
+    if (levelAnimalImage) {
+      const levelCode = String(levelInfo.current.level).padStart(3, "0");
+      levelAnimalImage.src = `./icons/levels/level-${levelCode}.png`;
+      levelAnimalImage.alt = levelInfo.current.name;
+      levelAnimalImage.onerror = () => {
+        levelAnimalImage.hidden = true;
+      };
+      levelAnimalImage.onload = () => {
+        levelAnimalImage.hidden = false;
+      };
+    }
+    const levelProgressBar = board.querySelector(".child-level-progress-bar");
+    if (levelProgressBar) levelProgressBar.style.width = `${levelInfo.progressPct}%`;
+    const levelProgressText = board.querySelector(".child-level-progress-text");
+    if (levelProgressText) {
+      levelProgressText.textContent = levelInfo.next
+        ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} til nivå ${levelInfo.next.level}`
+        : "Maksnivå nådd";
+    }
 
     const dayModeNote = board.querySelector(".day-mode-note");
     if (dayModeNote) {
@@ -783,7 +810,26 @@ function removeTask(childName, taskIndex) {
   if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
 
   state.children[childName].routines.splice(taskIndex, 1);
-  sessions[childName] = createSession(childName);
+  const session = sessions[childName];
+  if (session && session.startedAt) {
+    const nextCompletedTasks = {};
+    Object.entries(session.completedTasks || {}).forEach(([key, details]) => {
+      const numericKey = Number(key);
+      if (!Number.isInteger(numericKey)) {
+        nextCompletedTasks[key] = details;
+        return;
+      }
+      if (numericKey === taskIndex) return;
+      const shiftedKey = numericKey > taskIndex ? numericKey - 1 : numericKey;
+      nextCompletedTasks[String(shiftedKey)] = details;
+    });
+    session.completedTasks = nextCompletedTasks;
+    session.score = Object.values(nextCompletedTasks).reduce((sum, entry) => sum + (Number(entry?.points) || 0), 0);
+    const remaining = Object.values(nextCompletedTasks).filter(Boolean);
+    session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => Number(item.completedAtMs) || 0)) : session.startedAt;
+  } else {
+    sessions[childName] = createSession(childName);
+  }
   state.history = state.history.map((entry) => {
     if (entry.childName !== childName) return entry;
     return {
@@ -1018,6 +1064,7 @@ function renderStats() {
 
     entries.forEach((entry) => {
       (entry.taskEntries || []).forEach((t) => {
+        if (t?.isWildcard) return;
         if (!taskMap.has(t.taskName)) taskMap.set(t.taskName, { totalSec: 0, count: 0 });
         const row = taskMap.get(t.taskName);
         row.totalSec += t.durationSec;
@@ -1190,7 +1237,7 @@ function pickWildcardTask(childName, dateKey, usedToday = new Set()) {
 }
 
 function getOrAssignDailyWildcard(childName) {
-  const dateKey = getLocalDateKey();
+  const dateKey = WILDCARD_REFRESH_KEY;
   const usedToday = getUsedWildcardIdsForDate(dateKey, childName);
   const existing = state.wildcards[childName];
 
