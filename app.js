@@ -40,60 +40,1011 @@ const DEFAULT_WILDCARD_TASKS = [
 const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
+const WILDCARD_REFRESH_KEY = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const DEFAULT_LEVEL_DEFINITIONS = [
-  { level: 1, name: "Maur", requiredCompletedTasks: 0 },
-  { level: 2, name: "Marihøne", requiredCompletedTasks: 5 },
-  { level: 3, name: "Sommerfugl", requiredCompletedTasks: 12 },
-  { level: 4, name: "Bie", requiredCompletedTasks: 22 },
-  { level: 5, name: "Gresshoppe", requiredCompletedTasks: 35 },
-  { level: 6, name: "Frosk", requiredCompletedTasks: 52 },
-  { level: 7, name: "Mus", requiredCompletedTasks: 74 },
-  { level: 8, name: "Ekorn", requiredCompletedTasks: 102 },
-  { level: 9, name: "Pinnsvin", requiredCompletedTasks: 138 },
-  { level: 10, name: "Ravn", requiredCompletedTasks: 184 },
-  { level: 11, name: "Rev", requiredCompletedTasks: 242 },
-  { level: 12, name: "Gaupe", requiredCompletedTasks: 314 },
-  { level: 13, name: "Ulv", requiredCompletedTasks: 402 },
-  { level: 14, name: "Hjort", requiredCompletedTasks: 510 },
-  { level: 15, name: "Elg", requiredCompletedTasks: 642 },
-  { level: 16, name: "Løve", requiredCompletedTasks: 804 },
-  { level: 17, name: "Tiger", requiredCompletedTasks: 1002 },
-  { level: 18, name: "Neshorn", requiredCompletedTasks: 1244 },
-  { level: 19, name: "Isbjørn", requiredCompletedTasks: 1540 },
-  { level: 20, name: "Flodhest", requiredCompletedTasks: 1902 },
-  { level: 21, name: "Sjøløve", requiredCompletedTasks: 2344 },
-  { level: 22, name: "Hvalross", requiredCompletedTasks: 2882 },
-  { level: 23, name: "Delfin", requiredCompletedTasks: 3538 },
-  { level: 24, name: "Havskilpadde", requiredCompletedTasks: 4336 },
-  { level: 25, name: "Hammerhai", requiredCompletedTasks: 5308 },
-  { level: 26, name: "Spekkhogger", requiredCompletedTasks: 6492 },
-  { level: 27, name: "Kjempeblekksprut", requiredCompletedTasks: 7934 },
-  { level: 28, name: "Pukkelhval", requiredCompletedTasks: 9692 },
-  { level: 29, name: "Finhval", requiredCompletedTasks: 11836 },
-  { level: 30, name: "Blåhval", requiredCompletedTasks: 20000 },
+  {
+    "level": 1,
+    "name": "Bananflue",
+    "requiredCompletedTasks": 0
+  },
+  {
+    "level": 2,
+    "name": "Mygg",
+    "requiredCompletedTasks": 50
+  },
+  {
+    "level": 3,
+    "name": "Husflue",
+    "requiredCompletedTasks": 100
+  },
+  {
+    "level": 4,
+    "name": "Marihøne",
+    "requiredCompletedTasks": 150
+  },
+  {
+    "level": 5,
+    "name": "Løvskjærermaur",
+    "requiredCompletedTasks": 200
+  },
+  {
+    "level": 6,
+    "name": "Honningbie",
+    "requiredCompletedTasks": 250
+  },
+  {
+    "level": 7,
+    "name": "Jordhumle",
+    "requiredCompletedTasks": 300
+  },
+  {
+    "level": 8,
+    "name": "Monarksommerfugl",
+    "requiredCompletedTasks": 350
+  },
+  {
+    "level": 9,
+    "name": "Pinnedyr",
+    "requiredCompletedTasks": 400
+  },
+  {
+    "level": 10,
+    "name": "Gresshoppe",
+    "requiredCompletedTasks": 450
+  },
+  {
+    "level": 11,
+    "name": "Dvergspissmus",
+    "requiredCompletedTasks": 500
+  },
+  {
+    "level": 12,
+    "name": "Herkulesbille",
+    "requiredCompletedTasks": 550
+  },
+  {
+    "level": 13,
+    "name": "Blåmeis",
+    "requiredCompletedTasks": 600
+  },
+  {
+    "level": 14,
+    "name": "Sebrafink",
+    "requiredCompletedTasks": 650
+  },
+  {
+    "level": 15,
+    "name": "Kanarifugl",
+    "requiredCompletedTasks": 700
+  },
+  {
+    "level": 16,
+    "name": "Rødstrupe",
+    "requiredCompletedTasks": 750
+  },
+  {
+    "level": 17,
+    "name": "Husmus",
+    "requiredCompletedTasks": 800
+  },
+  {
+    "level": 18,
+    "name": "Feltmus",
+    "requiredCompletedTasks": 850
+  },
+  {
+    "level": 19,
+    "name": "Gråspurv",
+    "requiredCompletedTasks": 900
+  },
+  {
+    "level": 20,
+    "name": "Keiserskorpion",
+    "requiredCompletedTasks": 950
+  },
+  {
+    "level": 21,
+    "name": "Grønnfink",
+    "requiredCompletedTasks": 1000
+  },
+  {
+    "level": 22,
+    "name": "Vanlig padde",
+    "requiredCompletedTasks": 1050
+  },
+  {
+    "level": 23,
+    "name": "Tarantella",
+    "requiredCompletedTasks": 1100
+  },
+  {
+    "level": 24,
+    "name": "Rødvingetrost",
+    "requiredCompletedTasks": 1150
+  },
+  {
+    "level": 25,
+    "name": "Mellomspett",
+    "requiredCompletedTasks": 1200
+  },
+  {
+    "level": 26,
+    "name": "Vanlig stær",
+    "requiredCompletedTasks": 1250
+  },
+  {
+    "level": 27,
+    "name": "Gullhamster",
+    "requiredCompletedTasks": 1300
+  },
+  {
+    "level": 28,
+    "name": "Dvergsilkeape",
+    "requiredCompletedTasks": 1350
+  },
+  {
+    "level": 29,
+    "name": "Lemen",
+    "requiredCompletedTasks": 1400
+  },
+  {
+    "level": 30,
+    "name": "Røyskatt",
+    "requiredCompletedTasks": 1450
+  },
+  {
+    "level": 31,
+    "name": "Brunrotte",
+    "requiredCompletedTasks": 1500
+  },
+  {
+    "level": 32,
+    "name": "Tamdue",
+    "requiredCompletedTasks": 1550
+  },
+  {
+    "level": 33,
+    "name": "Rødt ekorn",
+    "requiredCompletedTasks": 1600
+  },
+  {
+    "level": 34,
+    "name": "Snøhare",
+    "requiredCompletedTasks": 1650
+  },
+  {
+    "level": 35,
+    "name": "Ringdue",
+    "requiredCompletedTasks": 1700
+  },
+  {
+    "level": 36,
+    "name": "Chinchilla",
+    "requiredCompletedTasks": 1750
+  },
+  {
+    "level": 37,
+    "name": "Surikat",
+    "requiredCompletedTasks": 1800
+  },
+  {
+    "level": 38,
+    "name": "Piggsvin",
+    "requiredCompletedTasks": 1850
+  },
+  {
+    "level": 39,
+    "name": "Ilder",
+    "requiredCompletedTasks": 1900
+  },
+  {
+    "level": 40,
+    "name": "Stokkand",
+    "requiredCompletedTasks": 1950
+  },
+  {
+    "level": 41,
+    "name": "Præriehund",
+    "requiredCompletedTasks": 2000
+  },
+  {
+    "level": 42,
+    "name": "Marsvin",
+    "requiredCompletedTasks": 2050
+  },
+  {
+    "level": 43,
+    "name": "Ravn",
+    "requiredCompletedTasks": 2100
+  },
+  {
+    "level": 44,
+    "name": "Fasan",
+    "requiredCompletedTasks": 2150
+  },
+  {
+    "level": 45,
+    "name": "Europeisk kanin",
+    "requiredCompletedTasks": 2200
+  },
+  {
+    "level": 46,
+    "name": "Snøugle",
+    "requiredCompletedTasks": 2250
+  },
+  {
+    "level": 47,
+    "name": "Hubro",
+    "requiredCompletedTasks": 2300
+  },
+  {
+    "level": 48,
+    "name": "Tamhøne",
+    "requiredCompletedTasks": 2350
+  },
+  {
+    "level": 49,
+    "name": "Kiwi",
+    "requiredCompletedTasks": 2400
+  },
+  {
+    "level": 50,
+    "name": "Stripet stinkdyr",
+    "requiredCompletedTasks": 2450
+  },
+  {
+    "level": 51,
+    "name": "Grågås",
+    "requiredCompletedTasks": 2500
+  },
+  {
+    "level": 52,
+    "name": "Stor flamingo",
+    "requiredCompletedTasks": 2550
+  },
+  {
+    "level": 53,
+    "name": "Kappucinape",
+    "requiredCompletedTasks": 2600
+  },
+  {
+    "level": 54,
+    "name": "Europeisk hare",
+    "requiredCompletedTasks": 2650
+  },
+  {
+    "level": 55,
+    "name": "Påfugl",
+    "requiredCompletedTasks": 2700
+  },
+  {
+    "level": 56,
+    "name": "Huskatt",
+    "requiredCompletedTasks": 2750
+  },
+  {
+    "level": 57,
+    "name": "Adéliepingvin",
+    "requiredCompletedTasks": 2800
+  },
+  {
+    "level": 58,
+    "name": "Kongeørn",
+    "requiredCompletedTasks": 2850
+  },
+  {
+    "level": 59,
+    "name": "Rød panda",
+    "requiredCompletedTasks": 2900
+  },
+  {
+    "level": 60,
+    "name": "Villkalkun",
+    "requiredCompletedTasks": 2950
+  },
+  {
+    "level": 61,
+    "name": "Rødrev",
+    "requiredCompletedTasks": 3000
+  },
+  {
+    "level": 62,
+    "name": "Kongekobra",
+    "requiredCompletedTasks": 3050
+  },
+  {
+    "level": 63,
+    "name": "Vaskebjørn",
+    "requiredCompletedTasks": 3100
+  },
+  {
+    "level": 64,
+    "name": "Harpyørn",
+    "requiredCompletedTasks": 3150
+  },
+  {
+    "level": 65,
+    "name": "Amerikansk grevling",
+    "requiredCompletedTasks": 3200
+  },
+  {
+    "level": 66,
+    "name": "Koala",
+    "requiredCompletedTasks": 3250
+  },
+  {
+    "level": 67,
+    "name": "Humboldtpingvin",
+    "requiredCompletedTasks": 3300
+  },
+  {
+    "level": 68,
+    "name": "Gullsjakal",
+    "requiredCompletedTasks": 3350
+  },
+  {
+    "level": 69,
+    "name": "Andeskondor",
+    "requiredCompletedTasks": 3400
+  },
+  {
+    "level": 70,
+    "name": "Europeisk oter",
+    "requiredCompletedTasks": 3450
+  },
+  {
+    "level": 71,
+    "name": "Ozelot",
+    "requiredCompletedTasks": 3500
+  },
+  {
+    "level": 72,
+    "name": "Knoppsvane",
+    "requiredCompletedTasks": 3550
+  },
+  {
+    "level": 73,
+    "name": "Mårhund",
+    "requiredCompletedTasks": 3600
+  },
+  {
+    "level": 74,
+    "name": "Tasmaniadjevel",
+    "requiredCompletedTasks": 3650
+  },
+  {
+    "level": 75,
+    "name": "Serval",
+    "requiredCompletedTasks": 3700
+  },
+  {
+    "level": 76,
+    "name": "Karakal",
+    "requiredCompletedTasks": 3750
+  },
+  {
+    "level": 77,
+    "name": "Kongepingvin",
+    "requiredCompletedTasks": 3800
+  },
+  {
+    "level": 78,
+    "name": "Binturong",
+    "requiredCompletedTasks": 3850
+  },
+  {
+    "level": 79,
+    "name": "Jerv",
+    "requiredCompletedTasks": 3900
+  },
+  {
+    "level": 80,
+    "name": "Prærieulv",
+    "requiredCompletedTasks": 3950
+  },
+  {
+    "level": 81,
+    "name": "Gaupe",
+    "requiredCompletedTasks": 4000
+  },
+  {
+    "level": 82,
+    "name": "Bever",
+    "requiredCompletedTasks": 4050
+  },
+  {
+    "level": 83,
+    "name": "Nilvaran",
+    "requiredCompletedTasks": 4100
+  },
+  {
+    "level": 84,
+    "name": "Gråsel",
+    "requiredCompletedTasks": 4150
+  },
+  {
+    "level": 85,
+    "name": "Kjempeotter",
+    "requiredCompletedTasks": 4200
+  },
+  {
+    "level": 86,
+    "name": "Nandu",
+    "requiredCompletedTasks": 4250
+  },
+  {
+    "level": 87,
+    "name": "Storkobbe",
+    "requiredCompletedTasks": 4300
+  },
+  {
+    "level": 88,
+    "name": "Emu",
+    "requiredCompletedTasks": 4350
+  },
+  {
+    "level": 89,
+    "name": "Stor maursluker",
+    "requiredCompletedTasks": 4400
+  },
+  {
+    "level": 90,
+    "name": "Springbukk",
+    "requiredCompletedTasks": 4450
+  },
+  {
+    "level": 91,
+    "name": "Rød kjempekenguru",
+    "requiredCompletedTasks": 4500
+  },
+  {
+    "level": 92,
+    "name": "Saigaantilope",
+    "requiredCompletedTasks": 4550
+  },
+  {
+    "level": 93,
+    "name": "Gepard",
+    "requiredCompletedTasks": 4600
+  },
+  {
+    "level": 94,
+    "name": "Bonobo",
+    "requiredCompletedTasks": 4650
+  },
+  {
+    "level": 95,
+    "name": "Hjelmkasuar",
+    "requiredCompletedTasks": 4700
+  },
+  {
+    "level": 96,
+    "name": "Sjimpanse",
+    "requiredCompletedTasks": 4750
+  },
+  {
+    "level": 97,
+    "name": "Kapybara",
+    "requiredCompletedTasks": 4800
+  },
+  {
+    "level": 98,
+    "name": "Impala",
+    "requiredCompletedTasks": 4850
+  },
+  {
+    "level": 99,
+    "name": "Leopard",
+    "requiredCompletedTasks": 4900
+  },
+  {
+    "level": 100,
+    "name": "Flekkhyene",
+    "requiredCompletedTasks": 4950
+  },
+  {
+    "level": 101,
+    "name": "Alpakka",
+    "requiredCompletedTasks": 5000
+  },
+  {
+    "level": 102,
+    "name": "Puma",
+    "requiredCompletedTasks": 5050
+  },
+  {
+    "level": 103,
+    "name": "Komodovaran",
+    "requiredCompletedTasks": 5100
+  },
+  {
+    "level": 104,
+    "name": "Orangutang",
+    "requiredCompletedTasks": 5150
+  },
+  {
+    "level": 105,
+    "name": "Pytonslange",
+    "requiredCompletedTasks": 5200
+  },
+  {
+    "level": 106,
+    "name": "Vortesvin",
+    "requiredCompletedTasks": 5250
+  },
+  {
+    "level": 107,
+    "name": "Jaguar",
+    "requiredCompletedTasks": 5300
+  },
+  {
+    "level": 108,
+    "name": "Gråulv",
+    "requiredCompletedTasks": 5350
+  },
+  {
+    "level": 109,
+    "name": "Villrein",
+    "requiredCompletedTasks": 5400
+  },
+  {
+    "level": 110,
+    "name": "Amerikansk svartbjørn",
+    "requiredCompletedTasks": 5450
+  },
+  {
+    "level": 111,
+    "name": "Grønn anakonda",
+    "requiredCompletedTasks": 5500
+  },
+  {
+    "level": 112,
+    "name": "Struts",
+    "requiredCompletedTasks": 5550
+  },
+  {
+    "level": 113,
+    "name": "Lama",
+    "requiredCompletedTasks": 5600
+  },
+  {
+    "level": 114,
+    "name": "Tigerhai",
+    "requiredCompletedTasks": 5650
+  },
+  {
+    "level": 115,
+    "name": "Kjempepanda",
+    "requiredCompletedTasks": 5700
+  },
+  {
+    "level": 116,
+    "name": "Vestgorilla",
+    "requiredCompletedTasks": 5750
+  },
+  {
+    "level": 117,
+    "name": "Brunbjørn",
+    "requiredCompletedTasks": 5800
+  },
+  {
+    "level": 118,
+    "name": "Flodsvin",
+    "requiredCompletedTasks": 5850
+  },
+  {
+    "level": 119,
+    "name": "Afrikansk løve",
+    "requiredCompletedTasks": 5900
+  },
+  {
+    "level": 120,
+    "name": "Grønn havskilpadde",
+    "requiredCompletedTasks": 5950
+  },
+  {
+    "level": 121,
+    "name": "Kjempeblekksprut",
+    "requiredCompletedTasks": 6000
+  },
+  {
+    "level": 122,
+    "name": "Sibirsk tiger",
+    "requiredCompletedTasks": 6050
+  },
+  {
+    "level": 123,
+    "name": "Atlantisk blåfinnet tunfisk",
+    "requiredCompletedTasks": 6100
+  },
+  {
+    "level": 124,
+    "name": "Nilkrokodille",
+    "requiredCompletedTasks": 6150
+  },
+  {
+    "level": 125,
+    "name": "Esel",
+    "requiredCompletedTasks": 6200
+  },
+  {
+    "level": 126,
+    "name": "Galápagosskilpadde",
+    "requiredCompletedTasks": 6250
+  },
+  {
+    "level": 127,
+    "name": "Tumler",
+    "requiredCompletedTasks": 6300
+  },
+  {
+    "level": 128,
+    "name": "Grizzlybjørn",
+    "requiredCompletedTasks": 6350
+  },
+  {
+    "level": 129,
+    "name": "Muskusfe",
+    "requiredCompletedTasks": 6400
+  },
+  {
+    "level": 130,
+    "name": "Bongoantilope",
+    "requiredCompletedTasks": 6450
+  },
+  {
+    "level": 131,
+    "name": "Stillehavsstør",
+    "requiredCompletedTasks": 6500
+  },
+  {
+    "level": 132,
+    "name": "Sverdfisk",
+    "requiredCompletedTasks": 6550
+  },
+  {
+    "level": 133,
+    "name": "California sjøløve",
+    "requiredCompletedTasks": 6600
+  },
+  {
+    "level": 134,
+    "name": "Plainssebra",
+    "requiredCompletedTasks": 6650
+  },
+  {
+    "level": 135,
+    "name": "Lavlandstapir",
+    "requiredCompletedTasks": 6700
+  },
+  {
+    "level": 136,
+    "name": "Sørlig elefantsel hunn",
+    "requiredCompletedTasks": 6750
+  },
+  {
+    "level": 137,
+    "name": "Dugong",
+    "requiredCompletedTasks": 6800
+  },
+  {
+    "level": 138,
+    "name": "Lærskilpadde",
+    "requiredCompletedTasks": 6850
+  },
+  {
+    "level": 139,
+    "name": "Tamhest",
+    "requiredCompletedTasks": 6900
+  },
+  {
+    "level": 140,
+    "name": "Elg",
+    "requiredCompletedTasks": 6950
+  },
+  {
+    "level": 141,
+    "name": "Dromedar",
+    "requiredCompletedTasks": 7000
+  },
+  {
+    "level": 142,
+    "name": "Elant",
+    "requiredCompletedTasks": 7050
+  },
+  {
+    "level": 143,
+    "name": "Amerikansk bison",
+    "requiredCompletedTasks": 7100
+  },
+  {
+    "level": 144,
+    "name": "Tamokse",
+    "requiredCompletedTasks": 7150
+  },
+  {
+    "level": 145,
+    "name": "Vannbøffel",
+    "requiredCompletedTasks": 7200
+  },
+  {
+    "level": 146,
+    "name": "Månefisk",
+    "requiredCompletedTasks": 7250
+  },
+  {
+    "level": 147,
+    "name": "Hvithai",
+    "requiredCompletedTasks": 7300
+  },
+  {
+    "level": 148,
+    "name": "Hvalross",
+    "requiredCompletedTasks": 7350
+  },
+  {
+    "level": 149,
+    "name": "Giraff",
+    "requiredCompletedTasks": 7400
+  },
+  {
+    "level": 150,
+    "name": "Kjempemanta",
+    "requiredCompletedTasks": 7450
+  },
+  {
+    "level": 151,
+    "name": "Flodhest",
+    "requiredCompletedTasks": 7500
+  },
+  {
+    "level": 152,
+    "name": "Beluga",
+    "requiredCompletedTasks": 7550
+  },
+  {
+    "level": 153,
+    "name": "Narhval",
+    "requiredCompletedTasks": 7600
+  },
+  {
+    "level": 154,
+    "name": "Indisk neshorn",
+    "requiredCompletedTasks": 7650
+  },
+  {
+    "level": 155,
+    "name": "Allosaurus",
+    "requiredCompletedTasks": 7700
+  },
+  {
+    "level": 156,
+    "name": "Carnotaurus",
+    "requiredCompletedTasks": 7750
+  },
+  {
+    "level": 157,
+    "name": "Hvitt neshorn",
+    "requiredCompletedTasks": 7800
+  },
+  {
+    "level": 158,
+    "name": "Albertosaurus",
+    "requiredCompletedTasks": 7850
+  },
+  {
+    "level": 159,
+    "name": "Afrikansk skogelefant",
+    "requiredCompletedTasks": 7900
+  },
+  {
+    "level": 160,
+    "name": "Grindhval",
+    "requiredCompletedTasks": 7950
+  },
+  {
+    "level": 161,
+    "name": "Parasaurolophus",
+    "requiredCompletedTasks": 8000
+  },
+  {
+    "level": 162,
+    "name": "Iguanodon",
+    "requiredCompletedTasks": 8050
+  },
+  {
+    "level": 163,
+    "name": "Asiatisk elefant",
+    "requiredCompletedTasks": 8100
+  },
+  {
+    "level": 164,
+    "name": "Spekkhogger",
+    "requiredCompletedTasks": 8150
+  },
+  {
+    "level": 165,
+    "name": "Stegosaurus",
+    "requiredCompletedTasks": 8200
+  },
+  {
+    "level": 166,
+    "name": "Therizinosaurus",
+    "requiredCompletedTasks": 8250
+  },
+  {
+    "level": 167,
+    "name": "Afrikansk savanneelefant",
+    "requiredCompletedTasks": 8300
+  },
+  {
+    "level": 168,
+    "name": "Ankylosaurus",
+    "requiredCompletedTasks": 8350
+  },
+  {
+    "level": 169,
+    "name": "Utahraptor",
+    "requiredCompletedTasks": 8400
+  },
+  {
+    "level": 170,
+    "name": "Tyrannosaurus rex",
+    "requiredCompletedTasks": 8450
+  },
+  {
+    "level": 171,
+    "name": "Giganotosaurus",
+    "requiredCompletedTasks": 8500
+  },
+  {
+    "level": 172,
+    "name": "Triceratops",
+    "requiredCompletedTasks": 8550
+  },
+  {
+    "level": 173,
+    "name": "Spinosaurus",
+    "requiredCompletedTasks": 8600
+  },
+  {
+    "level": 174,
+    "name": "Antarktisk vågehval",
+    "requiredCompletedTasks": 8650
+  },
+  {
+    "level": 175,
+    "name": "Kronosaurus",
+    "requiredCompletedTasks": 8700
+  },
+  {
+    "level": 176,
+    "name": "Pliosaurus",
+    "requiredCompletedTasks": 8750
+  },
+  {
+    "level": 177,
+    "name": "Shantungosaurus",
+    "requiredCompletedTasks": 8800
+  },
+  {
+    "level": 178,
+    "name": "Mosasaurus",
+    "requiredCompletedTasks": 8850
+  },
+  {
+    "level": 179,
+    "name": "Diplodocus",
+    "requiredCompletedTasks": 8900
+  },
+  {
+    "level": 180,
+    "name": "Hvalhai",
+    "requiredCompletedTasks": 8950
+  },
+  {
+    "level": 181,
+    "name": "Apatosaurus",
+    "requiredCompletedTasks": 9000
+  },
+  {
+    "level": 182,
+    "name": "Kjempekalmar",
+    "requiredCompletedTasks": 9050
+  },
+  {
+    "level": 183,
+    "name": "Barosaurus",
+    "requiredCompletedTasks": 9100
+  },
+  {
+    "level": 184,
+    "name": "Basilosaurus",
+    "requiredCompletedTasks": 9150
+  },
+  {
+    "level": 185,
+    "name": "Megalodon",
+    "requiredCompletedTasks": 9200
+  },
+  {
+    "level": 186,
+    "name": "Knølhval",
+    "requiredCompletedTasks": 9250
+  },
+  {
+    "level": 187,
+    "name": "Brachiosaurus",
+    "requiredCompletedTasks": 9300
+  },
+  {
+    "level": 188,
+    "name": "Supersaurus",
+    "requiredCompletedTasks": 9350
+  },
+  {
+    "level": 189,
+    "name": "Gråhval",
+    "requiredCompletedTasks": 9400
+  },
+  {
+    "level": 190,
+    "name": "Seihval",
+    "requiredCompletedTasks": 9450
+  },
+  {
+    "level": 191,
+    "name": "Sauroposeidon",
+    "requiredCompletedTasks": 9500
+  },
+  {
+    "level": 192,
+    "name": "Livyatan",
+    "requiredCompletedTasks": 9550
+  },
+  {
+    "level": 193,
+    "name": "Spermhval",
+    "requiredCompletedTasks": 9600
+  },
+  {
+    "level": 194,
+    "name": "Dreadnoughtus",
+    "requiredCompletedTasks": 9650
+  },
+  {
+    "level": 195,
+    "name": "Patagotitan",
+    "requiredCompletedTasks": 9700
+  },
+  {
+    "level": 196,
+    "name": "Argentinosaurus",
+    "requiredCompletedTasks": 9750
+  },
+  {
+    "level": 197,
+    "name": "Finhval",
+    "requiredCompletedTasks": 9800
+  },
+  {
+    "level": 198,
+    "name": "Grønlandshval",
+    "requiredCompletedTasks": 9850
+  },
+  {
+    "level": 199,
+    "name": "Retthval",
+    "requiredCompletedTasks": 9900
+  },
+  {
+    "level": 200,
+    "name": "Blåhval",
+    "requiredCompletedTasks": 9950
+  }
 ];
 let levelDefinitions = [...DEFAULT_LEVEL_DEFINITIONS];
-
-const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
-
-function hexToRgbString(hex) {
-  const clean = String(hex || "").replace("#", "").trim();
-  if (clean.length !== 6) return "253, 160, 117";
-  const r = Number.parseInt(clean.slice(0, 2), 16);
-  const g = Number.parseInt(clean.slice(2, 4), 16);
-  const b = Number.parseInt(clean.slice(4, 6), 16);
-  if (![r, g, b].every(Number.isFinite)) return "253, 160, 117";
-  return `${r}, ${g}, ${b}`;
-}
-
-function applyRandomAccentTheme() {
-  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#fda075";
-  document.documentElement.style.setProperty("--accent", color);
-  document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", color);
-}
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
@@ -140,14 +1091,16 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
-applyRandomAccentTheme();
-renderAll();
-startTimerLoop();
-registerServiceWorker();
-setupAuthUI();
-cloud.init();
-loadWildcardTasks();
-loadAnimalLevels();
+void initApp();
+
+async function initApp() {
+  setupAuthUI();
+  cloud.init();
+  await Promise.all([loadWildcardTasks(), loadAnimalLevels()]);
+  renderAll();
+  startTimerLoop();
+  registerServiceWorker();
+}
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
@@ -273,11 +1226,62 @@ function sanitizeWildcardCatalog(rawCatalog) {
   return rows;
 }
 
+async function fetchJsonCandidates(fileName) {
+  const candidates = [
+    `./${fileName}`,
+    fileName,
+    `/${fileName}`,
+    new URL(fileName, window.location.href).href,
+  ];
+  const tried = new Set();
+
+  for (const candidate of candidates) {
+    const target = String(candidate || "").trim();
+    if (!target || tried.has(target)) continue;
+    tried.add(target);
+    try {
+      const response = await fetch(target, { cache: "no-store" });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      return payload;
+    } catch {
+      // prøv neste kandidatsti
+    }
+  }
+
+  if ("caches" in window) {
+    for (const candidate of candidates) {
+      const target = String(candidate || "").trim();
+      if (!target) continue;
+      try {
+        const cached = await caches.match(target);
+        if (!cached || !cached.ok) continue;
+        const payload = await cached.json();
+        return payload;
+      } catch {
+        // ignorer og prøv videre
+      }
+    }
+  }
+
+  const embeddedId = fileName === "animal-levels.json" ? "animalLevelsData" : (fileName === "wildcard-tasks.json" ? "wildcardTasksData" : "");
+  if (embeddedId) {
+    try {
+      const embeddedNode = document.getElementById(embeddedId);
+      const embeddedText = embeddedNode?.textContent?.trim();
+      if (embeddedText) return JSON.parse(embeddedText);
+    } catch {
+      // fallback til null
+    }
+  }
+
+  return null;
+}
+
 async function loadWildcardTasks() {
   try {
-    const response = await fetch("./wildcard-tasks.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("wildcard-tasks.json");
+    if (!payload) return;
     const nextTasks = sanitizeWildcardCatalog(payload);
     if (!nextTasks.length) return;
 
@@ -317,9 +1321,8 @@ function sanitizeLevelDefinitions(rawDefinitions) {
 
 async function loadAnimalLevels() {
   try {
-    const response = await fetch("./animal-levels.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("animal-levels.json");
+    if (!payload) return;
     const nextDefs = sanitizeLevelDefinitions(payload);
     if (!nextDefs.length) return;
 
@@ -547,8 +1550,13 @@ function renderBoards() {
       <div class="child-head">
         <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
       </div>
+      <img class="child-level-animal" src="" alt="" width="400" height="400" hidden />
       <h3>${escapeHtml(name)}</h3>
       <p class="child-level-name"></p>
+      <div class="child-level-progress" aria-hidden="true">
+        <div class="child-level-progress-bar"></div>
+      </div>
+      <p class="child-level-progress-text"></p>
       <div class="board-top-stats">
         <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
         <span class="badge badge-level"><span class="badge-level-value"></span></span>
@@ -579,6 +1587,26 @@ function renderBoards() {
     if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
     const levelName = board.querySelector(".child-level-name");
     if (levelName) levelName.textContent = levelInfo.current.name;
+    const levelAnimalImage = board.querySelector(".child-level-animal");
+    if (levelAnimalImage) {
+      const levelCode = String(levelInfo.current.level).padStart(3, "0");
+      levelAnimalImage.src = `./icons/levels/level-${levelCode}.png`;
+      levelAnimalImage.alt = levelInfo.current.name;
+      levelAnimalImage.onerror = () => {
+        levelAnimalImage.hidden = true;
+      };
+      levelAnimalImage.onload = () => {
+        levelAnimalImage.hidden = false;
+      };
+    }
+    const levelProgressBar = board.querySelector(".child-level-progress-bar");
+    if (levelProgressBar) levelProgressBar.style.width = `${levelInfo.progressPct}%`;
+    const levelProgressText = board.querySelector(".child-level-progress-text");
+    if (levelProgressText) {
+      levelProgressText.textContent = levelInfo.next
+        ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} til nivå ${levelInfo.next.level}`
+        : "Maksnivå nådd";
+    }
 
     const dayModeNote = board.querySelector(".day-mode-note");
     if (dayModeNote) {
@@ -783,7 +1811,26 @@ function removeTask(childName, taskIndex) {
   if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
 
   state.children[childName].routines.splice(taskIndex, 1);
-  sessions[childName] = createSession(childName);
+  const session = sessions[childName];
+  if (session && session.startedAt) {
+    const nextCompletedTasks = {};
+    Object.entries(session.completedTasks || {}).forEach(([key, details]) => {
+      const numericKey = Number(key);
+      if (!Number.isInteger(numericKey)) {
+        nextCompletedTasks[key] = details;
+        return;
+      }
+      if (numericKey === taskIndex) return;
+      const shiftedKey = numericKey > taskIndex ? numericKey - 1 : numericKey;
+      nextCompletedTasks[String(shiftedKey)] = details;
+    });
+    session.completedTasks = nextCompletedTasks;
+    session.score = Object.values(nextCompletedTasks).reduce((sum, entry) => sum + (Number(entry?.points) || 0), 0);
+    const remaining = Object.values(nextCompletedTasks).filter(Boolean);
+    session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => Number(item.completedAtMs) || 0)) : session.startedAt;
+  } else {
+    sessions[childName] = createSession(childName);
+  }
   state.history = state.history.map((entry) => {
     if (entry.childName !== childName) return entry;
     return {
@@ -1018,6 +2065,7 @@ function renderStats() {
 
     entries.forEach((entry) => {
       (entry.taskEntries || []).forEach((t) => {
+        if (t?.isWildcard) return;
         if (!taskMap.has(t.taskName)) taskMap.set(t.taskName, { totalSec: 0, count: 0 });
         const row = taskMap.get(t.taskName);
         row.totalSec += t.durationSec;
@@ -1190,7 +2238,7 @@ function pickWildcardTask(childName, dateKey, usedToday = new Set()) {
 }
 
 function getOrAssignDailyWildcard(childName) {
-  const dateKey = getLocalDateKey();
+  const dateKey = WILDCARD_REFRESH_KEY;
   const usedToday = getUsedWildcardIdsForDate(dateKey, childName);
   const existing = state.wildcards[childName];
 
