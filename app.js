@@ -230,17 +230,6 @@ function sanitizeWildcardCatalog(rawCatalog) {
 }
 
 async function fetchJsonCandidates(fileName) {
-  const embeddedId = fileName === "animal-levels.json" ? "animalLevelsData" : (fileName === "wildcard-tasks.json" ? "wildcardTasksData" : "");
-  if (embeddedId) {
-    try {
-      const embeddedNode = document.getElementById(embeddedId);
-      const embeddedText = embeddedNode?.textContent?.trim();
-      if (embeddedText) return JSON.parse(embeddedText);
-    } catch {
-      // fallback til fetch-kandidater under
-    }
-  }
-
   const candidates = [
     `./${fileName}`,
     fileName,
@@ -275,6 +264,17 @@ async function fetchJsonCandidates(fileName) {
       } catch {
         // ignorer og prøv videre
       }
+    }
+  }
+
+  const embeddedId = fileName === "animal-levels.json" ? "animalLevelsData" : (fileName === "wildcard-tasks.json" ? "wildcardTasksData" : "");
+  if (embeddedId) {
+    try {
+      const embeddedNode = document.getElementById(embeddedId);
+      const embeddedText = embeddedNode?.textContent?.trim();
+      if (embeddedText) return JSON.parse(embeddedText);
+    } catch {
+      // fallback til null
     }
   }
 
