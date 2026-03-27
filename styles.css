@@ -151,9 +151,9 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .child-level-animal {
-  width: 400px;
-  height: 400px;
-  max-width: min(92vw, 400px);
+  width: 300px;
+  height: 300px;
+  max-width: min(92vw, 300px);
   object-fit: contain;
   display: block;
   margin: 0 auto 0.35rem;
@@ -508,6 +508,8 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .reward-menu-rings {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  column-gap: 15px;
+  row-gap: 0.85rem;
 }
 
 .reward-choice {
