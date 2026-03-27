@@ -426,7 +426,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 }
 
 .task-grid > * {
-  width: 100%;
+  width: 150px;
   justify-self: center;
 }
 
@@ -436,15 +436,16 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .task-btn {
   font-family: "Platypi", "Segoe UI", serif;
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   text-align: center;
   padding: 0.8rem;
   background: transparent;
-  border: 3px solid var(--ink);
+  border: 8px solid var(--ink);
   color: var(--ink);
   border-radius: 999px;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 150px;
+  height: 150px;
+  aspect-ratio: auto;
   min-height: 0;
   transition: transform 120ms ease, filter 120ms ease;
   display: flex;
@@ -474,13 +475,13 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   text-align: center;
   margin-top: 0.25rem;
   font-size: inherit;
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .task-btn small {
   display: block;
   margin-top: 0.3rem;
-  font-size: 0.68rem;
+  font-size: 0.74rem;
   font-weight: 200;
 }
 
@@ -922,10 +923,12 @@ input[type="text"] {
     padding-bottom: 2.2rem;
   }
   .task-grid > * {
-    width: 100%;
+    width: 132px;
   }
   .task-btn {
-    font-size: 0.9rem;
+    width: 132px;
+    height: 132px;
+    font-size: 0.94rem;
     padding: 0.32rem;
   }
   .child-create-row {
