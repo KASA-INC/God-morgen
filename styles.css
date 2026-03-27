@@ -418,7 +418,8 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
 
 .task-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 150px);
+  justify-content: center;
   column-gap: 5px;
   row-gap: 0.7rem;
   margin-top: 1rem;
@@ -430,7 +431,7 @@ button:focus-visible { background: var(--ink); color: var(--accent); }
   justify-self: center;
 }
 
-.task-grid > :nth-child(even) {
+.task-grid > :nth-child(3n + 2) {
   transform: translateY(50%);
 }
 
@@ -758,6 +759,15 @@ input[type="text"] {
 @media (max-width: 900px) {
   html { font-size: 14px; }
   .child-boards { grid-template-columns: 1fr; }
+  .task-grid {
+    grid-template-columns: repeat(2, 150px);
+  }
+  .task-grid > :nth-child(3n + 2) {
+    transform: none;
+  }
+  .task-grid > :nth-child(even) {
+    transform: translateY(50%);
+  }
   .task-grid { padding-bottom: 2.6rem; }
   .child-board h3 { font-size: 3.2rem; }
   .badge-clock { font-size: 2.8rem; }
@@ -918,6 +928,7 @@ input[type="text"] {
     grid-template-columns: 1fr;
   }
   .task-grid {
+    grid-template-columns: repeat(2, 132px);
     column-gap: 5px;
     row-gap: 0.5rem;
     padding-bottom: 2.2rem;
