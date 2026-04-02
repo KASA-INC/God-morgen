@@ -1,1002 +1,1002 @@
 [
   {
-    "level": 1,
-    "name": "Bananflue",
-    "requiredCompletedTasks": 0
+    "level":1,
+    "name":"Pygméspissmus",
+    "requiredCompletedTasks":0
   },
   {
-    "level": 2,
-    "name": "Mygg",
-    "requiredCompletedTasks": 1
+    "level":2,
+    "name":"Pilgiftfrosk",
+    "requiredCompletedTasks":50
   },
   {
-    "level": 3,
-    "name": "Husflue",
-    "requiredCompletedTasks": 2
+    "level":3,
+    "name":"Blåspurv",
+    "requiredCompletedTasks":100
   },
   {
-    "level": 4,
-    "name": "Marihøne",
-    "requiredCompletedTasks": 3
+    "level":4,
+    "name":"Husmus",
+    "requiredCompletedTasks":150
   },
   {
-    "level": 5,
-    "name": "Løvskjærermaur",
-    "requiredCompletedTasks": 4
+    "level":5,
+    "name":"Rødstrupe",
+    "requiredCompletedTasks":200
   },
   {
-    "level": 6,
-    "name": "Honningbie",
-    "requiredCompletedTasks": 5
+    "level":6,
+    "name":"Kanarifugl",
+    "requiredCompletedTasks":250
   },
   {
-    "level": 7,
-    "name": "Jordhumle",
-    "requiredCompletedTasks": 6
+    "level":7,
+    "name":"Rødøyet løvfrosk",
+    "requiredCompletedTasks":300
   },
   {
-    "level": 8,
-    "name": "Monarksommerfugl",
-    "requiredCompletedTasks": 7
+    "level":8,
+    "name":"Markmus",
+    "requiredCompletedTasks":350
   },
   {
-    "level": 9,
-    "name": "Pinnedyr",
-    "requiredCompletedTasks": 9
+    "level":9,
+    "name":"Spurv",
+    "requiredCompletedTasks":400
   },
   {
-    "level": 10,
-    "name": "Gresshoppe",
-    "requiredCompletedTasks": 12
+    "level":10,
+    "name":"Isfugl",
+    "requiredCompletedTasks":450
   },
   {
-    "level": 11,
-    "name": "Dvergspissmus",
-    "requiredCompletedTasks": 15
+    "level":11,
+    "name":"Lemen",
+    "requiredCompletedTasks":500
   },
   {
-    "level": 12,
-    "name": "Herkulesbille",
-    "requiredCompletedTasks": 19
+    "level":12,
+    "name":"Hærfugl",
+    "requiredCompletedTasks":550
   },
   {
-    "level": 13,
-    "name": "Blåmeis",
-    "requiredCompletedTasks": 24
+    "level":13,
+    "name":"Jerboa",
+    "requiredCompletedTasks":600
   },
   {
-    "level": 14,
-    "name": "Sebrafink",
-    "requiredCompletedTasks": 29
+    "level":14,
+    "name":"Stripeekorn",
+    "requiredCompletedTasks":650
   },
   {
-    "level": 15,
-    "name": "Kanarifugl",
-    "requiredCompletedTasks": 34
+    "level":15,
+    "name":"Moldvarp",
+    "requiredCompletedTasks":700
   },
   {
-    "level": 16,
-    "name": "Rødstrupe",
-    "requiredCompletedTasks": 40
+    "level":16,
+    "name":"Axolotl",
+    "requiredCompletedTasks":750
   },
   {
-    "level": 17,
-    "name": "Husmus",
-    "requiredCompletedTasks": 47
+    "level":17,
+    "name":"Salamander",
+    "requiredCompletedTasks":800
   },
   {
-    "level": 18,
-    "name": "Feltmus",
-    "requiredCompletedTasks": 55
+    "level":18,
+    "name":"Kengururotte",
+    "requiredCompletedTasks":850
   },
   {
-    "level": 19,
-    "name": "Gråspurv",
-    "requiredCompletedTasks": 63
+    "level":19,
+    "name":"Hamster",
+    "requiredCompletedTasks":900
   },
   {
-    "level": 20,
-    "name": "Keiserskorpion",
-    "requiredCompletedTasks": 71
+    "level":20,
+    "name":"Spøkelsesaper",
+    "requiredCompletedTasks":950
   },
   {
-    "level": 21,
-    "name": "Grønnfink",
-    "requiredCompletedTasks": 81
+    "level":21,
+    "name":"Pipeharer",
+    "requiredCompletedTasks":1000
   },
   {
-    "level": 22,
-    "name": "Vanlig padde",
-    "requiredCompletedTasks": 91
+    "level":22,
+    "name":"Flygeekorn",
+    "requiredCompletedTasks":1050
   },
   {
-    "level": 23,
-    "name": "Tarantella",
-    "requiredCompletedTasks": 101
+    "level":23,
+    "name":"Kestrel",
+    "requiredCompletedTasks":1100
   },
   {
-    "level": 24,
-    "name": "Rødvingetrost",
-    "requiredCompletedTasks": 113
+    "level":24,
+    "name":"Skjære",
+    "requiredCompletedTasks":1150
   },
   {
-    "level": 25,
-    "name": "Mellomspett",
-    "requiredCompletedTasks": 125
+    "level":25,
+    "name":"Ekorn",
+    "requiredCompletedTasks":1200
   },
   {
-    "level": 26,
-    "name": "Vanlig stær",
-    "requiredCompletedTasks": 138
+    "level":26,
+    "name":"Mustela",
+    "requiredCompletedTasks":1250
   },
   {
-    "level": 27,
-    "name": "Gullhamster",
-    "requiredCompletedTasks": 151
+    "level":27,
+    "name":"Røyskatt",
+    "requiredCompletedTasks":1300
   },
   {
-    "level": 28,
-    "name": "Dvergsilkeape",
-    "requiredCompletedTasks": 166
+    "level":28,
+    "name":"Hakkespett",
+    "requiredCompletedTasks":1350
   },
   {
-    "level": 29,
-    "name": "Lemen",
-    "requiredCompletedTasks": 181
+    "level":29,
+    "name":"Lundefugl",
+    "requiredCompletedTasks":1400
   },
   {
-    "level": 30,
-    "name": "Røyskatt",
-    "requiredCompletedTasks": 197
+    "level":30,
+    "name":"Kråke",
+    "requiredCompletedTasks":1450
   },
   {
-    "level": 31,
-    "name": "Brunrotte",
-    "requiredCompletedTasks": 213
+    "level":31,
+    "name":"Oksefrosk",
+    "requiredCompletedTasks":1500
   },
   {
-    "level": 32,
-    "name": "Tamdue",
-    "requiredCompletedTasks": 231
+    "level":32,
+    "name":"Springspissmus",
+    "requiredCompletedTasks":1550
   },
   {
-    "level": 33,
-    "name": "Rødt ekorn",
-    "requiredCompletedTasks": 249
+    "level":33,
+    "name":"Chinchilla",
+    "requiredCompletedTasks":1600
   },
   {
-    "level": 34,
-    "name": "Snøhare",
-    "requiredCompletedTasks": 268
+    "level":34,
+    "name":"Surikat",
+    "requiredCompletedTasks":1650
   },
   {
-    "level": 35,
-    "name": "Ringdue",
-    "requiredCompletedTasks": 288
+    "level":35,
+    "name":"Tukan",
+    "requiredCompletedTasks":1700
   },
   {
-    "level": 36,
-    "name": "Chinchilla",
-    "requiredCompletedTasks": 309
+    "level":36,
+    "name":"Pinnsvin",
+    "requiredCompletedTasks":1750
   },
   {
-    "level": 37,
-    "name": "Surikat",
-    "requiredCompletedTasks": 330
+    "level":37,
+    "name":"Marsvin",
+    "requiredCompletedTasks":1800
   },
   {
-    "level": 38,
-    "name": "Piggsvin",
-    "requiredCompletedTasks": 353
+    "level":38,
+    "name":"Præriehund",
+    "requiredCompletedTasks":1850
   },
   {
-    "level": 39,
-    "name": "Ilder",
-    "requiredCompletedTasks": 376
+    "level":39,
+    "name":"Mink",
+    "requiredCompletedTasks":1900
   },
   {
-    "level": 40,
-    "name": "Stokkand",
-    "requiredCompletedTasks": 400
+    "level":40,
+    "name":"Vandrefalk",
+    "requiredCompletedTasks":1950
   },
   {
-    "level": 41,
-    "name": "Præriehund",
-    "requiredCompletedTasks": 425
+    "level":41,
+    "name":"Måke",
+    "requiredCompletedTasks":2000
   },
   {
-    "level": 42,
-    "name": "Marsvin",
-    "requiredCompletedTasks": 451
+    "level":42,
+    "name":"Kakadu",
+    "requiredCompletedTasks":2050
   },
   {
-    "level": 43,
-    "name": "Ravn",
-    "requiredCompletedTasks": 478
+    "level":43,
+    "name":"Dovenloris",
+    "requiredCompletedTasks":2100
   },
   {
-    "level": 44,
-    "name": "Fasan",
-    "requiredCompletedTasks": 506
+    "level":44,
+    "name":"Grevlingpungdyr",
+    "requiredCompletedTasks":2150
   },
   {
-    "level": 45,
-    "name": "Europeisk kanin",
-    "requiredCompletedTasks": 535
+    "level":45,
+    "name":"Skjermflygere",
+    "requiredCompletedTasks":2200
   },
   {
-    "level": 46,
-    "name": "Snøugle",
-    "requiredCompletedTasks": 564
+    "level":46,
+    "name":"Båndilder",
+    "requiredCompletedTasks":2250
   },
   {
-    "level": 47,
-    "name": "Hubro",
-    "requiredCompletedTasks": 595
+    "level":47,
+    "name":"Nebbdyr",
+    "requiredCompletedTasks":2300
   },
   {
-    "level": 48,
-    "name": "Tamhøne",
-    "requiredCompletedTasks": 626
+    "level":48,
+    "name":"Kanin",
+    "requiredCompletedTasks":2350
   },
   {
-    "level": 49,
-    "name": "Kiwi",
-    "requiredCompletedTasks": 659
+    "level":49,
+    "name":"Fennek",
+    "requiredCompletedTasks":2400
   },
   {
-    "level": 50,
-    "name": "Stripet stinkdyr",
-    "requiredCompletedTasks": 692
+    "level":50,
+    "name":"Tårnugle",
+    "requiredCompletedTasks":2450
   },
   {
-    "level": 51,
-    "name": "Grågås",
-    "requiredCompletedTasks": 727
+    "level":51,
+    "name":"Ara",
+    "requiredCompletedTasks":2500
   },
   {
-    "level": 52,
-    "name": "Stor flamingo",
-    "requiredCompletedTasks": 762
+    "level":52,
+    "name":"Ravn",
+    "requiredCompletedTasks":2550
   },
   {
-    "level": 53,
-    "name": "Kappucinape",
-    "requiredCompletedTasks": 798
+    "level":53,
+    "name":"Mår",
+    "requiredCompletedTasks":2600
   },
   {
-    "level": 54,
-    "name": "Europeisk hare",
-    "requiredCompletedTasks": 836
+    "level":54,
+    "name":"Mungo",
+    "requiredCompletedTasks":2650
   },
   {
-    "level": 55,
-    "name": "Påfugl",
-    "requiredCompletedTasks": 874
+    "level":55,
+    "name":"Snøugle",
+    "requiredCompletedTasks":2700
   },
   {
-    "level": 56,
-    "name": "Huskatt",
-    "requiredCompletedTasks": 913
+    "level":56,
+    "name":"Stokkand",
+    "requiredCompletedTasks":2750
   },
   {
-    "level": 57,
-    "name": "Adéliepingvin",
-    "requiredCompletedTasks": 954
+    "level":57,
+    "name":"Hegre",
+    "requiredCompletedTasks":2800
   },
   {
-    "level": 58,
-    "name": "Kongeørn",
-    "requiredCompletedTasks": 995
+    "level":58,
+    "name":"Dynndjevel",
+    "requiredCompletedTasks":2850
   },
   {
-    "level": 59,
-    "name": "Rød panda",
-    "requiredCompletedTasks": 1038
+    "level":59,
+    "name":"Fingerdyr",
+    "requiredCompletedTasks":2900
   },
   {
-    "level": 60,
-    "name": "Villkalkun",
-    "requiredCompletedTasks": 1081
+    "level":60,
+    "name":"Saki",
+    "requiredCompletedTasks":2950
   },
   {
-    "level": 61,
-    "name": "Rødrev",
-    "requiredCompletedTasks": 1126
+    "level":61,
+    "name":"Kiwi",
+    "requiredCompletedTasks":3000
   },
   {
-    "level": 62,
-    "name": "Kongekobra",
-    "requiredCompletedTasks": 1171
+    "level":62,
+    "name":"Kylling",
+    "requiredCompletedTasks":3050
   },
   {
-    "level": 63,
-    "name": "Vaskebjørn",
-    "requiredCompletedTasks": 1218
+    "level":63,
+    "name":"Flamingo",
+    "requiredCompletedTasks":3100
   },
   {
-    "level": 64,
-    "name": "Harpyørn",
-    "requiredCompletedTasks": 1265
+    "level":64,
+    "name":"Skarv",
+    "requiredCompletedTasks":3150
   },
   {
-    "level": 65,
-    "name": "Amerikansk grevling",
-    "requiredCompletedTasks": 1314
+    "level":65,
+    "name":"Viklebjørn",
+    "requiredCompletedTasks":3200
   },
   {
-    "level": 66,
-    "name": "Koala",
-    "requiredCompletedTasks": 1364
+    "level":66,
+    "name":"Quokka",
+    "requiredCompletedTasks":3250
   },
   {
-    "level": 67,
-    "name": "Humboldtpingvin",
-    "requiredCompletedTasks": 1415
+    "level":67,
+    "name":"Uakari",
+    "requiredCompletedTasks":3300
   },
   {
-    "level": 68,
-    "name": "Gullsjakal",
-    "requiredCompletedTasks": 1467
+    "level":68,
+    "name":"Hare",
+    "requiredCompletedTasks":3350
   },
   {
-    "level": 69,
-    "name": "Andeskondor",
-    "requiredCompletedTasks": 1520
+    "level":69,
+    "name":"Pungrotte",
+    "requiredCompletedTasks":3400
   },
   {
-    "level": 70,
-    "name": "Europeisk oter",
-    "requiredCompletedTasks": 1574
+    "level":70,
+    "name":"Skunkdyr",
+    "requiredCompletedTasks":3450
   },
   {
-    "level": 71,
-    "name": "Ozelot",
-    "requiredCompletedTasks": 1629
+    "level":71,
+    "name":"Hubro",
+    "requiredCompletedTasks":3500
   },
   {
-    "level": 72,
-    "name": "Knoppsvane",
-    "requiredCompletedTasks": 1686
+    "level":72,
+    "name":"Stork",
+    "requiredCompletedTasks":3550
   },
   {
-    "level": 73,
-    "name": "Mårhund",
-    "requiredCompletedTasks": 1743
+    "level":73,
+    "name":"Murmeldyr",
+    "requiredCompletedTasks":3600
   },
   {
-    "level": 74,
-    "name": "Tasmaniadjevel",
-    "requiredCompletedTasks": 1802
+    "level":74,
+    "name":"Nesebjørn",
+    "requiredCompletedTasks":3650
   },
   {
-    "level": 75,
-    "name": "Serval",
-    "requiredCompletedTasks": 1862
+    "level":75,
+    "name":"Dovendyr",
+    "requiredCompletedTasks":3700
   },
   {
-    "level": 76,
-    "name": "Karakal",
-    "requiredCompletedTasks": 1923
+    "level":76,
+    "name":"Gås",
+    "requiredCompletedTasks":3750
   },
   {
-    "level": 77,
-    "name": "Kongepingvin",
-    "requiredCompletedTasks": 1985
+    "level":77,
+    "name":"Trane",
+    "requiredCompletedTasks":3800
   },
   {
-    "level": 78,
-    "name": "Binturong",
-    "requiredCompletedTasks": 2048
+    "level":78,
+    "name":"Kuskus",
+    "requiredCompletedTasks":3850
   },
   {
-    "level": 79,
-    "name": "Jerv",
-    "requiredCompletedTasks": 2113
+    "level":79,
+    "name":"Fugl Føniks",
+    "requiredCompletedTasks":3900
   },
   {
-    "level": 80,
-    "name": "Prærieulv",
-    "requiredCompletedTasks": 2178
+    "level":80,
+    "name":"Rødrev",
+    "requiredCompletedTasks":3950
   },
   {
-    "level": 81,
-    "name": "Gaupe",
-    "requiredCompletedTasks": 2245
+    "level":81,
+    "name":"Skjelldyr",
+    "requiredCompletedTasks":4000
   },
   {
-    "level": 82,
-    "name": "Bever",
-    "requiredCompletedTasks": 2313
+    "level":82,
+    "name":"Kongeørn",
+    "requiredCompletedTasks":4050
   },
   {
-    "level": 83,
-    "name": "Nilvaran",
-    "requiredCompletedTasks": 2382
+    "level":83,
+    "name":"Påfugl",
+    "requiredCompletedTasks":4100
   },
   {
-    "level": 84,
-    "name": "Gråsel",
-    "requiredCompletedTasks": 2452
+    "level":84,
+    "name":"Vaskebjørn",
+    "requiredCompletedTasks":4150
   },
   {
-    "level": 85,
-    "name": "Kjempeotter",
-    "requiredCompletedTasks": 2524
+    "level":85,
+    "name":"Børstesvin",
+    "requiredCompletedTasks":4200
   },
   {
-    "level": 86,
-    "name": "Nandu",
-    "requiredCompletedTasks": 2596
+    "level":86,
+    "name":"Trekenguru",
+    "requiredCompletedTasks":4250
   },
   {
-    "level": 87,
-    "name": "Storkobbe",
-    "requiredCompletedTasks": 2670
+    "level":87,
+    "name":"Bushhund",
+    "requiredCompletedTasks":4300
   },
   {
-    "level": 88,
-    "name": "Emu",
-    "requiredCompletedTasks": 2746
+    "level":88,
+    "name":"Sjakal",
+    "requiredCompletedTasks":4350
   },
   {
-    "level": 89,
-    "name": "Stor maursluker",
-    "requiredCompletedTasks": 2822
+    "level":89,
+    "name":"Albatross",
+    "requiredCompletedTasks":4400
   },
   {
-    "level": 90,
-    "name": "Springbukk",
-    "requiredCompletedTasks": 2899
+    "level":90,
+    "name":"Pelikan",
+    "requiredCompletedTasks":4450
   },
   {
-    "level": 91,
-    "name": "Rød kjempekenguru",
-    "requiredCompletedTasks": 2978
+    "level":91,
+    "name":"Mårbjørn",
+    "requiredCompletedTasks":4500
   },
   {
-    "level": 92,
-    "name": "Saigaantilope",
-    "requiredCompletedTasks": 3058
+    "level":92,
+    "name":"Brølape",
+    "requiredCompletedTasks":4550
   },
   {
-    "level": 93,
-    "name": "Gepard",
-    "requiredCompletedTasks": 3140
+    "level":93,
+    "name":"Kalkun",
+    "requiredCompletedTasks":4600
   },
   {
-    "level": 94,
-    "name": "Bonobo",
-    "requiredCompletedTasks": 3222
+    "level":94,
+    "name":"Prærieulv",
+    "requiredCompletedTasks":4650
   },
   {
-    "level": 95,
-    "name": "Hjelmkasuar",
-    "requiredCompletedTasks": 3306
+    "level":95,
+    "name":"Svane",
+    "requiredCompletedTasks":4700
   },
   {
-    "level": 96,
-    "name": "Sjimpanse",
-    "requiredCompletedTasks": 3391
+    "level":96,
+    "name":"Honninggrevling",
+    "requiredCompletedTasks":4750
   },
   {
-    "level": 97,
-    "name": "Kapybara",
-    "requiredCompletedTasks": 3477
+    "level":97,
+    "name":"Serval",
+    "requiredCompletedTasks":4800
   },
   {
-    "level": 98,
-    "name": "Impala",
-    "requiredCompletedTasks": 3565
+    "level":98,
+    "name":"Ocelot",
+    "requiredCompletedTasks":4850
   },
   {
-    "level": 99,
-    "name": "Leopard",
-    "requiredCompletedTasks": 3654
+    "level":99,
+    "name":"Andeskondor",
+    "requiredCompletedTasks":4900
   },
   {
-    "level": 100,
-    "name": "Flekkhyene",
-    "requiredCompletedTasks": 3744
+    "level":100,
+    "name":"Dingo",
+    "requiredCompletedTasks":4950
   },
   {
-    "level": 101,
-    "name": "Alpakka",
-    "requiredCompletedTasks": 3835
+    "level":101,
+    "name":"Karakal",
+    "requiredCompletedTasks":5000
   },
   {
-    "level": 102,
-    "name": "Puma",
-    "requiredCompletedTasks": 3928
+    "level":102,
+    "name":"Gelada",
+    "requiredCompletedTasks":5050
   },
   {
-    "level": 103,
-    "name": "Komodovaran",
-    "requiredCompletedTasks": 4022
+    "level":103,
+    "name":"Bever",
+    "requiredCompletedTasks":5100
   },
   {
-    "level": 104,
-    "name": "Orangutang",
-    "requiredCompletedTasks": 4117
+    "level":104,
+    "name":"Gaupe",
+    "requiredCompletedTasks":5150
   },
   {
-    "level": 105,
-    "name": "Pytonslange",
-    "requiredCompletedTasks": 4214
+    "level":105,
+    "name":"Asiatisk villhund",
+    "requiredCompletedTasks":5200
   },
   {
-    "level": 106,
-    "name": "Vortesvin",
-    "requiredCompletedTasks": 4312
+    "level":106,
+    "name":"Jerv",
+    "requiredCompletedTasks":5250
   },
   {
-    "level": 107,
-    "name": "Jaguar",
-    "requiredCompletedTasks": 4411
+    "level":107,
+    "name":"Neseape",
+    "requiredCompletedTasks":5300
   },
   {
-    "level": 108,
-    "name": "Gråulv",
-    "requiredCompletedTasks": 4511
+    "level":108,
+    "name":"Gaselle",
+    "requiredCompletedTasks":5350
   },
   {
-    "level": 109,
-    "name": "Villrein",
-    "requiredCompletedTasks": 4613
+    "level":109,
+    "name":"Kinesisk kjempesalamander",
+    "requiredCompletedTasks":5400
   },
   {
-    "level": 110,
-    "name": "Amerikansk svartbjørn",
-    "requiredCompletedTasks": 4716
+    "level":110,
+    "name":"Bavian",
+    "requiredCompletedTasks":5450
   },
   {
-    "level": 111,
-    "name": "Grønn anakonda",
-    "requiredCompletedTasks": 4821
+    "level":111,
+    "name":"Havoter",
+    "requiredCompletedTasks":5500
   },
   {
-    "level": 112,
-    "name": "Struts",
-    "requiredCompletedTasks": 4927
+    "level":112,
+    "name":"Keiserpingvin",
+    "requiredCompletedTasks":5550
   },
   {
-    "level": 113,
-    "name": "Lama",
-    "requiredCompletedTasks": 5034
+    "level":113,
+    "name":"Mandrill",
+    "requiredCompletedTasks":5600
   },
   {
-    "level": 114,
-    "name": "Tigerhai",
-    "requiredCompletedTasks": 5142
+    "level":114,
+    "name":"Ulv",
+    "requiredCompletedTasks":5650
   },
   {
-    "level": 115,
-    "name": "Kjempepanda",
-    "requiredCompletedTasks": 5252
+    "level":115,
+    "name":"Maursluker",
+    "requiredCompletedTasks":5700
   },
   {
-    "level": 116,
-    "name": "Vestgorilla",
-    "requiredCompletedTasks": 5364
+    "level":116,
+    "name":"Emu",
+    "requiredCompletedTasks":5750
   },
   {
-    "level": 117,
-    "name": "Brunbjørn",
-    "requiredCompletedTasks": 5476
+    "level":117,
+    "name":"Sjimpanse",
+    "requiredCompletedTasks":5800
   },
   {
-    "level": 118,
-    "name": "Flodsvin",
-    "requiredCompletedTasks": 5590
+    "level":118,
+    "name":"Capybara",
+    "requiredCompletedTasks":5850
   },
   {
-    "level": 119,
-    "name": "Afrikansk løve",
-    "requiredCompletedTasks": 5706
+    "level":119,
+    "name":"Gepard",
+    "requiredCompletedTasks":5900
   },
   {
-    "level": 120,
-    "name": "Grønn havskilpadde",
-    "requiredCompletedTasks": 5822
+    "level":120,
+    "name":"Impala",
+    "requiredCompletedTasks":5950
   },
   {
-    "level": 121,
-    "name": "Kjempeblekksprut",
-    "requiredCompletedTasks": 5940
+    "level":121,
+    "name":"Gemsbukk",
+    "requiredCompletedTasks":6000
   },
   {
-    "level": 122,
-    "name": "Sibirsk tiger",
-    "requiredCompletedTasks": 6060
+    "level":122,
+    "name":"Vikunja",
+    "requiredCompletedTasks":6050
   },
   {
-    "level": 123,
-    "name": "Atlantisk blåfinnet tunfisk",
-    "requiredCompletedTasks": 6181
+    "level":123,
+    "name":"Snøleopard",
+    "requiredCompletedTasks":6100
   },
   {
-    "level": 124,
-    "name": "Nilkrokodille",
-    "requiredCompletedTasks": 6303
+    "level":124,
+    "name":"Leopard",
+    "requiredCompletedTasks":6150
   },
   {
-    "level": 125,
-    "name": "Esel",
-    "requiredCompletedTasks": 6427
+    "level":125,
+    "name":"Hyene",
+    "requiredCompletedTasks":6200
   },
   {
-    "level": 126,
-    "name": "Galápagosskilpadde",
-    "requiredCompletedTasks": 6552
+    "level":126,
+    "name":"Aardvark",
+    "requiredCompletedTasks":6250
   },
   {
-    "level": 127,
-    "name": "Tumler",
-    "requiredCompletedTasks": 6678
+    "level":127,
+    "name":"Geit",
+    "requiredCompletedTasks":6300
   },
   {
-    "level": 128,
-    "name": "Grizzlybjørn",
-    "requiredCompletedTasks": 6806
+    "level":128,
+    "name":"Nise",
+    "requiredCompletedTasks":6350
   },
   {
-    "level": 129,
-    "name": "Muskusfe",
-    "requiredCompletedTasks": 6936
+    "level":129,
+    "name":"Kasuar",
+    "requiredCompletedTasks":6400
   },
   {
-    "level": 130,
-    "name": "Bongoantilope",
-    "requiredCompletedTasks": 7066
+    "level":130,
+    "name":"Puma",
+    "requiredCompletedTasks":6450
   },
   {
-    "level": 131,
-    "name": "Stillehavsstør",
-    "requiredCompletedTasks": 7199
+    "level":131,
+    "name":"Orangutang",
+    "requiredCompletedTasks":6500
   },
   {
-    "level": 132,
-    "name": "Sverdfisk",
-    "requiredCompletedTasks": 7332
+    "level":132,
+    "name":"Sau",
+    "requiredCompletedTasks":6550
   },
   {
-    "level": 133,
-    "name": "California sjøløve",
-    "requiredCompletedTasks": 7467
+    "level":133,
+    "name":"Alpakka",
+    "requiredCompletedTasks":6600
   },
   {
-    "level": 134,
-    "name": "Plainssebra",
-    "requiredCompletedTasks": 7604
+    "level":134,
+    "name":"Fjellgeit",
+    "requiredCompletedTasks":6650
   },
   {
-    "level": 135,
-    "name": "Lavlandstapir",
-    "requiredCompletedTasks": 7742
+    "level":135,
+    "name":"Vortesvin",
+    "requiredCompletedTasks":6700
   },
   {
-    "level": 136,
-    "name": "Sørlig elefantsel hunn",
-    "requiredCompletedTasks": 7881
+    "level":136,
+    "name":"Guanako",
+    "requiredCompletedTasks":6750
   },
   {
-    "level": 137,
-    "name": "Dugong",
-    "requiredCompletedTasks": 8022
+    "level":137,
+    "name":"Varulv",
+    "requiredCompletedTasks":6800
   },
   {
-    "level": 138,
-    "name": "Lærskilpadde",
-    "requiredCompletedTasks": 8164
+    "level":138,
+    "name":"Kjempepanda",
+    "requiredCompletedTasks":6850
   },
   {
-    "level": 139,
-    "name": "Tamhest",
-    "requiredCompletedTasks": 8308
+    "level":139,
+    "name":"Villsvin",
+    "requiredCompletedTasks":6900
   },
   {
-    "level": 140,
-    "name": "Elg",
-    "requiredCompletedTasks": 8453
+    "level":140,
+    "name":"Sel",
+    "requiredCompletedTasks":6950
   },
   {
-    "level": 141,
-    "name": "Dromedar",
-    "requiredCompletedTasks": 8600
+    "level":141,
+    "name":"Struts",
+    "requiredCompletedTasks":7000
   },
   {
-    "level": 142,
-    "name": "Elant",
-    "requiredCompletedTasks": 8748
+    "level":142,
+    "name":"Alpesteinbukk",
+    "requiredCompletedTasks":7050
   },
   {
-    "level": 143,
-    "name": "Amerikansk bison",
-    "requiredCompletedTasks": 8898
+    "level":143,
+    "name":"Gris",
+    "requiredCompletedTasks":7100
   },
   {
-    "level": 144,
-    "name": "Tamokse",
-    "requiredCompletedTasks": 9049
+    "level":144,
+    "name":"Svartbjørn",
+    "requiredCompletedTasks":7150
   },
   {
-    "level": 145,
-    "name": "Vannbøffel",
-    "requiredCompletedTasks": 9201
+    "level":145,
+    "name":"Reinsdyr",
+    "requiredCompletedTasks":7200
   },
   {
-    "level": 146,
-    "name": "Månefisk",
-    "requiredCompletedTasks": 9355
+    "level":146,
+    "name":"Llama",
+    "requiredCompletedTasks":7250
   },
   {
-    "level": 147,
-    "name": "Hvithai",
-    "requiredCompletedTasks": 9511
+    "level":147,
+    "name":"Antilope",
+    "requiredCompletedTasks":7300
   },
   {
-    "level": 148,
-    "name": "Hvalross",
-    "requiredCompletedTasks": 9668
+    "level":148,
+    "name":"Gorilla",
+    "requiredCompletedTasks":7350
   },
   {
-    "level": 149,
-    "name": "Giraff",
-    "requiredCompletedTasks": 9827
+    "level":149,
+    "name":"Hjort",
+    "requiredCompletedTasks":7400
   },
   {
-    "level": 150,
-    "name": "Kjempemanta",
-    "requiredCompletedTasks": 9987
+    "level":150,
+    "name":"Yeti",
+    "requiredCompletedTasks":7450
   },
   {
-    "level": 151,
-    "name": "Flodhest",
-    "requiredCompletedTasks": 10148
+    "level":151,
+    "name":"Esel",
+    "requiredCompletedTasks":7500
   },
   {
-    "level": 152,
-    "name": "Beluga",
-    "requiredCompletedTasks": 10312
+    "level":152,
+    "name":"Gnu",
+    "requiredCompletedTasks":7550
   },
   {
-    "level": 153,
-    "name": "Narhval",
-    "requiredCompletedTasks": 10476
+    "level":153,
+    "name":"Okapi",
+    "requiredCompletedTasks":7600
   },
   {
-    "level": 154,
-    "name": "Indisk neshorn",
-    "requiredCompletedTasks": 10642
+    "level":154,
+    "name":"Sasquatch",
+    "requiredCompletedTasks":7650
   },
   {
-    "level": 155,
-    "name": "Allosaurus",
-    "requiredCompletedTasks": 10810
+    "level":155,
+    "name":"Griff",
+    "requiredCompletedTasks":7700
   },
   {
-    "level": 156,
-    "name": "Carnotaurus",
-    "requiredCompletedTasks": 10979
+    "level":156,
+    "name":"Brunbjørn",
+    "requiredCompletedTasks":7750
   },
   {
-    "level": 157,
-    "name": "Hvitt neshorn",
-    "requiredCompletedTasks": 11150
+    "level":157,
+    "name":"Buskbukk",
+    "requiredCompletedTasks":7800
   },
   {
-    "level": 158,
-    "name": "Albertosaurus",
-    "requiredCompletedTasks": 11322
+    "level":158,
+    "name":"Sjøløve",
+    "requiredCompletedTasks":7850
   },
   {
-    "level": 159,
-    "name": "Afrikansk skogelefant",
-    "requiredCompletedTasks": 11496
+    "level":159,
+    "name":"Takin",
+    "requiredCompletedTasks":7900
   },
   {
-    "level": 160,
-    "name": "Grindhval",
-    "requiredCompletedTasks": 11672
+    "level":160,
+    "name":"Grizzlybjørn",
+    "requiredCompletedTasks":7950
   },
   {
-    "level": 161,
-    "name": "Parasaurolophus",
-    "requiredCompletedTasks": 11849
+    "level":161,
+    "name":"Wapiti",
+    "requiredCompletedTasks":8000
   },
   {
-    "level": 162,
-    "name": "Iguanodon",
-    "requiredCompletedTasks": 12027
+    "level":162,
+    "name":"Zebra",
+    "requiredCompletedTasks":8050
   },
   {
-    "level": 163,
-    "name": "Asiatisk elefant",
-    "requiredCompletedTasks": 12207
+    "level":163,
+    "name":"Minotaur",
+    "requiredCompletedTasks":8100
   },
   {
-    "level": 164,
-    "name": "Spekkhogger",
-    "requiredCompletedTasks": 12389
+    "level":164,
+    "name":"Hippogriff",
+    "requiredCompletedTasks":8150
   },
   {
-    "level": 165,
-    "name": "Stegosaurus",
-    "requiredCompletedTasks": 12572
+    "level":165,
+    "name":"Isbjørn",
+    "requiredCompletedTasks":8200
   },
   {
-    "level": 166,
-    "name": "Therizinosaurus",
-    "requiredCompletedTasks": 12757
+    "level":166,
+    "name":"Pegasus",
+    "requiredCompletedTasks":8250
   },
   {
-    "level": 167,
-    "name": "Afrikansk savanneelefant",
-    "requiredCompletedTasks": 12943
+    "level":167,
+    "name":"Elg",
+    "requiredCompletedTasks":8300
   },
   {
-    "level": 168,
-    "name": "Ankylosaurus",
-    "requiredCompletedTasks": 13131
+    "level":168,
+    "name":"Hest",
+    "requiredCompletedTasks":8350
   },
   {
-    "level": 169,
-    "name": "Utahraptor",
-    "requiredCompletedTasks": 13321
+    "level":169,
+    "name":"Yakokse",
+    "requiredCompletedTasks":8400
   },
   {
-    "level": 170,
-    "name": "Tyrannosaurus rex",
-    "requiredCompletedTasks": 13512
+    "level":170,
+    "name":"Enhjørning",
+    "requiredCompletedTasks":8450
   },
   {
-    "level": 171,
-    "name": "Giganotosaurus",
-    "requiredCompletedTasks": 13704
+    "level":171,
+    "name":"Kamel",
+    "requiredCompletedTasks":8500
   },
   {
-    "level": 172,
-    "name": "Triceratops",
-    "requiredCompletedTasks": 13899
+    "level":172,
+    "name":"Eland",
+    "requiredCompletedTasks":8550
   },
   {
-    "level": 173,
-    "name": "Spinosaurus",
-    "requiredCompletedTasks": 14095
+    "level":173,
+    "name":"Kodiakbjørn",
+    "requiredCompletedTasks":8600
   },
   {
-    "level": 174,
-    "name": "Antarktisk vågehval",
-    "requiredCompletedTasks": 14292
+    "level":174,
+    "name":"Kentaur",
+    "requiredCompletedTasks":8650
   },
   {
-    "level": 175,
-    "name": "Kronosaurus",
-    "requiredCompletedTasks": 14491
+    "level":175,
+    "name":"Bison",
+    "requiredCompletedTasks":8700
   },
   {
-    "level": 176,
-    "name": "Pliosaurus",
-    "requiredCompletedTasks": 14692
+    "level":176,
+    "name":"Vannbøffel",
+    "requiredCompletedTasks":8750
   },
   {
-    "level": 177,
-    "name": "Shantungosaurus",
-    "requiredCompletedTasks": 14894
+    "level":177,
+    "name":"Hvalross",
+    "requiredCompletedTasks":8800
   },
   {
-    "level": 178,
-    "name": "Mosasaurus",
-    "requiredCompletedTasks": 15098
+    "level":178,
+    "name":"Sjiraff",
+    "requiredCompletedTasks":8850
   },
   {
-    "level": 179,
-    "name": "Diplodocus",
-    "requiredCompletedTasks": 15303
+    "level":179,
+    "name":"Flodhest",
+    "requiredCompletedTasks":8900
   },
   {
-    "level": 180,
-    "name": "Hvalhai",
-    "requiredCompletedTasks": 15511
+    "level":180,
+    "name":"Hvithval",
+    "requiredCompletedTasks":8950
   },
   {
-    "level": 181,
-    "name": "Apatosaurus",
-    "requiredCompletedTasks": 15719
+    "level":181,
+    "name":"Narhval",
+    "requiredCompletedTasks":9000
   },
   {
-    "level": 182,
-    "name": "Kjempekalmar",
-    "requiredCompletedTasks": 15930
+    "level":182,
+    "name":"Halvspekkhogger",
+    "requiredCompletedTasks":9050
   },
   {
-    "level": 183,
-    "name": "Barosaurus",
-    "requiredCompletedTasks": 16142
+    "level":183,
+    "name":"Nesehorn",
+    "requiredCompletedTasks":9100
   },
   {
-    "level": 184,
-    "name": "Basilosaurus",
-    "requiredCompletedTasks": 16356
+    "level":184,
+    "name":"Kyklop",
+    "requiredCompletedTasks":9150
   },
   {
-    "level": 185,
-    "name": "Megalodon",
-    "requiredCompletedTasks": 16571
+    "level":185,
+    "name":"Grindhvaler",
+    "requiredCompletedTasks":9200
   },
   {
-    "level": 186,
-    "name": "Knølhval",
-    "requiredCompletedTasks": 16788
+    "level":186,
+    "name":"Sjøelefant",
+    "requiredCompletedTasks":9250
   },
   {
-    "level": 187,
-    "name": "Brachiosaurus",
-    "requiredCompletedTasks": 17006
+    "level":187,
+    "name":"Troll",
+    "requiredCompletedTasks":9300
   },
   {
-    "level": 188,
-    "name": "Supersaurus",
-    "requiredCompletedTasks": 17227
+    "level":188,
+    "name":"Spekkhogger",
+    "requiredCompletedTasks":9350
   },
   {
-    "level": 189,
-    "name": "Gråhval",
-    "requiredCompletedTasks": 17449
+    "level":189,
+    "name":"Drage",
+    "requiredCompletedTasks":9400
   },
   {
-    "level": 190,
-    "name": "Seihval",
-    "requiredCompletedTasks": 17672
+    "level":190,
+    "name":"Elefant",
+    "requiredCompletedTasks":9450
   },
   {
-    "level": 191,
-    "name": "Sauroposeidon",
-    "requiredCompletedTasks": 17897
+    "level":191,
+    "name":"King Kong",
+    "requiredCompletedTasks":9500
   },
   {
-    "level": 192,
-    "name": "Livyatan",
-    "requiredCompletedTasks": 18124
+    "level":192,
+    "name":"Nessie",
+    "requiredCompletedTasks":9550
   },
   {
-    "level": 193,
-    "name": "Spermhval",
-    "requiredCompletedTasks": 18353
+    "level":193,
+    "name":"Knølhval",
+    "requiredCompletedTasks":9600
   },
   {
-    "level": 194,
-    "name": "Dreadnoughtus",
-    "requiredCompletedTasks": 18583
+    "level":194,
+    "name":"Spermhval",
+    "requiredCompletedTasks":9650
   },
   {
-    "level": 195,
-    "name": "Patagotitan",
-    "requiredCompletedTasks": 18815
+    "level":195,
+    "name":"Kraken",
+    "requiredCompletedTasks":9700
   },
   {
-    "level": 196,
-    "name": "Argentinosaurus",
-    "requiredCompletedTasks": 19049
+    "level":196,
+    "name":"Leviatan",
+    "requiredCompletedTasks":9750
   },
   {
-    "level": 197,
-    "name": "Finhval",
-    "requiredCompletedTasks": 19284
+    "level":197,
+    "name":"Finnhval",
+    "requiredCompletedTasks":9800
   },
   {
-    "level": 198,
-    "name": "Grønlandshval",
-    "requiredCompletedTasks": 19521
+    "level":198,
+    "name":"Godzilla",
+    "requiredCompletedTasks":9850
   },
   {
-    "level": 199,
-    "name": "Retthval",
-    "requiredCompletedTasks": 19760
+    "level":199,
+    "name":"Blåhval",
+    "requiredCompletedTasks":9900
   },
   {
-    "level": 200,
-    "name": "Blåhval",
-    "requiredCompletedTasks": 20000
+    "level":200,
+    "name":"Midgardsormen",
+    "requiredCompletedTasks":9950
   }
 ]
