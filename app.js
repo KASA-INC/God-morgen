@@ -1051,6 +1051,7 @@ let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
+let activeChildName = null;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
@@ -1515,178 +1516,245 @@ function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
   if (!names.length) {
+    activeChildName = null;
     document.body.classList.add("setup-only");
     emptyState.hidden = true;
+    renderHeroShell(0, 0);
     return;
   }
   document.body.classList.remove("setup-only");
   emptyState.hidden = true;
 
-  let wildcardStateChanged = false;
+  if (activeChildName && !state.children[activeChildName]) activeChildName = null;
 
-  Object.entries(state.children).forEach(([name, info]) => {
+  let wildcardStateChanged = false;
+  const familyProgress = names.reduce((sum, name) => {
+    const info = state.children[name];
     const session = sessions[name] || createSession(name);
     sessions[name] = session;
-    const doneCount = countRoutineCompletions(session);
-    const total = info.routines.length;
     const todayKey = getLocalDateKey();
-    const manualStatus = getChildDayOverride(name, todayKey);
-    const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
-    const requiredCount = getRequiredRoutineCount(total, effectiveMode);
-    const streak = ensureChildStreak(name);
-    const account = ensureChildPointAccount(name);
-    const started = !!session.startedAt;
-    const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
-    const wildcardEnabled = state.bonusTasksEnabled !== false;
-    const wildcardState = wildcardEnabled ? getOrAssignDailyWildcard(name) : null;
-    if (wildcardState?.didAssign) wildcardStateChanged = true;
-    const wildcardTask = wildcardState?.task || null;
-    const wildcardTaskKey = wildcardState ? `wildcard:${wildcardState.dateKey}` : null;
-    const wildcardDone = wildcardTaskKey ? !!session.completedTasks[wildcardTaskKey] : false;
+    const requiredCount = getRequiredRoutineCount(info.routines.length, getEffectiveDayMode(todayKey, getChildDayOverride(name, todayKey)));
+    const doneCount = countRoutineCompletions(session);
+    return sum + (requiredCount ? Math.min(1, doneCount / requiredCount) : 1);
+  }, 0);
+  renderHeroShell(names.length, Math.round((familyProgress / Math.max(1, names.length)) * 100));
 
-    const board = document.createElement("section");
-    board.className = "child-board";
-    board.innerHTML = `
-      <div class="child-head">
-        <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
+  if (!activeChildName) {
+    renderHomeScreen(names);
+    return;
+  }
+
+  const name = activeChildName;
+  const info = state.children[name];
+  const session = sessions[name] || createSession(name);
+  sessions[name] = session;
+  const doneCount = countRoutineCompletions(session);
+  const total = info.routines.length;
+  const todayKey = getLocalDateKey();
+  const manualStatus = getChildDayOverride(name, todayKey);
+  const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
+  const requiredCount = getRequiredRoutineCount(total, effectiveMode);
+  const streak = ensureChildStreak(name);
+  const account = ensureChildPointAccount(name);
+  const started = !!session.startedAt;
+  const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
+  const wildcardEnabled = state.bonusTasksEnabled !== false;
+  const wildcardState = wildcardEnabled ? getOrAssignDailyWildcard(name) : null;
+  if (wildcardState?.didAssign) wildcardStateChanged = true;
+  const wildcardTask = wildcardState?.task || null;
+  const wildcardTaskKey = wildcardState ? `wildcard:${wildcardState.dateKey}` : null;
+  const wildcardDone = wildcardTaskKey ? !!session.completedTasks[wildcardTaskKey] : false;
+  const levelProgress = ensureChildLevelProgress(name);
+  const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
+  const levelCode = String(levelInfo.current.level).padStart(3, "0");
+
+  const board = document.createElement("section");
+  board.className = "child-board child-board--quest";
+  board.innerHTML = `
+    <div class="quest-nav">
+      <button class="ghost-btn back-home-btn" type="button" aria-label="Tilbake til familien">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Familie
+      </button>
+      <button class="ghost-btn remove-child-btn" type="button" aria-label="Fjern barn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="hero-card child-hero-card">
+      <div class="avatar-stage">
+        <div class="avatar-glow"></div>
+        <img class="child-level-animal" src="./icons/levels/level-${levelCode}.png" alt="${escapeHtml(levelInfo.current.name)}" width="300" height="300" hidden />
+        <div class="avatar-fallback" aria-hidden="true"><span></span></div>
       </div>
-      <img class="child-level-animal" src="" alt="" width="300" height="300" hidden />
-      <h3>${escapeHtml(name)}</h3>
-      <p class="child-level-name"></p>
-      <div class="child-level-progress" aria-hidden="true">
-        <div class="child-level-progress-bar"></div>
+      <div class="child-title-block">
+        <p class="eyebrow">Dagens heltereise</p>
+        <h3>${escapeHtml(name)}</h3>
+        <p class="child-level-name">${escapeHtml(levelInfo.current.name)}</p>
       </div>
-      <p class="child-level-progress-text"></p>
-      <div class="board-top-stats">
-        <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
-        <span class="badge badge-level"><span class="badge-level-value"></span></span>
-        <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <img class="score-star" src="./icons/star.svg" alt="" aria-hidden="true" /></span>
+      <div class="stat-pills" aria-label="Heltestatus">
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 3 5 5.5 5 9a5 5 0 0 1-10 0c0-3.5 2-6 5-9Z" /></svg>${streak.count} rekke</span>
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.2l-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg>${account.earnedTotal} HP</span>
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="9" /></svg>${formatElapsed(session.startedAt)}</span>
       </div>
+      <div class="xp-panel">
+        <div class="xp-label"><span>XP mot nivå ${levelInfo.next ? levelInfo.next.level : levelInfo.current.level}</span><strong>${levelInfo.progressPct}%</strong></div>
+        <div class="child-level-progress" aria-label="XP mot neste nivå"><div class="child-level-progress-bar" style="width:${levelInfo.progressPct}%"></div></div>
+        <p class="child-level-progress-text">${levelInfo.next ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} XP til neste dyr` : "Legendarisk makslevel"}</p>
+      </div>
+    </div>
+    <section class="quest-controls" aria-label="Morgenstyring">
       <div class="day-status-row">
         <div class="day-status-control" role="radiogroup" aria-label="Dagens status">
           <button class="day-status-step ${manualStatus === "holiday" ? "active" : ""}" type="button" data-status="holiday" role="radio" aria-checked="${manualStatus === "holiday"}"></button>
           <button class="day-status-step ${manualStatus === "normal" ? "active" : ""}" type="button" data-status="normal" role="radio" aria-checked="${manualStatus === "normal"}"></button>
           <button class="day-status-step ${manualStatus === "sick" ? "active" : ""}" type="button" data-status="sick" role="radio" aria-checked="${manualStatus === "sick"}"></button>
         </div>
-        <div class="day-status-labels"><span>Fri</span><span>Vanlig dag</span><span>Syk</span></div>
+        <div class="day-status-labels"><span>Fri</span><span>Vanlig</span><span>Syk</span></div>
       </div>
       <p class="day-mode-note"></p>
-      <div class="actions">
-        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk</button>
-        <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
-        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Avslutt</button>
+      <div class="morning-progress-card">
+        <div class="xp-label"><span>Dagens progresjon</span><strong>${requiredCount ? `${doneCount}/${requiredCount}` : "Fri"}</strong></div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       </div>
-      <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
-      <p class="progress-count">${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
+      <div class="actions">
+        <button class="primary start-btn" ${started ? "disabled" : ""}>Start eventyret</button>
+        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Fullfør morgen</button>
+      </div>
+    </section>
+    <section class="quest-section">
+      <div class="section-heading"><p class="eyebrow">Oppdrag</p><h4>Dagens helteoppgaver</h4></div>
       <div class="task-grid"></div>
+    </section>
+  `;
+
+  const levelAnimalImage = board.querySelector(".child-level-animal");
+  const fallback = board.querySelector(".avatar-fallback");
+  if (levelAnimalImage) {
+    levelAnimalImage.onerror = () => {
+      levelAnimalImage.hidden = true;
+      if (fallback) fallback.hidden = false;
+    };
+    levelAnimalImage.onload = () => {
+      levelAnimalImage.hidden = false;
+      if (fallback) fallback.hidden = true;
+    };
+  }
+
+  const dayModeNote = board.querySelector(".day-mode-note");
+  if (dayModeNote) {
+    if (effectiveMode.includes("_holiday")) {
+      dayModeNote.textContent = "I dag er det fridag i eventyrboken.";
+    } else if (effectiveMode.includes("weekend") && effectiveMode.includes("_sick")) {
+      dayModeNote.textContent = "Rolig helgedag – små heltedåd teller ekstra.";
+    } else if (effectiveMode.includes("_sick")) {
+      dayModeNote.textContent = "Rolig dag: halvparten av oppdragene holder.";
+    } else {
+      dayModeNote.textContent = "";
+    }
+  }
+
+  board.querySelector(".back-home-btn")?.addEventListener("click", () => {
+    activeChildName = null;
+    renderAll();
+  });
+  board.querySelectorAll(".day-status-step").forEach((stepBtn) => {
+    stepBtn.addEventListener("click", () => setChildDayStatusForToday(name, stepBtn.dataset.status));
+  });
+  board.querySelector(".start-btn")?.addEventListener("click", () => startMorning(name));
+  board.querySelector(".finish-btn")?.addEventListener("click", () => abortMorning(name));
+  board.querySelector(".remove-child-btn")?.addEventListener("click", () => removeChild(name));
+
+  const taskGrid = board.querySelector(".task-grid");
+  info.routines.forEach((task, idx) => {
+    const details = session.completedTasks[idx];
+    const done = !!details;
+    const taskItem = document.createElement("article");
+    taskItem.className = `task-item quest-task ${done ? "quest-task--done" : ""}`;
+    taskItem.innerHTML = `
+      <button class="task-btn" type="button" ${!started || effectiveMode.includes("_holiday") ? "disabled" : ""}>
+        <span class="task-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7" /></svg></span>
+        <span class="task-text">${escapeHtml(task)}</span>
+        <small>${done ? `${formatDuration(details.durationSec)} · +${details.points} HP` : `+${state.scoring.basePoints} HP`}</small>
+      </button>
+      <button class="icon-btn remove-task-btn" type="button" aria-label="Fjern oppgave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
     `;
-
-    const levelProgress = ensureChildLevelProgress(name);
-    const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
-    const levelBadgeValue = board.querySelector(".badge-level-value");
-    if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
-    const levelName = board.querySelector(".child-level-name");
-    if (levelName) levelName.textContent = levelInfo.current.name;
-    const levelAnimalImage = board.querySelector(".child-level-animal");
-    if (levelAnimalImage) {
-      const levelCode = String(levelInfo.current.level).padStart(3, "0");
-      levelAnimalImage.src = `./icons/levels/level-${levelCode}.png`;
-      levelAnimalImage.alt = levelInfo.current.name;
-      levelAnimalImage.onerror = () => {
-        levelAnimalImage.hidden = true;
-      };
-      levelAnimalImage.onload = () => {
-        levelAnimalImage.hidden = false;
-      };
-    }
-    const levelProgressBar = board.querySelector(".child-level-progress-bar");
-    if (levelProgressBar) levelProgressBar.style.width = `${levelInfo.progressPct}%`;
-    const levelProgressText = board.querySelector(".child-level-progress-text");
-    if (levelProgressText) {
-      levelProgressText.textContent = levelInfo.next
-        ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} til nivå ${levelInfo.next.level}`
-        : "Maksnivå nådd";
-    }
-
-    const dayModeNote = board.querySelector(".day-mode-note");
-    if (dayModeNote) {
-      if (effectiveMode.includes("_holiday")) {
-        dayModeNote.textContent = "I dag er det fridag";
-      } else if (effectiveMode.includes("weekend") && effectiveMode.includes("_sick")) {
-        dayModeNote.textContent = "Helg og sykedag – ekstra godt jobbet i dag";
-      } else if (effectiveMode.includes("_sick")) {
-        dayModeNote.textContent = "Vi tar det litt rolig i dag";
-      } else {
-        dayModeNote.textContent = "";
-      }
-    }
-
-    board.querySelectorAll(".day-status-step").forEach((stepBtn) => {
-      stepBtn.addEventListener("click", () => {
-        setChildDayStatusForToday(name, stepBtn.dataset.status);
-      });
-    });
-
-    board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
-    board.querySelector(".finish-btn")?.addEventListener("click", () => abortMorning(name));
-    board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
-    const taskGrid = board.querySelector(".task-grid");
-
-    if (wildcardEnabled && wildcardTask && wildcardTaskKey && !effectiveMode.includes("_holiday")) {
-      const wildcardItem = document.createElement("div");
-      wildcardItem.className = "task-item";
-
-      const wildcardBtn = document.createElement("button");
-      wildcardBtn.className = `task-btn ${wildcardDone ? "done" : ""}`;
-      wildcardBtn.disabled = !started;
-      wildcardBtn.innerHTML = `
-        <div class="task-text">${escapeHtml(wildcardTask.title)}</div>
-        ${wildcardDone ? `<small>Fullført · +${session.completedTasks[wildcardTaskKey].points} poeng</small>` : '<small>Bonusoppgave</small>'}
-      `;
-      wildcardBtn.addEventListener("click", () => toggleWildcardTask(name));
-
-      wildcardItem.appendChild(wildcardBtn);
-      taskGrid.appendChild(wildcardItem);
-    }
-    info.routines.forEach((task, idx) => {
-      const details = session.completedTasks[idx];
-      const done = !!details;
-
-      const taskItem = document.createElement("div");
-      taskItem.className = "task-item";
-
-      const taskBtn = document.createElement("button");
-      taskBtn.className = `task-btn ${done ? "done" : ""}`;
-      taskBtn.disabled = !started || effectiveMode.includes("_holiday");
-      taskBtn.innerHTML = `
-        <div class="task-text">${escapeHtml(task)}</div>
-        ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
-      `;
-      taskBtn.addEventListener("click", () => toggleTask(name, idx));
-
-      const removeTaskBtn = document.createElement("button");
-      removeTaskBtn.className = "icon-btn remove-task-btn";
-      removeTaskBtn.type = "button";
-      removeTaskBtn.setAttribute("aria-label", "Fjern oppgave");
-      removeTaskBtn.textContent = "✕";
-      removeTaskBtn.addEventListener("click", () => removeTask(name, idx));
-
-      taskItem.appendChild(taskBtn);
-      taskItem.appendChild(removeTaskBtn);
-      taskGrid.appendChild(taskItem);
-    });
-
-    const addTaskBtn = document.createElement("button");
-    addTaskBtn.className = "task-btn add-task-btn";
-    addTaskBtn.type = "button";
-    addTaskBtn.innerHTML = '<div class="task-text">+<br>Legg til oppgave</div>';
-    addTaskBtn.addEventListener("click", () => addTask(name));
-    taskGrid.appendChild(addTaskBtn);
-
-    childBoards.appendChild(board);
+    taskItem.querySelector(".task-btn")?.addEventListener("click", () => toggleTask(name, idx));
+    taskItem.querySelector(".remove-task-btn")?.addEventListener("click", () => removeTask(name, idx));
+    taskGrid.appendChild(taskItem);
   });
 
+  const addTaskBtn = document.createElement("button");
+  addTaskBtn.className = "task-btn add-task-btn quest-add-task";
+  addTaskBtn.type = "button";
+  addTaskBtn.innerHTML = '<span class="task-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></span><span class="task-text">Nytt oppdrag</span><small>Legg til</small>';
+  addTaskBtn.addEventListener("click", () => addTask(name));
+  taskGrid.appendChild(addTaskBtn);
+
+  if (wildcardEnabled && wildcardTask && wildcardTaskKey && !effectiveMode.includes("_holiday")) {
+    const bonus = document.createElement("section");
+    bonus.className = `bonus-card ${wildcardDone ? "bonus-card--done" : ""}`;
+    bonus.innerHTML = `
+      <div><p class="eyebrow">Dagens utfordring</p><h4>${escapeHtml(wildcardTask.title)}</h4><p>${wildcardDone ? `Fullført · +${session.completedTasks[wildcardTaskKey].points} HP` : "Et ekstra lite eventyr for bonuspoeng."}</p></div>
+      <button class="primary wildcard-btn" type="button" ${!started ? "disabled" : ""}>${wildcardDone ? "Angre" : "Fullfør"}</button>
+    `;
+    bonus.querySelector(".wildcard-btn")?.addEventListener("click", () => toggleWildcardTask(name));
+    board.appendChild(bonus);
+  }
+
+  childBoards.appendChild(board);
   if (wildcardStateChanged) saveState();
+}
+
+function renderHeroShell(childCount, progressPct) {
+  const heroTitle = document.getElementById("heroTitle");
+  const heroSubtitle = document.getElementById("heroSubtitle");
+  const heroProgress = document.getElementById("heroProgress");
+  if (heroTitle) heroTitle.textContent = activeChildName ? "Heltereisen er i gang" : "God morgen";
+  if (heroSubtitle) heroSubtitle.textContent = activeChildName ? "Fullfør dagens oppdrag og fyll XP-baren." : `${childCount || "Ingen"} helter klare for dagens eventyr.`;
+  if (heroProgress) heroProgress.style.width = `${Math.max(0, Math.min(100, progressPct || 0))}%`;
+}
+
+function renderHomeScreen(names) {
+  const shell = document.createElement("section");
+  shell.className = "home-screen";
+  shell.innerHTML = `
+    <div class="home-heading">
+      <p class="eyebrow">Velg helt</p>
+      <h2>Hvem starter eventyret?</h2>
+    </div>
+    <div class="hero-selector-grid"></div>
+  `;
+  const grid = shell.querySelector(".hero-selector-grid");
+  names.forEach((name) => {
+    const info = state.children[name];
+    const session = sessions[name] || createSession(name);
+    sessions[name] = session;
+    const streak = ensureChildStreak(name);
+    const account = ensureChildPointAccount(name);
+    const levelInfo = resolveLevelInfo(ensureChildLevelProgress(name).completedTasksTotal);
+    const todayKey = getLocalDateKey();
+    const required = getRequiredRoutineCount(info.routines.length, getEffectiveDayMode(todayKey, getChildDayOverride(name, todayKey)));
+    const done = countRoutineCompletions(session);
+    const pct = required ? Math.min(100, Math.round((done / required) * 100)) : 100;
+    const levelCode = String(levelInfo.current.level).padStart(3, "0");
+    const card = document.createElement("article");
+    card.className = "hero-select-card";
+    card.innerHTML = `
+      <button class="hero-select-main" type="button">
+        <img src="./icons/levels/level-${levelCode}.png" alt="" width="120" height="120" onerror="this.hidden=true" />
+        <span class="hero-select-name">${escapeHtml(name)}</span>
+        <span class="hero-select-level">${escapeHtml(levelInfo.current.name)}</span>
+        <span class="mini-progress"><span style="width:${pct}%"></span></span>
+        <span class="hero-select-meta">${streak.count} rekke · ${account.earnedTotal} HP</span>
+      </button>
+    `;
+    card.querySelector(".hero-select-main")?.addEventListener("click", () => {
+      activeChildName = name;
+      renderAll();
+    });
+    grid.appendChild(card);
+  });
+  childBoards.appendChild(shell);
 }
 
 function ensureChildPointAccount(childName) {

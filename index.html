@@ -22,8 +22,14 @@
   <body>
     <div class="app">
       <header class="topbar panel">
-        <div>
+        <div class="brand-lockup">
           <img src="logo.svg" alt="Morgenhelt" class="site-logo" width="2400" height="867" />
+          <section class="morning-hero" aria-label="Dagens oversikt">
+            <p class="eyebrow">Hero Journey</p>
+            <h1 id="heroTitle">God morgen</h1>
+            <p id="heroSubtitle">Velg en helt og start dagens eventyr.</p>
+            <div class="hero-progress-track" aria-hidden="true"><div id="heroProgress"></div></div>
+          </section>
         </div>
         <div class="topbar-actions">
           <button id="openSettings" class="settings-btn" type="button" aria-label="Åpne innstillinger">
