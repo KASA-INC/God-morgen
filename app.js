@@ -40,66 +40,1018 @@ const DEFAULT_WILDCARD_TASKS = [
 const WILDCARD_HISTORY_LIMIT = 20;
 const WILDCARD_REPEAT_GUARD = 4;
 let wildcardTasks = [...DEFAULT_WILDCARD_TASKS];
+const WILDCARD_REFRESH_KEY = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const DEFAULT_LEVEL_DEFINITIONS = [
-  { level: 1, name: "Maur", requiredCompletedTasks: 0 },
-  { level: 2, name: "Marihøne", requiredCompletedTasks: 5 },
-  { level: 3, name: "Sommerfugl", requiredCompletedTasks: 12 },
-  { level: 4, name: "Bie", requiredCompletedTasks: 22 },
-  { level: 5, name: "Gresshoppe", requiredCompletedTasks: 35 },
-  { level: 6, name: "Frosk", requiredCompletedTasks: 52 },
-  { level: 7, name: "Mus", requiredCompletedTasks: 74 },
-  { level: 8, name: "Ekorn", requiredCompletedTasks: 102 },
-  { level: 9, name: "Pinnsvin", requiredCompletedTasks: 138 },
-  { level: 10, name: "Ravn", requiredCompletedTasks: 184 },
-  { level: 11, name: "Rev", requiredCompletedTasks: 242 },
-  { level: 12, name: "Gaupe", requiredCompletedTasks: 314 },
-  { level: 13, name: "Ulv", requiredCompletedTasks: 402 },
-  { level: 14, name: "Hjort", requiredCompletedTasks: 510 },
-  { level: 15, name: "Elg", requiredCompletedTasks: 642 },
-  { level: 16, name: "Løve", requiredCompletedTasks: 804 },
-  { level: 17, name: "Tiger", requiredCompletedTasks: 1002 },
-  { level: 18, name: "Neshorn", requiredCompletedTasks: 1244 },
-  { level: 19, name: "Isbjørn", requiredCompletedTasks: 1540 },
-  { level: 20, name: "Flodhest", requiredCompletedTasks: 1902 },
-  { level: 21, name: "Sjøløve", requiredCompletedTasks: 2344 },
-  { level: 22, name: "Hvalross", requiredCompletedTasks: 2882 },
-  { level: 23, name: "Delfin", requiredCompletedTasks: 3538 },
-  { level: 24, name: "Havskilpadde", requiredCompletedTasks: 4336 },
-  { level: 25, name: "Hammerhai", requiredCompletedTasks: 5308 },
-  { level: 26, name: "Spekkhogger", requiredCompletedTasks: 6492 },
-  { level: 27, name: "Kjempeblekksprut", requiredCompletedTasks: 7934 },
-  { level: 28, name: "Pukkelhval", requiredCompletedTasks: 9692 },
-  { level: 29, name: "Finhval", requiredCompletedTasks: 11836 },
-  { level: 30, name: "Blåhval", requiredCompletedTasks: 20000 },
+  {
+    "level": 1,
+    "name": "Pygméspissmus",
+    "requiredCompletedTasks": 0
+  },
+  {
+    "level": 2,
+    "name": "Pilgiftfrosk",
+    "requiredCompletedTasks": 25
+  },
+  {
+    "level": 3,
+    "name": "Blåspurv",
+    "requiredCompletedTasks": 50
+  },
+  {
+    "level": 4,
+    "name": "Husmus",
+    "requiredCompletedTasks": 75
+  },
+  {
+    "level": 5,
+    "name": "Rødstrupe",
+    "requiredCompletedTasks": 100
+  },
+  {
+    "level": 6,
+    "name": "Kanarifugl",
+    "requiredCompletedTasks": 125
+  },
+  {
+    "level": 7,
+    "name": "Rødøyet løvfrosk",
+    "requiredCompletedTasks": 150
+  },
+  {
+    "level": 8,
+    "name": "Markmus",
+    "requiredCompletedTasks": 175
+  },
+  {
+    "level": 9,
+    "name": "Spurv",
+    "requiredCompletedTasks": 200
+  },
+  {
+    "level": 10,
+    "name": "Isfugl",
+    "requiredCompletedTasks": 225
+  },
+  {
+    "level": 11,
+    "name": "Lemen",
+    "requiredCompletedTasks": 250
+  },
+  {
+    "level": 12,
+    "name": "Hærfugl",
+    "requiredCompletedTasks": 275
+  },
+  {
+    "level": 13,
+    "name": "Jerboa",
+    "requiredCompletedTasks": 300
+  },
+  {
+    "level": 14,
+    "name": "Stripeekorn",
+    "requiredCompletedTasks": 325
+  },
+  {
+    "level": 15,
+    "name": "Moldvarp",
+    "requiredCompletedTasks": 350
+  },
+  {
+    "level": 16,
+    "name": "Axolotl",
+    "requiredCompletedTasks": 375
+  },
+  {
+    "level": 17,
+    "name": "Salamander",
+    "requiredCompletedTasks": 400
+  },
+  {
+    "level": 18,
+    "name": "Kengururotte",
+    "requiredCompletedTasks": 425
+  },
+  {
+    "level": 19,
+    "name": "Hamster",
+    "requiredCompletedTasks": 450
+  },
+  {
+    "level": 20,
+    "name": "Spøkelsesaper",
+    "requiredCompletedTasks": 475
+  },
+  {
+    "level": 21,
+    "name": "Pipeharer",
+    "requiredCompletedTasks": 500
+  },
+  {
+    "level": 22,
+    "name": "Flygeekorn",
+    "requiredCompletedTasks": 525
+  },
+  {
+    "level": 23,
+    "name": "Kestrel",
+    "requiredCompletedTasks": 550
+  },
+  {
+    "level": 24,
+    "name": "Skjære",
+    "requiredCompletedTasks": 575
+  },
+  {
+    "level": 25,
+    "name": "Ekorn",
+    "requiredCompletedTasks": 600
+  },
+  {
+    "level": 26,
+    "name": "Mustela",
+    "requiredCompletedTasks": 625
+  },
+  {
+    "level": 27,
+    "name": "Røyskatt",
+    "requiredCompletedTasks": 650
+  },
+  {
+    "level": 28,
+    "name": "Hakkespett",
+    "requiredCompletedTasks": 675
+  },
+  {
+    "level": 29,
+    "name": "Lundefugl",
+    "requiredCompletedTasks": 700
+  },
+  {
+    "level": 30,
+    "name": "Kråke",
+    "requiredCompletedTasks": 725
+  },
+  {
+    "level": 31,
+    "name": "Oksefrosk",
+    "requiredCompletedTasks": 750
+  },
+  {
+    "level": 32,
+    "name": "Springspissmus",
+    "requiredCompletedTasks": 775
+  },
+  {
+    "level": 33,
+    "name": "Chinchilla",
+    "requiredCompletedTasks": 800
+  },
+  {
+    "level": 34,
+    "name": "Surikat",
+    "requiredCompletedTasks": 825
+  },
+  {
+    "level": 35,
+    "name": "Tukan",
+    "requiredCompletedTasks": 850
+  },
+  {
+    "level": 36,
+    "name": "Pinnsvin",
+    "requiredCompletedTasks": 875
+  },
+  {
+    "level": 37,
+    "name": "Marsvin",
+    "requiredCompletedTasks": 900
+  },
+  {
+    "level": 38,
+    "name": "Præriehund",
+    "requiredCompletedTasks": 925
+  },
+  {
+    "level": 39,
+    "name": "Mink",
+    "requiredCompletedTasks": 950
+  },
+  {
+    "level": 40,
+    "name": "Vandrefalk",
+    "requiredCompletedTasks": 975
+  },
+  {
+    "level": 41,
+    "name": "Måke",
+    "requiredCompletedTasks": 1000
+  },
+  {
+    "level": 42,
+    "name": "Kakadu",
+    "requiredCompletedTasks": 1025
+  },
+  {
+    "level": 43,
+    "name": "Dovenloris",
+    "requiredCompletedTasks": 1050
+  },
+  {
+    "level": 44,
+    "name": "Grevlingpungdyr",
+    "requiredCompletedTasks": 1075
+  },
+  {
+    "level": 45,
+    "name": "Skjermflygere",
+    "requiredCompletedTasks": 1100
+  },
+  {
+    "level": 46,
+    "name": "Båndilder",
+    "requiredCompletedTasks": 1125
+  },
+  {
+    "level": 47,
+    "name": "Nebbdyr",
+    "requiredCompletedTasks": 1150
+  },
+  {
+    "level": 48,
+    "name": "Kanin",
+    "requiredCompletedTasks": 1175
+  },
+  {
+    "level": 49,
+    "name": "Fennek",
+    "requiredCompletedTasks": 1200
+  },
+  {
+    "level": 50,
+    "name": "Tårnugle",
+    "requiredCompletedTasks": 1225
+  },
+  {
+    "level": 51,
+    "name": "Ara",
+    "requiredCompletedTasks": 1250
+  },
+  {
+    "level": 52,
+    "name": "Ravn",
+    "requiredCompletedTasks": 1275
+  },
+  {
+    "level": 53,
+    "name": "Mår",
+    "requiredCompletedTasks": 1300
+  },
+  {
+    "level": 54,
+    "name": "Mungo",
+    "requiredCompletedTasks": 1325
+  },
+  {
+    "level": 55,
+    "name": "Snøugle",
+    "requiredCompletedTasks": 1350
+  },
+  {
+    "level": 56,
+    "name": "Stokkand",
+    "requiredCompletedTasks": 1375
+  },
+  {
+    "level": 57,
+    "name": "Hegre",
+    "requiredCompletedTasks": 1400
+  },
+  {
+    "level": 58,
+    "name": "Dynndjevel",
+    "requiredCompletedTasks": 1425
+  },
+  {
+    "level": 59,
+    "name": "Fingerdyr",
+    "requiredCompletedTasks": 1450
+  },
+  {
+    "level": 60,
+    "name": "Saki",
+    "requiredCompletedTasks": 1475
+  },
+  {
+    "level": 61,
+    "name": "Kiwi",
+    "requiredCompletedTasks": 1500
+  },
+  {
+    "level": 62,
+    "name": "Kylling",
+    "requiredCompletedTasks": 1525
+  },
+  {
+    "level": 63,
+    "name": "Flamingo",
+    "requiredCompletedTasks": 1550
+  },
+  {
+    "level": 64,
+    "name": "Skarv",
+    "requiredCompletedTasks": 1575
+  },
+  {
+    "level": 65,
+    "name": "Viklebjørn",
+    "requiredCompletedTasks": 1600
+  },
+  {
+    "level": 66,
+    "name": "Quokka",
+    "requiredCompletedTasks": 1625
+  },
+  {
+    "level": 67,
+    "name": "Uakari",
+    "requiredCompletedTasks": 1650
+  },
+  {
+    "level": 68,
+    "name": "Hare",
+    "requiredCompletedTasks": 1675
+  },
+  {
+    "level": 69,
+    "name": "Pungrotte",
+    "requiredCompletedTasks": 1700
+  },
+  {
+    "level": 70,
+    "name": "Skunkdyr",
+    "requiredCompletedTasks": 1725
+  },
+  {
+    "level": 71,
+    "name": "Hubro",
+    "requiredCompletedTasks": 1750
+  },
+  {
+    "level": 72,
+    "name": "Stork",
+    "requiredCompletedTasks": 1775
+  },
+  {
+    "level": 73,
+    "name": "Murmeldyr",
+    "requiredCompletedTasks": 1800
+  },
+  {
+    "level": 74,
+    "name": "Nesebjørn",
+    "requiredCompletedTasks": 1825
+  },
+  {
+    "level": 75,
+    "name": "Dovendyr",
+    "requiredCompletedTasks": 1850
+  },
+  {
+    "level": 76,
+    "name": "Gås",
+    "requiredCompletedTasks": 1875
+  },
+  {
+    "level": 77,
+    "name": "Trane",
+    "requiredCompletedTasks": 1900
+  },
+  {
+    "level": 78,
+    "name": "Kuskus",
+    "requiredCompletedTasks": 1925
+  },
+  {
+    "level": 79,
+    "name": "Fugl Føniks",
+    "requiredCompletedTasks": 1950
+  },
+  {
+    "level": 80,
+    "name": "Rødrev",
+    "requiredCompletedTasks": 1975
+  },
+  {
+    "level": 81,
+    "name": "Skjelldyr",
+    "requiredCompletedTasks": 2000
+  },
+  {
+    "level": 82,
+    "name": "Kongeørn",
+    "requiredCompletedTasks": 2025
+  },
+  {
+    "level": 83,
+    "name": "Påfugl",
+    "requiredCompletedTasks": 2050
+  },
+  {
+    "level": 84,
+    "name": "Vaskebjørn",
+    "requiredCompletedTasks": 2075
+  },
+  {
+    "level": 85,
+    "name": "Børstesvin",
+    "requiredCompletedTasks": 2100
+  },
+  {
+    "level": 86,
+    "name": "Trekenguru",
+    "requiredCompletedTasks": 2125
+  },
+  {
+    "level": 87,
+    "name": "Bushhund",
+    "requiredCompletedTasks": 2150
+  },
+  {
+    "level": 88,
+    "name": "Sjakal",
+    "requiredCompletedTasks": 2175
+  },
+  {
+    "level": 89,
+    "name": "Albatross",
+    "requiredCompletedTasks": 2200
+  },
+  {
+    "level": 90,
+    "name": "Pelikan",
+    "requiredCompletedTasks": 2225
+  },
+  {
+    "level": 91,
+    "name": "Mårbjørn",
+    "requiredCompletedTasks": 2250
+  },
+  {
+    "level": 92,
+    "name": "Brølape",
+    "requiredCompletedTasks": 2275
+  },
+  {
+    "level": 93,
+    "name": "Kalkun",
+    "requiredCompletedTasks": 2300
+  },
+  {
+    "level": 94,
+    "name": "Prærieulv",
+    "requiredCompletedTasks": 2325
+  },
+  {
+    "level": 95,
+    "name": "Svane",
+    "requiredCompletedTasks": 2350
+  },
+  {
+    "level": 96,
+    "name": "Honninggrevling",
+    "requiredCompletedTasks": 2375
+  },
+  {
+    "level": 97,
+    "name": "Serval",
+    "requiredCompletedTasks": 2400
+  },
+  {
+    "level": 98,
+    "name": "Ocelot",
+    "requiredCompletedTasks": 2425
+  },
+  {
+    "level": 99,
+    "name": "Andeskondor",
+    "requiredCompletedTasks": 2450
+  },
+  {
+    "level": 100,
+    "name": "Dingo",
+    "requiredCompletedTasks": 2475
+  },
+  {
+    "level": 101,
+    "name": "Karakal",
+    "requiredCompletedTasks": 2500
+  },
+  {
+    "level": 102,
+    "name": "Gelada",
+    "requiredCompletedTasks": 2525
+  },
+  {
+    "level": 103,
+    "name": "Bever",
+    "requiredCompletedTasks": 2550
+  },
+  {
+    "level": 104,
+    "name": "Gaupe",
+    "requiredCompletedTasks": 2575
+  },
+  {
+    "level": 105,
+    "name": "Asiatisk villhund",
+    "requiredCompletedTasks": 2600
+  },
+  {
+    "level": 106,
+    "name": "Jerv",
+    "requiredCompletedTasks": 2625
+  },
+  {
+    "level": 107,
+    "name": "Neseape",
+    "requiredCompletedTasks": 2650
+  },
+  {
+    "level": 108,
+    "name": "Gaselle",
+    "requiredCompletedTasks": 2675
+  },
+  {
+    "level": 109,
+    "name": "Kinesisk kjempesalamander",
+    "requiredCompletedTasks": 2700
+  },
+  {
+    "level": 110,
+    "name": "Bavian",
+    "requiredCompletedTasks": 2725
+  },
+  {
+    "level": 111,
+    "name": "Havoter",
+    "requiredCompletedTasks": 2750
+  },
+  {
+    "level": 112,
+    "name": "Keiserpingvin",
+    "requiredCompletedTasks": 2775
+  },
+  {
+    "level": 113,
+    "name": "Mandrill",
+    "requiredCompletedTasks": 2800
+  },
+  {
+    "level": 114,
+    "name": "Ulv",
+    "requiredCompletedTasks": 2825
+  },
+  {
+    "level": 115,
+    "name": "Maursluker",
+    "requiredCompletedTasks": 2850
+  },
+  {
+    "level": 116,
+    "name": "Emu",
+    "requiredCompletedTasks": 2875
+  },
+  {
+    "level": 117,
+    "name": "Sjimpanse",
+    "requiredCompletedTasks": 2900
+  },
+  {
+    "level": 118,
+    "name": "Capybara",
+    "requiredCompletedTasks": 2925
+  },
+  {
+    "level": 119,
+    "name": "Gepard",
+    "requiredCompletedTasks": 2950
+  },
+  {
+    "level": 120,
+    "name": "Impala",
+    "requiredCompletedTasks": 2975
+  },
+  {
+    "level": 121,
+    "name": "Gemsbukk",
+    "requiredCompletedTasks": 3000
+  },
+  {
+    "level": 122,
+    "name": "Vikunja",
+    "requiredCompletedTasks": 3025
+  },
+  {
+    "level": 123,
+    "name": "Snøleopard",
+    "requiredCompletedTasks": 3050
+  },
+  {
+    "level": 124,
+    "name": "Leopard",
+    "requiredCompletedTasks": 3075
+  },
+  {
+    "level": 125,
+    "name": "Hyene",
+    "requiredCompletedTasks": 3100
+  },
+  {
+    "level": 126,
+    "name": "Aardvark",
+    "requiredCompletedTasks": 3125
+  },
+  {
+    "level": 127,
+    "name": "Geit",
+    "requiredCompletedTasks": 3150
+  },
+  {
+    "level": 128,
+    "name": "Nise",
+    "requiredCompletedTasks": 3175
+  },
+  {
+    "level": 129,
+    "name": "Kasuar",
+    "requiredCompletedTasks": 3200
+  },
+  {
+    "level": 130,
+    "name": "Puma",
+    "requiredCompletedTasks": 3225
+  },
+  {
+    "level": 131,
+    "name": "Orangutang",
+    "requiredCompletedTasks": 3250
+  },
+  {
+    "level": 132,
+    "name": "Sau",
+    "requiredCompletedTasks": 3275
+  },
+  {
+    "level": 133,
+    "name": "Alpakka",
+    "requiredCompletedTasks": 3300
+  },
+  {
+    "level": 134,
+    "name": "Fjellgeit",
+    "requiredCompletedTasks": 3325
+  },
+  {
+    "level": 135,
+    "name": "Vortesvin",
+    "requiredCompletedTasks": 3350
+  },
+  {
+    "level": 136,
+    "name": "Guanako",
+    "requiredCompletedTasks": 3375
+  },
+  {
+    "level": 137,
+    "name": "Varulv",
+    "requiredCompletedTasks": 3400
+  },
+  {
+    "level": 138,
+    "name": "Kjempepanda",
+    "requiredCompletedTasks": 3425
+  },
+  {
+    "level": 139,
+    "name": "Villsvin",
+    "requiredCompletedTasks": 3450
+  },
+  {
+    "level": 140,
+    "name": "Sel",
+    "requiredCompletedTasks": 3475
+  },
+  {
+    "level": 141,
+    "name": "Struts",
+    "requiredCompletedTasks": 3500
+  },
+  {
+    "level": 142,
+    "name": "Alpesteinbukk",
+    "requiredCompletedTasks": 3525
+  },
+  {
+    "level": 143,
+    "name": "Gris",
+    "requiredCompletedTasks": 3550
+  },
+  {
+    "level": 144,
+    "name": "Svartbjørn",
+    "requiredCompletedTasks": 3575
+  },
+  {
+    "level": 145,
+    "name": "Reinsdyr",
+    "requiredCompletedTasks": 3600
+  },
+  {
+    "level": 146,
+    "name": "Llama",
+    "requiredCompletedTasks": 3625
+  },
+  {
+    "level": 147,
+    "name": "Antilope",
+    "requiredCompletedTasks": 3650
+  },
+  {
+    "level": 148,
+    "name": "Gorilla",
+    "requiredCompletedTasks": 3675
+  },
+  {
+    "level": 149,
+    "name": "Hjort",
+    "requiredCompletedTasks": 3700
+  },
+  {
+    "level": 150,
+    "name": "Yeti",
+    "requiredCompletedTasks": 3725
+  },
+  {
+    "level": 151,
+    "name": "Esel",
+    "requiredCompletedTasks": 3750
+  },
+  {
+    "level": 152,
+    "name": "Gnu",
+    "requiredCompletedTasks": 3775
+  },
+  {
+    "level": 153,
+    "name": "Okapi",
+    "requiredCompletedTasks": 3800
+  },
+  {
+    "level": 154,
+    "name": "Sasquatch",
+    "requiredCompletedTasks": 3825
+  },
+  {
+    "level": 155,
+    "name": "Griff",
+    "requiredCompletedTasks": 3850
+  },
+  {
+    "level": 156,
+    "name": "Brunbjørn",
+    "requiredCompletedTasks": 3875
+  },
+  {
+    "level": 157,
+    "name": "Buskbukk",
+    "requiredCompletedTasks": 3900
+  },
+  {
+    "level": 158,
+    "name": "Sjøløve",
+    "requiredCompletedTasks": 3925
+  },
+  {
+    "level": 159,
+    "name": "Takin",
+    "requiredCompletedTasks": 3950
+  },
+  {
+    "level": 160,
+    "name": "Grizzlybjørn",
+    "requiredCompletedTasks": 3975
+  },
+  {
+    "level": 161,
+    "name": "Wapiti",
+    "requiredCompletedTasks": 4000
+  },
+  {
+    "level": 162,
+    "name": "Zebra",
+    "requiredCompletedTasks": 4025
+  },
+  {
+    "level": 163,
+    "name": "Minotaur",
+    "requiredCompletedTasks": 4050
+  },
+  {
+    "level": 164,
+    "name": "Hippogriff",
+    "requiredCompletedTasks": 4075
+  },
+  {
+    "level": 165,
+    "name": "Isbjørn",
+    "requiredCompletedTasks": 4100
+  },
+  {
+    "level": 166,
+    "name": "Pegasus",
+    "requiredCompletedTasks": 4125
+  },
+  {
+    "level": 167,
+    "name": "Elg",
+    "requiredCompletedTasks": 4150
+  },
+  {
+    "level": 168,
+    "name": "Hest",
+    "requiredCompletedTasks": 4175
+  },
+  {
+    "level": 169,
+    "name": "Yakokse",
+    "requiredCompletedTasks": 4200
+  },
+  {
+    "level": 170,
+    "name": "Enhjørning",
+    "requiredCompletedTasks": 4225
+  },
+  {
+    "level": 171,
+    "name": "Kamel",
+    "requiredCompletedTasks": 4250
+  },
+  {
+    "level": 172,
+    "name": "Eland",
+    "requiredCompletedTasks": 4275
+  },
+  {
+    "level": 173,
+    "name": "Kodiakbjørn",
+    "requiredCompletedTasks": 4300
+  },
+  {
+    "level": 174,
+    "name": "Kentaur",
+    "requiredCompletedTasks": 4325
+  },
+  {
+    "level": 175,
+    "name": "Bison",
+    "requiredCompletedTasks": 4350
+  },
+  {
+    "level": 176,
+    "name": "Vannbøffel",
+    "requiredCompletedTasks": 4375
+  },
+  {
+    "level": 177,
+    "name": "Hvalross",
+    "requiredCompletedTasks": 4400
+  },
+  {
+    "level": 178,
+    "name": "Sjiraff",
+    "requiredCompletedTasks": 4425
+  },
+  {
+    "level": 179,
+    "name": "Flodhest",
+    "requiredCompletedTasks": 4450
+  },
+  {
+    "level": 180,
+    "name": "Hvithval",
+    "requiredCompletedTasks": 4475
+  },
+  {
+    "level": 181,
+    "name": "Narhval",
+    "requiredCompletedTasks": 4500
+  },
+  {
+    "level": 182,
+    "name": "Halvspekkhogger",
+    "requiredCompletedTasks": 4525
+  },
+  {
+    "level": 183,
+    "name": "Nesehorn",
+    "requiredCompletedTasks": 4550
+  },
+  {
+    "level": 184,
+    "name": "Kyklop",
+    "requiredCompletedTasks": 4575
+  },
+  {
+    "level": 185,
+    "name": "Grindhvaler",
+    "requiredCompletedTasks": 4600
+  },
+  {
+    "level": 186,
+    "name": "Sjøelefant",
+    "requiredCompletedTasks": 4625
+  },
+  {
+    "level": 187,
+    "name": "Troll",
+    "requiredCompletedTasks": 4650
+  },
+  {
+    "level": 188,
+    "name": "Spekkhogger",
+    "requiredCompletedTasks": 4675
+  },
+  {
+    "level": 189,
+    "name": "Drage",
+    "requiredCompletedTasks": 4700
+  },
+  {
+    "level": 190,
+    "name": "Elefant",
+    "requiredCompletedTasks": 4725
+  },
+  {
+    "level": 191,
+    "name": "King Kong",
+    "requiredCompletedTasks": 4750
+  },
+  {
+    "level": 192,
+    "name": "Nessie",
+    "requiredCompletedTasks": 4775
+  },
+  {
+    "level": 193,
+    "name": "Knølhval",
+    "requiredCompletedTasks": 4800
+  },
+  {
+    "level": 194,
+    "name": "Spermhval",
+    "requiredCompletedTasks": 4825
+  },
+  {
+    "level": 195,
+    "name": "Kraken",
+    "requiredCompletedTasks": 4850
+  },
+  {
+    "level": 196,
+    "name": "Leviatan",
+    "requiredCompletedTasks": 4875
+  },
+  {
+    "level": 197,
+    "name": "Finnhval",
+    "requiredCompletedTasks": 4900
+  },
+  {
+    "level": 198,
+    "name": "Godzilla",
+    "requiredCompletedTasks": 4925
+  },
+  {
+    "level": 199,
+    "name": "Blåhval",
+    "requiredCompletedTasks": 4950
+  },
+  {
+    "level": 200,
+    "name": "Midgardsormen",
+    "requiredCompletedTasks": 4975
+  }
 ];
 let levelDefinitions = [...DEFAULT_LEVEL_DEFINITIONS];
-
-const ACCENT_THEME_COLORS = ["#fddc75", "#78aa78", "#32aabe", "#f082aa", "#fda075"];
-
-function hexToRgbString(hex) {
-  const clean = String(hex || "").replace("#", "").trim();
-  if (clean.length !== 6) return "253, 160, 117";
-  const r = Number.parseInt(clean.slice(0, 2), 16);
-  const g = Number.parseInt(clean.slice(2, 4), 16);
-  const b = Number.parseInt(clean.slice(4, 6), 16);
-  if (![r, g, b].every(Number.isFinite)) return "253, 160, 117";
-  return `${r}, ${g}, ${b}`;
-}
-
-function applyRandomAccentTheme() {
-  const color = ACCENT_THEME_COLORS[Math.floor(Math.random() * ACCENT_THEME_COLORS.length)] || "#fda075";
-  document.documentElement.style.setProperty("--accent", color);
-  document.documentElement.style.setProperty("--accent-rgb", hexToRgbString(color));
-  const themeMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeMeta) themeMeta.setAttribute("content", color);
-}
 
 const STORAGE_KEY = "morgenhelt-state-v1";
 let state = loadState();
 const sessions = createAllSessions();
 let timerId = null;
 let audioCtx = null;
+let activeChildName = null;
 
 const authScreen = document.getElementById("authScreen");
 const appShell = document.getElementById("appShell");
@@ -140,14 +1092,16 @@ const settingsLogout = document.getElementById("settingsLogout");
 
 const cloud = createCloudAdapter();
 
-applyRandomAccentTheme();
-renderAll();
-startTimerLoop();
-registerServiceWorker();
-setupAuthUI();
-cloud.init();
-loadWildcardTasks();
-loadAnimalLevels();
+void initApp();
+
+async function initApp() {
+  setupAuthUI();
+  cloud.init();
+  await Promise.all([loadWildcardTasks(), loadAnimalLevels()]);
+  renderAll();
+  startTimerLoop();
+  registerServiceWorker();
+}
 
 function createAllSessions() {
   return sanitizeActiveSessions(state.activeSessions, state.children);
@@ -273,11 +1227,62 @@ function sanitizeWildcardCatalog(rawCatalog) {
   return rows;
 }
 
+async function fetchJsonCandidates(fileName) {
+  const candidates = [
+    `./${fileName}`,
+    fileName,
+    `/${fileName}`,
+    new URL(fileName, window.location.href).href,
+  ];
+  const tried = new Set();
+
+  for (const candidate of candidates) {
+    const target = String(candidate || "").trim();
+    if (!target || tried.has(target)) continue;
+    tried.add(target);
+    try {
+      const response = await fetch(target, { cache: "no-store" });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      return payload;
+    } catch {
+      // prøv neste kandidatsti
+    }
+  }
+
+  if ("caches" in window) {
+    for (const candidate of candidates) {
+      const target = String(candidate || "").trim();
+      if (!target) continue;
+      try {
+        const cached = await caches.match(target);
+        if (!cached || !cached.ok) continue;
+        const payload = await cached.json();
+        return payload;
+      } catch {
+        // ignorer og prøv videre
+      }
+    }
+  }
+
+  const embeddedId = fileName === "animal-levels.json" ? "animalLevelsData" : (fileName === "wildcard-tasks.json" ? "wildcardTasksData" : "");
+  if (embeddedId) {
+    try {
+      const embeddedNode = document.getElementById(embeddedId);
+      const embeddedText = embeddedNode?.textContent?.trim();
+      if (embeddedText) return JSON.parse(embeddedText);
+    } catch {
+      // fallback til null
+    }
+  }
+
+  return null;
+}
+
 async function loadWildcardTasks() {
   try {
-    const response = await fetch("./wildcard-tasks.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("wildcard-tasks.json");
+    if (!payload) return;
     const nextTasks = sanitizeWildcardCatalog(payload);
     if (!nextTasks.length) return;
 
@@ -317,9 +1322,8 @@ function sanitizeLevelDefinitions(rawDefinitions) {
 
 async function loadAnimalLevels() {
   try {
-    const response = await fetch("./animal-levels.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const payload = await response.json();
+    const payload = await fetchJsonCandidates("animal-levels.json");
+    if (!payload) return;
     const nextDefs = sanitizeLevelDefinitions(payload);
     if (!nextDefs.length) return;
 
@@ -512,153 +1516,245 @@ function renderBoards() {
   childBoards.innerHTML = "";
   const names = Object.keys(state.children);
   if (!names.length) {
+    activeChildName = null;
     document.body.classList.add("setup-only");
     emptyState.hidden = true;
+    renderHeroShell(0, 0);
     return;
   }
   document.body.classList.remove("setup-only");
   emptyState.hidden = true;
 
-  let wildcardStateChanged = false;
+  if (activeChildName && !state.children[activeChildName]) activeChildName = null;
 
-  Object.entries(state.children).forEach(([name, info]) => {
+  let wildcardStateChanged = false;
+  const familyProgress = names.reduce((sum, name) => {
+    const info = state.children[name];
     const session = sessions[name] || createSession(name);
     sessions[name] = session;
-    const doneCount = countRoutineCompletions(session);
-    const total = info.routines.length;
     const todayKey = getLocalDateKey();
-    const manualStatus = getChildDayOverride(name, todayKey);
-    const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
-    const requiredCount = getRequiredRoutineCount(total, effectiveMode);
-    const streak = ensureChildStreak(name);
-    const account = ensureChildPointAccount(name);
-    const started = !!session.startedAt;
-    const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
-    const wildcardEnabled = state.bonusTasksEnabled !== false;
-    const wildcardState = wildcardEnabled ? getOrAssignDailyWildcard(name) : null;
-    if (wildcardState?.didAssign) wildcardStateChanged = true;
-    const wildcardTask = wildcardState?.task || null;
-    const wildcardTaskKey = wildcardState ? `wildcard:${wildcardState.dateKey}` : null;
-    const wildcardDone = wildcardTaskKey ? !!session.completedTasks[wildcardTaskKey] : false;
+    const requiredCount = getRequiredRoutineCount(info.routines.length, getEffectiveDayMode(todayKey, getChildDayOverride(name, todayKey)));
+    const doneCount = countRoutineCompletions(session);
+    return sum + (requiredCount ? Math.min(1, doneCount / requiredCount) : 1);
+  }, 0);
+  renderHeroShell(names.length, Math.round((familyProgress / Math.max(1, names.length)) * 100));
 
-    const board = document.createElement("section");
-    board.className = "child-board";
-    board.innerHTML = `
-      <div class="child-head">
-        <button class="icon-btn remove-child-btn" type="button" aria-label="Fjern barn">✕</button>
+  if (!activeChildName) {
+    renderHomeScreen(names);
+    return;
+  }
+
+  const name = activeChildName;
+  const info = state.children[name];
+  const session = sessions[name] || createSession(name);
+  sessions[name] = session;
+  const doneCount = countRoutineCompletions(session);
+  const total = info.routines.length;
+  const todayKey = getLocalDateKey();
+  const manualStatus = getChildDayOverride(name, todayKey);
+  const effectiveMode = getEffectiveDayMode(todayKey, manualStatus);
+  const requiredCount = getRequiredRoutineCount(total, effectiveMode);
+  const streak = ensureChildStreak(name);
+  const account = ensureChildPointAccount(name);
+  const started = !!session.startedAt;
+  const progress = requiredCount ? Math.min(100, Math.round((doneCount / requiredCount) * 100)) : 100;
+  const wildcardEnabled = state.bonusTasksEnabled !== false;
+  const wildcardState = wildcardEnabled ? getOrAssignDailyWildcard(name) : null;
+  if (wildcardState?.didAssign) wildcardStateChanged = true;
+  const wildcardTask = wildcardState?.task || null;
+  const wildcardTaskKey = wildcardState ? `wildcard:${wildcardState.dateKey}` : null;
+  const wildcardDone = wildcardTaskKey ? !!session.completedTasks[wildcardTaskKey] : false;
+  const levelProgress = ensureChildLevelProgress(name);
+  const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
+  const levelCode = String(levelInfo.current.level).padStart(3, "0");
+
+  const board = document.createElement("section");
+  board.className = "child-board child-board--quest";
+  board.innerHTML = `
+    <div class="quest-nav">
+      <button class="ghost-btn back-home-btn" type="button" aria-label="Tilbake til familien">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Familie
+      </button>
+      <button class="ghost-btn remove-child-btn" type="button" aria-label="Fjern barn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="hero-card child-hero-card">
+      <div class="avatar-stage">
+        <div class="avatar-glow"></div>
+        <img class="child-level-animal" src="./icons/levels/level-${levelCode}.png" alt="${escapeHtml(levelInfo.current.name)}" width="300" height="300" hidden />
+        <div class="avatar-fallback" aria-hidden="true"><span></span></div>
       </div>
-      <h3>${escapeHtml(name)}</h3>
-      <p class="child-level-name"></p>
-      <div class="board-top-stats">
-        <span class="badge badge-streak"><img class="flame-icon" src="./icons/streak.svg" alt="" aria-hidden="true" /><span class="streak-value">${streak.count}</span></span>
-        <span class="badge badge-level"><span class="badge-level-value"></span></span>
-        <span class="badge badge-score"><span class="score-value">${account.earnedTotal}</span> <img class="score-star" src="./icons/star.svg" alt="" aria-hidden="true" /></span>
+      <div class="child-title-block">
+        <p class="eyebrow">Dagens heltereise</p>
+        <h3>${escapeHtml(name)}</h3>
+        <p class="child-level-name">${escapeHtml(levelInfo.current.name)}</p>
       </div>
+      <div class="stat-pills" aria-label="Heltestatus">
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3 3 5 5.5 5 9a5 5 0 0 1-10 0c0-3.5 2-6 5-9Z" /></svg>${streak.count} rekke</span>
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.2l-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg>${account.earnedTotal} HP</span>
+        <span class="stat-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="9" /></svg>${formatElapsed(session.startedAt)}</span>
+      </div>
+      <div class="xp-panel">
+        <div class="xp-label"><span>XP mot nivå ${levelInfo.next ? levelInfo.next.level : levelInfo.current.level}</span><strong>${levelInfo.progressPct}%</strong></div>
+        <div class="child-level-progress" aria-label="XP mot neste nivå"><div class="child-level-progress-bar" style="width:${levelInfo.progressPct}%"></div></div>
+        <p class="child-level-progress-text">${levelInfo.next ? `${levelInfo.total}/${levelInfo.next.requiredCompletedTasks} XP til neste dyr` : "Legendarisk makslevel"}</p>
+      </div>
+    </div>
+    <section class="quest-controls" aria-label="Morgenstyring">
       <div class="day-status-row">
         <div class="day-status-control" role="radiogroup" aria-label="Dagens status">
           <button class="day-status-step ${manualStatus === "holiday" ? "active" : ""}" type="button" data-status="holiday" role="radio" aria-checked="${manualStatus === "holiday"}"></button>
           <button class="day-status-step ${manualStatus === "normal" ? "active" : ""}" type="button" data-status="normal" role="radio" aria-checked="${manualStatus === "normal"}"></button>
           <button class="day-status-step ${manualStatus === "sick" ? "active" : ""}" type="button" data-status="sick" role="radio" aria-checked="${manualStatus === "sick"}"></button>
         </div>
-        <div class="day-status-labels"><span>Fri</span><span>Vanlig dag</span><span>Syk</span></div>
+        <div class="day-status-labels"><span>Fri</span><span>Vanlig</span><span>Syk</span></div>
       </div>
       <p class="day-mode-note"></p>
-      <div class="actions">
-        <button class="primary start-btn" ${started ? "disabled" : ""}>Vekk</button>
-        <span class="badge badge-clock">${formatElapsed(session.startedAt)}</span>
-        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Avslutt</button>
+      <div class="morning-progress-card">
+        <div class="xp-label"><span>Dagens progresjon</span><strong>${requiredCount ? `${doneCount}/${requiredCount}` : "Fri"}</strong></div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
       </div>
-      <div class="progress-wrap"><div class="progress-bar" style="width:${progress}%"></div></div>
-      <p class="progress-count">${requiredCount ? `${doneCount} av ${requiredCount} fullført` : "I dag er det fridag"}</p>
+      <div class="actions">
+        <button class="primary start-btn" ${started ? "disabled" : ""}>Start eventyret</button>
+        <button class="secondary finish-btn" ${!started ? "disabled" : ""}>Fullfør morgen</button>
+      </div>
+    </section>
+    <section class="quest-section">
+      <div class="section-heading"><p class="eyebrow">Oppdrag</p><h4>Dagens helteoppgaver</h4></div>
       <div class="task-grid"></div>
+    </section>
+  `;
+
+  const levelAnimalImage = board.querySelector(".child-level-animal");
+  const fallback = board.querySelector(".avatar-fallback");
+  if (levelAnimalImage) {
+    levelAnimalImage.onerror = () => {
+      levelAnimalImage.hidden = true;
+      if (fallback) fallback.hidden = false;
+    };
+    levelAnimalImage.onload = () => {
+      levelAnimalImage.hidden = false;
+      if (fallback) fallback.hidden = true;
+    };
+  }
+
+  const dayModeNote = board.querySelector(".day-mode-note");
+  if (dayModeNote) {
+    if (effectiveMode.includes("_holiday")) {
+      dayModeNote.textContent = "I dag er det fridag i eventyrboken.";
+    } else if (effectiveMode.includes("weekend") && effectiveMode.includes("_sick")) {
+      dayModeNote.textContent = "Rolig helgedag – små heltedåd teller ekstra.";
+    } else if (effectiveMode.includes("_sick")) {
+      dayModeNote.textContent = "Rolig dag: halvparten av oppdragene holder.";
+    } else {
+      dayModeNote.textContent = "";
+    }
+  }
+
+  board.querySelector(".back-home-btn")?.addEventListener("click", () => {
+    activeChildName = null;
+    renderAll();
+  });
+  board.querySelectorAll(".day-status-step").forEach((stepBtn) => {
+    stepBtn.addEventListener("click", () => setChildDayStatusForToday(name, stepBtn.dataset.status));
+  });
+  board.querySelector(".start-btn")?.addEventListener("click", () => startMorning(name));
+  board.querySelector(".finish-btn")?.addEventListener("click", () => abortMorning(name));
+  board.querySelector(".remove-child-btn")?.addEventListener("click", () => removeChild(name));
+
+  const taskGrid = board.querySelector(".task-grid");
+  info.routines.forEach((task, idx) => {
+    const details = session.completedTasks[idx];
+    const done = !!details;
+    const taskItem = document.createElement("article");
+    taskItem.className = `task-item quest-task ${done ? "quest-task--done" : ""}`;
+    taskItem.innerHTML = `
+      <button class="task-btn" type="button" ${!started || effectiveMode.includes("_holiday") ? "disabled" : ""}>
+        <span class="task-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7" /></svg></span>
+        <span class="task-text">${escapeHtml(task)}</span>
+        <small>${done ? `${formatDuration(details.durationSec)} · +${details.points} HP` : `+${state.scoring.basePoints} HP`}</small>
+      </button>
+      <button class="icon-btn remove-task-btn" type="button" aria-label="Fjern oppgave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
     `;
-
-    const levelProgress = ensureChildLevelProgress(name);
-    const levelInfo = resolveLevelInfo(levelProgress.completedTasksTotal);
-    const levelBadgeValue = board.querySelector(".badge-level-value");
-    if (levelBadgeValue) levelBadgeValue.textContent = String(levelInfo.current.level).padStart(3, "0");
-    const levelName = board.querySelector(".child-level-name");
-    if (levelName) levelName.textContent = levelInfo.current.name;
-
-    const dayModeNote = board.querySelector(".day-mode-note");
-    if (dayModeNote) {
-      if (effectiveMode.includes("_holiday")) {
-        dayModeNote.textContent = "I dag er det fridag";
-      } else if (effectiveMode.includes("weekend") && effectiveMode.includes("_sick")) {
-        dayModeNote.textContent = "Helg og sykedag – ekstra godt jobbet i dag";
-      } else if (effectiveMode.includes("_sick")) {
-        dayModeNote.textContent = "Vi tar det litt rolig i dag";
-      } else {
-        dayModeNote.textContent = "";
-      }
-    }
-
-    board.querySelectorAll(".day-status-step").forEach((stepBtn) => {
-      stepBtn.addEventListener("click", () => {
-        setChildDayStatusForToday(name, stepBtn.dataset.status);
-      });
-    });
-
-    board.querySelector(".start-btn").addEventListener("click", () => startMorning(name));
-    board.querySelector(".finish-btn")?.addEventListener("click", () => abortMorning(name));
-    board.querySelector(".remove-child-btn").addEventListener("click", () => removeChild(name));
-    const taskGrid = board.querySelector(".task-grid");
-
-    if (wildcardEnabled && wildcardTask && wildcardTaskKey && !effectiveMode.includes("_holiday")) {
-      const wildcardItem = document.createElement("div");
-      wildcardItem.className = "task-item";
-
-      const wildcardBtn = document.createElement("button");
-      wildcardBtn.className = `task-btn ${wildcardDone ? "done" : ""}`;
-      wildcardBtn.disabled = !started;
-      wildcardBtn.innerHTML = `
-        <div class="task-text">${escapeHtml(wildcardTask.title)}</div>
-        ${wildcardDone ? `<small>Fullført · +${session.completedTasks[wildcardTaskKey].points} poeng</small>` : '<small>Bonusoppgave</small>'}
-      `;
-      wildcardBtn.addEventListener("click", () => toggleWildcardTask(name));
-
-      wildcardItem.appendChild(wildcardBtn);
-      taskGrid.appendChild(wildcardItem);
-    }
-    info.routines.forEach((task, idx) => {
-      const details = session.completedTasks[idx];
-      const done = !!details;
-
-      const taskItem = document.createElement("div");
-      taskItem.className = "task-item";
-
-      const taskBtn = document.createElement("button");
-      taskBtn.className = `task-btn ${done ? "done" : ""}`;
-      taskBtn.disabled = !started || effectiveMode.includes("_holiday");
-      taskBtn.innerHTML = `
-        <div class="task-text">${escapeHtml(task)}</div>
-        ${done ? `<small>${formatDuration(details.durationSec)} · +${details.points} poeng</small>` : ""}
-      `;
-      taskBtn.addEventListener("click", () => toggleTask(name, idx));
-
-      const removeTaskBtn = document.createElement("button");
-      removeTaskBtn.className = "icon-btn remove-task-btn";
-      removeTaskBtn.type = "button";
-      removeTaskBtn.setAttribute("aria-label", "Fjern oppgave");
-      removeTaskBtn.textContent = "✕";
-      removeTaskBtn.addEventListener("click", () => removeTask(name, idx));
-
-      taskItem.appendChild(taskBtn);
-      taskItem.appendChild(removeTaskBtn);
-      taskGrid.appendChild(taskItem);
-    });
-
-    const addTaskBtn = document.createElement("button");
-    addTaskBtn.className = "task-btn add-task-btn";
-    addTaskBtn.type = "button";
-    addTaskBtn.innerHTML = '<div class="task-text">+<br>Legg til oppgave</div>';
-    addTaskBtn.addEventListener("click", () => addTask(name));
-    taskGrid.appendChild(addTaskBtn);
-
-    childBoards.appendChild(board);
+    taskItem.querySelector(".task-btn")?.addEventListener("click", () => toggleTask(name, idx));
+    taskItem.querySelector(".remove-task-btn")?.addEventListener("click", () => removeTask(name, idx));
+    taskGrid.appendChild(taskItem);
   });
 
+  const addTaskBtn = document.createElement("button");
+  addTaskBtn.className = "task-btn add-task-btn quest-add-task";
+  addTaskBtn.type = "button";
+  addTaskBtn.innerHTML = '<span class="task-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></span><span class="task-text">Nytt oppdrag</span><small>Legg til</small>';
+  addTaskBtn.addEventListener("click", () => addTask(name));
+  taskGrid.appendChild(addTaskBtn);
+
+  if (wildcardEnabled && wildcardTask && wildcardTaskKey && !effectiveMode.includes("_holiday")) {
+    const bonus = document.createElement("section");
+    bonus.className = `bonus-card ${wildcardDone ? "bonus-card--done" : ""}`;
+    bonus.innerHTML = `
+      <div><p class="eyebrow">Dagens utfordring</p><h4>${escapeHtml(wildcardTask.title)}</h4><p>${wildcardDone ? `Fullført · +${session.completedTasks[wildcardTaskKey].points} HP` : "Et ekstra lite eventyr for bonuspoeng."}</p></div>
+      <button class="primary wildcard-btn" type="button" ${!started ? "disabled" : ""}>${wildcardDone ? "Angre" : "Fullfør"}</button>
+    `;
+    bonus.querySelector(".wildcard-btn")?.addEventListener("click", () => toggleWildcardTask(name));
+    board.appendChild(bonus);
+  }
+
+  childBoards.appendChild(board);
   if (wildcardStateChanged) saveState();
+}
+
+function renderHeroShell(childCount, progressPct) {
+  const heroTitle = document.getElementById("heroTitle");
+  const heroSubtitle = document.getElementById("heroSubtitle");
+  const heroProgress = document.getElementById("heroProgress");
+  if (heroTitle) heroTitle.textContent = activeChildName ? "Heltereisen er i gang" : "God morgen";
+  if (heroSubtitle) heroSubtitle.textContent = activeChildName ? "Fullfør dagens oppdrag og fyll XP-baren." : `${childCount || "Ingen"} helter klare for dagens eventyr.`;
+  if (heroProgress) heroProgress.style.width = `${Math.max(0, Math.min(100, progressPct || 0))}%`;
+}
+
+function renderHomeScreen(names) {
+  const shell = document.createElement("section");
+  shell.className = "home-screen";
+  shell.innerHTML = `
+    <div class="home-heading">
+      <p class="eyebrow">Velg helt</p>
+      <h2>Hvem starter eventyret?</h2>
+    </div>
+    <div class="hero-selector-grid"></div>
+  `;
+  const grid = shell.querySelector(".hero-selector-grid");
+  names.forEach((name) => {
+    const info = state.children[name];
+    const session = sessions[name] || createSession(name);
+    sessions[name] = session;
+    const streak = ensureChildStreak(name);
+    const account = ensureChildPointAccount(name);
+    const levelInfo = resolveLevelInfo(ensureChildLevelProgress(name).completedTasksTotal);
+    const todayKey = getLocalDateKey();
+    const required = getRequiredRoutineCount(info.routines.length, getEffectiveDayMode(todayKey, getChildDayOverride(name, todayKey)));
+    const done = countRoutineCompletions(session);
+    const pct = required ? Math.min(100, Math.round((done / required) * 100)) : 100;
+    const levelCode = String(levelInfo.current.level).padStart(3, "0");
+    const card = document.createElement("article");
+    card.className = "hero-select-card";
+    card.innerHTML = `
+      <button class="hero-select-main" type="button">
+        <img src="./icons/levels/level-${levelCode}.png" alt="" width="120" height="120" onerror="this.hidden=true" />
+        <span class="hero-select-name">${escapeHtml(name)}</span>
+        <span class="hero-select-level">${escapeHtml(levelInfo.current.name)}</span>
+        <span class="mini-progress"><span style="width:${pct}%"></span></span>
+        <span class="hero-select-meta">${streak.count} rekke · ${account.earnedTotal} HP</span>
+      </button>
+    `;
+    card.querySelector(".hero-select-main")?.addEventListener("click", () => {
+      activeChildName = name;
+      renderAll();
+    });
+    grid.appendChild(card);
+  });
+  childBoards.appendChild(shell);
 }
 
 function ensureChildPointAccount(childName) {
@@ -783,7 +1879,26 @@ function removeTask(childName, taskIndex) {
   if (!confirm(`Fjern oppgaven "${taskName}"?`)) return;
 
   state.children[childName].routines.splice(taskIndex, 1);
-  sessions[childName] = createSession(childName);
+  const session = sessions[childName];
+  if (session && session.startedAt) {
+    const nextCompletedTasks = {};
+    Object.entries(session.completedTasks || {}).forEach(([key, details]) => {
+      const numericKey = Number(key);
+      if (!Number.isInteger(numericKey)) {
+        nextCompletedTasks[key] = details;
+        return;
+      }
+      if (numericKey === taskIndex) return;
+      const shiftedKey = numericKey > taskIndex ? numericKey - 1 : numericKey;
+      nextCompletedTasks[String(shiftedKey)] = details;
+    });
+    session.completedTasks = nextCompletedTasks;
+    session.score = Object.values(nextCompletedTasks).reduce((sum, entry) => sum + (Number(entry?.points) || 0), 0);
+    const remaining = Object.values(nextCompletedTasks).filter(Boolean);
+    session.lastTaskAt = remaining.length ? Math.max(...remaining.map((item) => Number(item.completedAtMs) || 0)) : session.startedAt;
+  } else {
+    sessions[childName] = createSession(childName);
+  }
   state.history = state.history.map((entry) => {
     if (entry.childName !== childName) return entry;
     return {
@@ -1018,6 +2133,7 @@ function renderStats() {
 
     entries.forEach((entry) => {
       (entry.taskEntries || []).forEach((t) => {
+        if (t?.isWildcard) return;
         if (!taskMap.has(t.taskName)) taskMap.set(t.taskName, { totalSec: 0, count: 0 });
         const row = taskMap.get(t.taskName);
         row.totalSec += t.durationSec;
@@ -1190,7 +2306,7 @@ function pickWildcardTask(childName, dateKey, usedToday = new Set()) {
 }
 
 function getOrAssignDailyWildcard(childName) {
-  const dateKey = getLocalDateKey();
+  const dateKey = WILDCARD_REFRESH_KEY;
   const usedToday = getUsedWildcardIdsForDate(dateKey, childName);
   const existing = state.wildcards[childName];
 
